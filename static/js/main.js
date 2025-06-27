@@ -11,8 +11,10 @@ async function loadPosts(query = '') {
     container.innerHTML = posts.map(post => `
         <div class="card">
             <div class="post">
-                <div class="post-type ${post.type}">${post.type.toUpperCase()}</div>
-                <h3><a href="/posts/${post.id}">${post.title}</a></h3>
+                <div class="post-header">
+                    <h3><a href="/posts/${post.id}">${post.title}</a></h3>
+                    <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
+                </div>
                 <p>${
                     post.content.length > 200 
                         ? post.content.substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
@@ -80,6 +82,11 @@ document.getElementById('postForm').addEventListener('submit', async e => {
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
     const type = document.querySelector('input[name="type"]:checked').value;
+
+    if (title.length > 80) {
+        alert("Title must be 160 characters or fewer.");
+        return;
+    }
 
     await fetch('/posts', {
         method: 'POST',

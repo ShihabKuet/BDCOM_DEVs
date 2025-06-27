@@ -80,6 +80,38 @@ form, .posts {
     text-transform: uppercase;
 }
 
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.post-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    flex: 1;
+}
+
+.post-header .post-type {
+    font-weight: bold;
+    font-size: 0.85em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.problem {
+    background-color: #fdecea;
+    color: #e74c3c;
+}
+
+.solution {
+    background-color: #e8f8f5;
+    color: #2ecc71;
+}
+
+
 .post-actions-single {
     margin: 20px 0;
     display: flex;
@@ -98,7 +130,7 @@ form, .posts {
 }
 
 .card {
-    background-color: white;
+    background-color: #f3f8fc;
     border-radius: 10px;
     padding: 20px;
     margin: 20px auto;
@@ -108,7 +140,7 @@ form, .posts {
 }
 
 .card:hover {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
 }
 
