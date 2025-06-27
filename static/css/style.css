@@ -1,0 +1,171 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+form, .posts {
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.post {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.post:last-child {
+    border: none;
+}
+
+.problem {
+    color: red;
+    font-weight: bold;
+}
+
+.solution {
+    color: green;
+    font-weight: bold;
+}
+
+#searchBox {
+    width: 400px;
+    padding: 8px;
+}
+
+#searchForm button, #postForm button {
+    padding: 8px 16px;
+    margin-left: 8px;
+}
+
+#title, #content {
+    width: 100%;
+    padding: 8px;
+}
+
+#content {
+    height: 100px;
+}
+
+.post h3 a {
+    color: #2c3e50;
+    text-decoration: none;         /* removes underline */
+    transition: color 0.3s ease;
+}
+
+.post h3 a:hover {
+    color: #2980b9;                /* highlight color on hover */
+}
+
+.post-single {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.post-type {
+    margin: 10px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.post-actions-single {
+    margin: 20px 0;
+    display: flex;
+    gap: 15px;
+}
+
+.post-actions-single button,
+.saveEditBtn,
+.cancelEditBtn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.3s;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.card h3 a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.card h3 a:hover {
+    color: #3498db;
+}
+
+
+.editBtn {
+    background-color: #3498db;
+    color: white;
+}
+
+.editBtn:hover {
+    background-color: #2980b9;
+}
+
+.deleteBtn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.deleteBtn:hover {
+    background-color: #c0392b;
+}
+
+.saveEditBtn {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.saveEditBtn:hover {
+    background-color: #27ae60;
+}
+
+.cancelEditBtn {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.cancelEditBtn:hover {
+    background-color: #7f8c8d;
+}
+
+#editForm input[type="text"],
+#editForm textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+

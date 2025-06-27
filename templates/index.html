@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BDCOM Devs Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>BDCOM Devs Forum</h1>
+
+    <form id="searchForm" style="text-align: center;">
+        <input type="text" id="searchBox" placeholder="Search posts...">
+        <button type="submit">Search</button>
+    </form>
+
+    <form id="postForm">
+        <input type="text" id="title" placeholder="Title" required><br><br>
+        <textarea id="content" placeholder="Describe the problem or solution..." required></textarea><br><br>
+        <label><input type="radio" name="type" value="problem" required> Problem</label>
+        <label><input type="radio" name="type" value="solution"> Solution</label><br><br>
+        <button type="submit">Post</button>
+    </form>
+
+    <div class="posts" id="postsContainer"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
