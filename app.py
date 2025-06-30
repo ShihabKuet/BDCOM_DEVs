@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from datetime import datetime
 
 app = Flask(__name__)
@@ -35,6 +35,9 @@ class Comment(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
 
+@app.context_processor
+def inject_year():
+    return {'current_year': datetime.now().year}
 
 @app.route('/')
 def index():
@@ -75,19 +78,31 @@ def posts():
             'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
         } for post in all_posts])
 
+@app.route('/create', methods=['GET'])
+def create_post_page():
+    return render_template('create_post.html')
+
 @app.route('/search')
 def search():
-    query = request.args.get('q', '')
-    if not query:
-        return jsonify([])
-
+    query = request.args.get('q', '').strip()
+    category = request.args.get('category', '').strip().lower()
     user_ip = request.remote_addr
-    posts = Post.query.filter(
-        or_(
+
+    filters = []
+
+    # Add search query filter if present
+    if query:
+        filters.append(or_(
             Post.title.ilike(f'%{query}%'),
             Post.content.ilike(f'%{query}%')
-        )
-    ).order_by(Post.id.desc()).all()
+        ))
+
+    # Add category filter if present
+    if category:
+        filters.append(Post.category.ilike(category))  # case-insensitive match
+
+    # Combine all filters with AND
+    posts = Post.query.filter(and_(*filters)).order_by(Post.id.desc()).all()
 
     return jsonify([{
         'id': post.id,

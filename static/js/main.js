@@ -25,8 +25,14 @@ function stripHTML(html) {
     return tmp.textContent || tmp.innerText || "";
 }
 
-async function loadPosts(query = '') {
-    const response = await fetch(query ? `/search?q=${encodeURIComponent(query)}` : '/posts');
+async function loadPosts(query = '', category = '') {
+    // Construct query params for search and filter
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (category) params.append('category', category);
+    const url = params.toString() ? `/search?${params.toString()}` : '/posts';
+
+    const response = await fetch(url);
     const posts = await response.json();
     const container = document.getElementById('postsContainer');
     container.innerHTML = posts.map(post => `
@@ -113,21 +119,6 @@ async function loadPosts(query = '') {
 
 }
 
-document.getElementById('filterForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const category = document.getElementById('filterCategory').value.trim();
-
-    // If you want to combine search + filter, you can extend here.
-
-    if(category) {
-        loadPosts('', category);
-    } else {
-        loadPosts();
-    }
-});
-
-
-// Hamburger menu toggle
 document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.getElementById("hamburger");
     const navMenu = document.getElementById("navMenu");
@@ -169,11 +160,22 @@ document.addEventListener("DOMContentLoaded", () => {
         loadPosts();
     });
 
-    document.getElementById('searchForm').addEventListener('submit', e => {
-        e.preventDefault();
-        const query = document.getElementById('searchBox').value.trim();
-        loadPosts(query);
-    });
+
+});
+
+document.getElementById('searchForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const query = document.getElementById('searchBox').value.trim();
+    const category = document.getElementById('filterCategory') ? document.getElementById('filterCategory').value.trim() : '';
+    loadPosts(query, category);
+});
+
+// Update filterForm submit event to support search + filter
+document.getElementById('filterForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const category = document.getElementById('filterCategory').value.trim();
+    const query = document.getElementById('searchBox') ? document.getElementById('searchBox').value.trim() : '';
+    loadPosts(query, category);
 });
 
 document.addEventListener('click', async function (e) {
@@ -197,6 +199,5 @@ document.addEventListener('click', async function (e) {
         }
     }
 });
-
 
 loadPosts();

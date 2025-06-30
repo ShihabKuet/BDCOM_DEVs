@@ -1,0 +1,95 @@
+/* Navigation Bar Container */
+.forum-navbar {
+    background-color: #ffffff;
+    padding: 15px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Flex Layout */
+.forum-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo + Title */
+.forum-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.forum-logo {
+    height: 45px;
+    width: auto;
+}
+
+.forum-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #2c3e50;
+}
+
+.forum-title:hover {
+    color: #3498db;
+}
+
+/* Navigation Links */
+.forum-nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #2c3e50;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.forum-nav a:hover {
+    color: #3498db;
+}
+
+/* Hamburger icon */
+.hamburger {
+    display: none;
+    font-size: 1.8em;
+    cursor: pointer;
+}
+
+/* Responsive menu (default desktop) */
+.forum-nav {
+    display: flex;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .forum-header-content {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .forum-nav {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+        margin-top: 10px;
+    }
+
+    .forum-nav.show {
+        display: flex;
+    }
+
+    .hamburger {
+        display: block;
+        color: #2c3e50;
+        margin-left: auto;
+    }
+
+    .forum-nav a {
+        margin-left: 0;
+        padding: 10px 0;
+        border-top: 1px solid #eee;
+    }
+}
