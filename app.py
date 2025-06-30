@@ -13,7 +13,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     content = db.Column(db.Text)
-    type = db.Column(db.String(10))  # "problem" or "solution"
+    type = db.Column(db.String(10))  # "Query" or "Patch"
     category = db.Column(db.String(20)) 
     ip_address = db.Column(db.String(45))  # to store IPv4 or IPv6
     last_modified_ip = db.Column(db.String(45)) 
@@ -212,4 +212,4 @@ def delete_comment(comment_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.100.133', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

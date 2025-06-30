@@ -51,7 +51,7 @@ async function loadPosts(query = '', category = '') {
                 <div class="post-footer-bar">
                     <div class="post-likes">
                         <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
-                            👍 <span id="likes-${post.id}">${post.likes}</span>
+                            ⚡ <span id="likes-${post.id}">${post.likes}</span>
                         </button>
                     </div>
                     <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
@@ -91,8 +91,8 @@ async function loadPosts(query = '', category = '') {
             postDiv.innerHTML = `
                 <input type="text" id="editTitle" value="${currentTitle}" style="width: 100%; padding: 5px;"><br><br>
                 <textarea id="editContent" style="width: 100%; height: 80px; padding: 5px;">${currentContent}</textarea><br><br>
-                <label><input type="radio" name="editType" value="problem" ${currentType === 'problem' ? 'checked' : ''}> Problem</label>
-                <label><input type="radio" name="editType" value="solution" ${currentType === 'solution' ? 'checked' : ''}> Solution</label><br><br>
+                <label><input type="radio" name="editType" value="query" ${currentType === 'query' ? 'checked' : ''}> Query</label>
+                <label><input type="radio" name="editType" value="patch" ${currentType === 'patch' ? 'checked' : ''}> Patch</label><br><br>
                 <button class="saveEditBtn">Save</button>
                 <button class="cancelEditBtn">Cancel</button>
             `;
