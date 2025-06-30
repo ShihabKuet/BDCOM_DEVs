@@ -1,27 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BDCOM Devs Forum</title>
+    <title>BDF - , ondelete='CASCADE' Devs Forum</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Quill Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body>
-    <h1>BDCOM Devs Forum</h1>
+    <header class="forum-navbar">
+        <div class="forum-header-content">
+            <div class="forum-brand">
+                <img src="{{ url_for('static', filename='resources/BDFs.png') }}" alt="BDCOM Logo" class="forum-logo">
+                <a href="/" class="forum-title"> Devs Forum</a>
+            </div>
+            <nav class="forum-nav" id="navMenu">
+                <a href="/">Home</a>
+                <a href="#postForm">New Post</a>
+                <a href="#">About</a>
+                <!-- Future: <a href="/login">Login</a> -->
+            </nav>
+            <div class="hamburger" id="hamburger">
+                &#9776;
+            </div>
+        </div>
+    </header>
 
     <form id="searchForm" style="text-align: center;">
         <input type="text" id="searchBox" placeholder="Search posts...">
         <button type="submit">Search</button>
     </form>
 
-    <form id="postForm">
-        <input type="text" id="title" placeholder="Title" required maxlength="160"><br><br>
-        <textarea id="content" placeholder="Describe the problem or solution..." required></textarea><br><br>
-        <label><input type="radio" name="type" value="problem" required> Problem</label>
-        <label><input type="radio" name="type" value="solution"> Solution</label><br><br>
-        <button type="submit">Post</button>
+    <form id="postForm" class="modern-form">
+        <input type="text" id="title" placeholder="Post title..." required maxlength="80">
+
+        <!-- Post Creation Form -->
+        <div id="editor-container" style="height: 200px;"></div>
+        <input type="hidden" name="content" id="hiddenContent">
+
+        <div class="radio-group">
+            <label><input type="radio" name="type" value="problem" required> <span>Problem</span></label>
+            <label><input type="radio" name="type" value="solution"> <span>Solution</span></label>
+        </div>
+
+        <select id="category" required class="styled-select">
+            <option value="">Select Category</option>
+            <option value="VxWorks">VxWorks</option>
+            <option value="Linux">Linux</option>
+            <option value="Technical">Technical</option>
+            <option value="Non Technical">Non Technical</option>
+        </select>
+
+        <button type="submit" class="modern-submit">🚀 Post</button>
+    </form>
+
+    <form id="filterForm" style="text-align: center; margin-bottom: 15px;">
+        <select id="filterCategory" class="styled-select">
+            <option value="">-- Filter by Category --</option>
+            <option value="VxWorks">VxWorks</option>
+            <option value="Linux">Linux</option>
+            <option value="Technical">Technical</option>
+            <option value="Non Technical">Non Technical</option>
+        </select>
+        <button type="submit">Filter</button>
     </form>
 
     <div class="posts" id="postsContainer"></div>
+    
+    <footer class="site-footer">
+        Created by © <strong>Md Shanjid Arefin</strong>
+    </footer>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 </body>
 </html>

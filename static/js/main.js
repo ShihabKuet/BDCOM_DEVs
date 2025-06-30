@@ -4,6 +4,27 @@ function truncate(text, maxLength) {
         : text;
 }
 
+function getCategoryIcon(category) {
+    switch (category.toLowerCase()) {
+        case 'vxworks':
+            return '🛠️';  // wrench icon
+        case 'linux':
+            return '🐧';   // penguin icon
+        case 'technical':
+            return '💡';   // light bulb icon
+        case 'non technical':
+            return '📖';   // book icon
+        default:
+            return '📂';   // folder icon fallback
+    }
+}
+
+function stripHTML(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+}
+
 async function loadPosts(query = '') {
     const response = await fetch(query ? `/search?q=${encodeURIComponent(query)}` : '/posts');
     const posts = await response.json();
@@ -16,11 +37,26 @@ async function loadPosts(query = '') {
                     <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
                 </div>
                 <p>${
-                    post.content.length > 200 
-                        ? post.content.substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
-                        : post.content
+                    stripHTML(post.content).length > 200
+                        ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
+                        : stripHTML(post.content)
                 }</p>
-                <small style="color: #666;">This post has been submitted by <strong>${post.ip_address}</strong></small>
+
+                <div class="post-footer-bar">
+                    <div class="post-likes">
+                        <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
+                            👍 <span id="likes-${post.id}">${post.likes}</span>
+                        </button>
+                    </div>
+                    <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
+                        ${getCategoryIcon(post.category)} ${post.category}
+                    </div>
+                </div>
+
+                <div class="post-footer">
+                    <small><strong>Last modified by:</strong> ${post.last_modified_ip}</small>
+                    <small><strong>Submitted by:</strong> ${post.ip_address}</small>
+                </div>
             </div>
         </div>
     `).join('');
@@ -77,31 +113,90 @@ async function loadPosts(query = '') {
 
 }
 
-document.getElementById('postForm').addEventListener('submit', async e => {
+document.getElementById('filterForm').addEventListener('submit', e => {
     e.preventDefault();
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
-    const type = document.querySelector('input[name="type"]:checked').value;
+    const category = document.getElementById('filterCategory').value.trim();
 
-    if (title.length > 80) {
-        alert("Title must be 160 characters or fewer.");
-        return;
+    // If you want to combine search + filter, you can extend here.
+
+    if(category) {
+        loadPosts('', category);
+    } else {
+        loadPosts();
+    }
+});
+
+
+// Hamburger menu toggle
+document.addEventListener("DOMContentLoaded", () => {
+    const hamburger = document.getElementById("hamburger");
+    const navMenu = document.getElementById("navMenu");
+
+    if (hamburger && navMenu) {
+        hamburger.addEventListener("click", () => {
+            navMenu.classList.toggle("show");
+        });
     }
 
-    await fetch('/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, type })
+    const quill = new Quill('#editor-container', {
+        theme: 'snow'
     });
 
-    document.getElementById('postForm').reset();
-    loadPosts();
+    document.getElementById('postForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+
+        // Get content from Quill and update hidden input
+        const content = quill.root.innerHTML;
+        document.getElementById('hiddenContent').value = content;
+
+        const type = document.querySelector('input[name="type"]:checked').value;
+        const category = document.getElementById('category').value;
+
+        if (title.length > 80) {
+            alert("Title must be 160 characters or fewer.");
+            return;
+        }
+
+        await fetch('/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, type, category })
+        });
+
+        document.getElementById('postForm').reset();
+        quill.setContents([]);
+        loadPosts();
+    });
+
+    document.getElementById('searchForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const query = document.getElementById('searchBox').value.trim();
+        loadPosts(query);
+    });
 });
 
-document.getElementById('searchForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const query = document.getElementById('searchBox').value.trim();
-    loadPosts(query);
+document.addEventListener('click', async function (e) {
+    if (e.target && e.target.classList.contains('like-btn')) {
+        const btn = e.target;
+        const postId = btn.dataset.id;
+
+        const res = await fetch(`/like/${postId}`, { method: 'POST' });
+        const data = await res.json();
+
+        if (res.ok) {
+            document.getElementById(`likes-${postId}`).textContent = data.likes;
+
+            if (data.liked) {
+                btn.classList.add('liked');
+            } else {
+                btn.classList.remove('liked');
+            }
+        } else {
+            alert('Error updating like.');
+        }
+    }
 });
+
 
 loadPosts();
