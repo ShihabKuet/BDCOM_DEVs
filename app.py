@@ -20,6 +20,8 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default=0)
     comments = db.relationship('Comment', backref='post', cascade='all, delete-orphan')
     likes_relation = db.relationship('PostLike', backref='post', cascade='all, delete-orphan')
+    reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+    reference = db.relationship('Post', remote_side=[id], backref='patches')
 
 class PostLike(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,13 +54,15 @@ def posts():
     if request.method == 'POST':
         data = request.json
         ip = request.remote_addr
+        reference_id = data.get('reference_id')
         new_post = Post(
             title=data['title'],
             content=data['content'],
             type=data['type'],
             category=data['category'],
             ip_address=ip,
-            last_modified_ip=ip
+            last_modified_ip=ip,
+            reference_id=reference_id
         )
         db.session.add(new_post)
         db.session.commit()

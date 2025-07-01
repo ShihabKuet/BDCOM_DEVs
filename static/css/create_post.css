@@ -94,3 +94,11 @@ button[type="submit"]:hover {
     text-decoration: underline;
 }
 
+.select2-container .select2-selection--single {
+    height: 40px;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+

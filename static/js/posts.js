@@ -11,14 +11,14 @@ function cancelEdit() {
 async function submitEdit(e, postId) {
     e.preventDefault();
     const title = document.getElementById('editTitle').value;
-    //const content = document.getElementById('editContent').value;
     const content = editQuill.root.innerHTML;
     const type = document.querySelector('input[name="editType"]:checked').value;
+    const category = document.getElementById('editCategory').value;
 
     await fetch(`/posts/${postId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, type })
+        body: JSON.stringify({ title, content, type, category })
     });
 
     location.reload();

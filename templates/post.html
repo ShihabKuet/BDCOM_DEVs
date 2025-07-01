@@ -11,18 +11,25 @@
 <body>
 
     {% include 'navbar.html' %}
-    
+
     <div class="post-single">
         <h1>{{ post.title }}</h1>
         <div class="{{ post.type }} post-type">{{ post.type.upper() }}</div>
-        <div class="post-body">{{ post.content | safe }}</div>
+        <div class="post-body">{{ post.content | safe }}</div><br><br>
+        {% if post.reference %}
+        <div class="reference-banner">
+            <span class="reference-icon">🔗</span>
+            <span class="reference-label">Addressing:</span>
+            <a class="reference-link" href="/posts/{{ post.reference.id }}">{{ post.reference.title }}</a>
+        </div>
+        {% endif %}
 
         <div class="post-actions-single">
             <button class="editBtn" onclick="startEdit()">✏️ Edit</button>
             <button class="deleteBtn" onclick="deletePost({{ post.id }})">🗑️ Delete</button>
         </div>
 
-        <form id="editForm" style="display:none;" onsubmit="submitEdit(event, {{ post.id }})">
+        <form id="editForm" class="filter-form" style="display:none;" onsubmit="submitEdit(event, {{ post.id }})">
             <input type="text" id="editTitle" value="{{ post.title }}" required><br><br>
             <!-- Hidden preloaded HTML for JavaScript to set into Quill -->
             <div id="editContentRaw" style="display: none;">{{ post.content|safe }}</div>
@@ -32,6 +39,13 @@
             <br><br>
             <label><input type="radio" name="editType" value="query" {% if post.type == 'Query' %}checked{% endif %}> Query</label>
             <label><input type="radio" name="editType" value="patch" {% if post.type == 'Patch' %}checked{% endif %}> Patch</label><br><br>
+            <label for="editCategory">Category:</label>
+            <select id="editCategory" required>
+                <option value="vxworks" {% if post.category == 'vxworks' %}selected{% endif %}>🛠️ VxWorks</option>
+                <option value="linux" {% if post.category == 'linux' %}selected{% endif %}>🐧 Linux</option>
+                <option value="technical" {% if post.category == 'technical' %}selected{% endif %}>💡 Technical</option>
+                <option value="non technical" {% if post.category == 'non technical' %}selected{% endif %}>📖 Non Technical</option>
+            </select><br><br>
             <button type="submit" class="saveEditBtn">💾 Save</button>
             <button type="button" class="cancelEditBtn" onclick="cancelEdit()">✖️ Cancel</button>
         </form>
@@ -39,12 +53,12 @@
         <br>
 
         <div class="comments-section">
-            <h3>Comments</h3>
+            <h3>Feedback</h3>
             <div id="comments-container"></div>
 
             <form id="commentForm">
-                <textarea id="commentContent" placeholder="Write a comment..." required></textarea><br>
-                <button type="submit">Submit Comment</button>
+                <textarea id="commentContent" placeholder="Write a feedback..." required></textarea><br>
+                <button type="submit">Give Feedback</button>
             </form>
         </div>
 
