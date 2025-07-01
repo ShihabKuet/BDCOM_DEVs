@@ -197,6 +197,77 @@ form, .posts {
     user-select: none;
 }
 
+/* For sidebars */
+.content-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.main-posts {
+    flex: 3;
+}
+
+.sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-card {
+    width: 100%;
+}
+
+.featured-card ul,
+.sidebar .card ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.featured-card ul li {
+    padding: 6px 0;
+    font-size: 0.95em;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar .card ul li:last-child {
+    border-bottom: none;
+}
+
+.featured-card ul li a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.featured-card ul li a:hover {
+    color: #007bff;
+}
+
+@media (max-width: 768px) {
+    .content-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .sidebar .card {
+        flex: 1 1 100%;
+    }
+}
+
+
+
+
 /* Category colors */
 .category-vxworks {
     background-color: #e67e22;  /* orange */

@@ -29,7 +29,33 @@
         </form>
     </div>
 
-    <div class="posts" id="postsContainer"></div>
+    <div class="content-layout">
+        <!-- Main posts area -->
+        <div class="main-posts">
+            <div class="posts" id="postsContainer"></div>
+            <div id="paginationControls" class="pagination-container"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Top 3 Posts -->
+            <div class="card sidebar-card">
+                <h3>🔥 Top 3 Posts</h3>
+                <ul id="featuredPostsList"></ul>
+            </div>
+
+            <!-- Future Features -->
+            <div class="card sidebar-card">
+                <h3>🚀 Future Features</h3>
+                <ul>
+                    <li>🗳️ Vote on posts</li>
+                    <li>📈 View counts</li>
+                    <li>🔔 Notifications</li>
+                    <li>📝 Markdown support</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
 
     <div id="paginationControls" class="pagination-container"></div>
     
