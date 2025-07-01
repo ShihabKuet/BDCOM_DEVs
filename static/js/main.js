@@ -25,15 +25,37 @@ function stripHTML(html) {
     return tmp.textContent || tmp.innerText || "";
 }
 
-async function loadPosts(query = '', category = '') {
+function renderPaginationControls(currentPage, totalPages, query, category) {
+    const container = document.getElementById('paginationControls');
+    container.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    for (let page = 1; page <= totalPages; page++) {
+        const button = document.createElement('button');
+        button.textContent = page;
+        button.className = page === currentPage ? 'active' : '';
+        button.addEventListener('click', () => loadPosts(query, category, page));
+        container.appendChild(button);
+    }
+}
+
+
+async function loadPosts(query = '', category = '', page = 1) {
     // Construct query params for search and filter
     const params = new URLSearchParams();
     if (query) params.append('q', query);
     if (category) params.append('category', category);
+    // For Pagination
+    params.append('page', page);
+    params.append('per_page', 10);
+    // For Pagination Ends
     const url = params.toString() ? `/search?${params.toString()}` : '/posts';
 
     const response = await fetch(url);
-    const posts = await response.json();
+    //const posts = await response.json();
+    const data = await response.json();
+    const posts = data.posts;
     const container = document.getElementById('postsContainer');
     container.innerHTML = posts.map(post => `
         <div class="card">
@@ -67,6 +89,7 @@ async function loadPosts(query = '', category = '') {
         </div>
     `).join('');
 
+    renderPaginationControls(data.page, data.total_pages, query, category);
 
     // Attach event listeners for delete buttons
     document.querySelectorAll('.deleteBtn').forEach(button => {

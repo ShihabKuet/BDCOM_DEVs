@@ -29,29 +29,9 @@
         </form>
     </div>
 
-    <!-- <form id="postForm" class="modern-form">
-        <input type="text" id="title" placeholder="Post title..." required maxlength="80">
-
-        <div id="editor-container" style="height: 200px;"></div>
-        <input type="hidden" name="content" id="hiddenContent">
-
-        <div class="radio-group">
-            <label><input type="radio" name="type" value="query" required> <span>Query</span></label>
-            <label><input type="radio" name="type" value="patch"> <span>Patch</span></label>
-        </div>
-
-        <select id="category" required class="styled-select">
-            <option value="">Select Category</option>
-            <option value="VxWorks">VxWorks</option>
-            <option value="Linux">Linux</option>
-            <option value="Technical">Technical</option>
-            <option value="Non Technical">Non Technical</option>
-        </select>
-
-        <button type="submit" class="modern-submit">🚀 Post</button>
-    </form> -->
-
     <div class="posts" id="postsContainer"></div>
+
+    <div id="paginationControls" class="pagination-container"></div>
     
     {% include 'footer.html' %}
 

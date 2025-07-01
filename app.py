@@ -68,19 +68,41 @@ def posts():
         db.session.commit()
         return jsonify({'message': 'Post added successfully'}), 201
     else:
+        # Pagination parameters
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        #
         user_ip = request.remote_addr
-        all_posts = Post.query.order_by(Post.id.desc()).all()
-        return jsonify([{
-            'id': post.id,
-            'title': post.title,
-            'content': post.content,
-            'type': post.type,
-            'ip_address': post.ip_address,
-            'category': post.category,
-            'last_modified_ip': post.last_modified_ip,
-            'likes': post.likes,
-            'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
-        } for post in all_posts])
+        #all_posts = Post.query.order_by(Post.id.desc()).all()
+        paginated_posts = Post.query.order_by(Post.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        # return jsonify([{
+        #     'id': post.id,
+        #     'title': post.title,
+        #     'content': post.content,
+        #     'type': post.type,
+        #     'ip_address': post.ip_address,
+        #     'category': post.category,
+        #     'last_modified_ip': post.last_modified_ip,
+        #     'likes': post.likes,
+        #     'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
+        # } for post in all_posts])
+        return jsonify({
+            'posts': [{
+                'id': post.id,
+                'title': post.title,
+                'content': post.content,
+                'type': post.type,
+                'ip_address': post.ip_address,
+                'category': post.category,
+                'last_modified_ip': post.last_modified_ip,
+                'likes': post.likes,
+                'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
+            } for post in paginated_posts.items],
+            'has_next': paginated_posts.has_next,
+            'has_prev': paginated_posts.has_prev,
+            'page': paginated_posts.page,
+            'total_pages': paginated_posts.pages
+        })
 
 @app.route('/create', methods=['GET'])
 def create_post_page():
@@ -90,6 +112,8 @@ def create_post_page():
 def search():
     query = request.args.get('q', '').strip()
     category = request.args.get('category', '').strip().lower()
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
     user_ip = request.remote_addr
 
     filters = []
@@ -105,20 +129,40 @@ def search():
     if category:
         filters.append(Post.category.ilike(category))  # case-insensitive match
 
-    # Combine all filters with AND
-    posts = Post.query.filter(and_(*filters)).order_by(Post.id.desc()).all()
+    filtered_query = Post.query.filter(and_(*filters)).order_by(Post.id.desc())
+    paginated_posts = filtered_query.paginate(page=page, per_page=per_page, error_out=False)
 
-    return jsonify([{
-        'id': post.id,
-        'title': post.title,
-        'content': post.content,
-        'type': post.type,
-        'ip_address': post.ip_address,
-        'category': post.category,
-        'last_modified_ip': post.last_modified_ip,
-        'likes': post.likes,
-        'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
-    } for post in posts])
+    # Combine all filters with AND
+    #posts = Post.query.filter(and_(*filters)).order_by(Post.id.desc()).all()
+
+    return jsonify({
+        'posts': [{
+            'id': post.id,
+            'title': post.title,
+            'content': post.content,
+            'type': post.type,
+            'ip_address': post.ip_address,
+            'category': post.category,
+            'last_modified_ip': post.last_modified_ip,
+            'likes': post.likes,
+            'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
+        } for post in paginated_posts.items],
+        'has_next': paginated_posts.has_next,
+        'has_prev': paginated_posts.has_prev,
+        'page': paginated_posts.page,
+        'total_pages': paginated_posts.pages
+    })
+    # return jsonify([{
+    #     'id': post.id,
+    #     'title': post.title,
+    #     'content': post.content,
+    #     'type': post.type,
+    #     'ip_address': post.ip_address,
+    #     'category': post.category,
+    #     'last_modified_ip': post.last_modified_ip,
+    #     'likes': post.likes,
+    #     'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
+    # } for post in posts])
 
 @app.route('/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):

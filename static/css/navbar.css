@@ -42,16 +42,42 @@
 
 /* Navigation Links */
 .forum-nav a {
+    position: relative;
     margin-left: 20px;
     text-decoration: none;
     color: #2c3e50;
-    font-weight: 500;
-    transition: color 0.3s;
+    font-weight: 600;
+    background-color: rgba(240, 248, 255, 0.6);
+    padding: 8px 14px;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+}
+
+.forum-nav a.active {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.forum-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0%;
+    height: 2px;
+    background-color: #3498db;
+    transition: width 0.3s ease-in-out;
 }
 
 .forum-nav a:hover {
     color: #3498db;
 }
+
+.forum-nav a:hover::after {
+    width: 100%;
+}
+
 
 /* Hamburger icon */
 .hamburger {

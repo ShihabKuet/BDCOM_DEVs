@@ -5,8 +5,8 @@
             <a href="/" class="forum-title">BDCOM Devs Forum</a>
         </div>
         <nav class="forum-nav" id="navMenu">
-            <a href="/">Home</a>
-            <a href="/create">Create</a>
+            <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Home</a>
+            <a href="/create" class="{{ 'active' if request.path == '/create' else '' }}">Create</a>
             <!-- Future: <a href="/login">Login</a> -->
         </nav>
         <div class="hamburger" id="hamburger">
