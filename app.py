@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask import abort
 from sqlalchemy import or_, and_
 from datetime import datetime
 
@@ -263,7 +264,46 @@ def delete_comment(comment_id):
     db.session.commit()
     return jsonify({'message': 'Comment deleted successfully'})
 
+#only for admin
+@app.route('/admin/posts')
+def admin_posts():
+    if request.remote_addr != '127.0.0.1':
+        abort(403)  # Forbidden
 
+    posts = Post.query.order_by(Post.id.desc()).all()
+    return render_template('admin_posts.html', posts=posts)
+
+@app.route('/posts/<int:post_id>', methods=['PUT', 'DELETE'])
+def update_or_delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    user_ip = request.remote_addr
+
+    if request.method == 'DELETE':
+        if user_ip != post.ip_address and user_ip != '127.0.0.1':
+            return jsonify({'error': 'Unauthorized'}), 403
+        db.session.delete(post)
+        db.session.commit()
+        return jsonify({'message': 'Deleted'}), 200
+
+    elif request.method == 'PUT':
+        data = request.json
+        if user_ip != post.ip_address and user_ip != '127.0.0.1':
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        if 'title' in data:
+            post.title = data['title']
+        if 'category' in data:
+            post.category = data['category']
+        if 'type' in data:
+            post.type = data['type']
+        if 'content' in data:
+            post.content = data['content']
+
+        post.last_modified_ip = user_ip
+        db.session.commit()
+        return jsonify({'message': 'Updated'}), 200
+
+#only for admin ends
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - Manage Posts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-post-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-post-table th, .admin-post-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .admin-actions button {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛠️ Admin Panel - Manage Posts</h1>
+    <table class="admin-post-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>IP</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr id="post-row-{{ post.id }}">
+                <td>{{ post.id }}</td>
+                <td contenteditable="true" onblur="editPostField({{ post.id }}, 'title', this.innerText)">{{ post.title }}</td>
+                <td contenteditable="true" onblur="editPostField({{ post.id }}, 'category', this.innerText)">{{ post.category }}</td>
+                <td contenteditable="true" onblur="editPostField({{ post.id }}, 'type', this.innerText)">{{ post.type }}</td>
+                <td>{{ post.ip_address }}</td>
+                <td class="admin-actions">
+                    <button onclick="window.location.href='/posts/{{ post.id }}'">🔍 View</button>
+                    <button onclick="deletePost({{ post.id }})">🗑️ Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script src="{{ url_for('static', filename='js/admin_panel.js') }}"></script>
+
+</body>
+</html>
