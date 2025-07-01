@@ -9,6 +9,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+ADMIN_IP = '127.0.0.1'
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
@@ -36,6 +38,9 @@ class Comment(db.Model):
     ip_address = db.Column(db.String(45))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
+
+def is_admin():
+    return request.remote_addr == ADMIN_IP
 
 @app.context_processor
 def inject_year():
@@ -75,17 +80,7 @@ def posts():
         user_ip = request.remote_addr
         #all_posts = Post.query.order_by(Post.id.desc()).all()
         paginated_posts = Post.query.order_by(Post.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
-        # return jsonify([{
-        #     'id': post.id,
-        #     'title': post.title,
-        #     'content': post.content,
-        #     'type': post.type,
-        #     'ip_address': post.ip_address,
-        #     'category': post.category,
-        #     'last_modified_ip': post.last_modified_ip,
-        #     'likes': post.likes,
-        #     'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
-        # } for post in all_posts])
+
         return jsonify({
             'posts': [{
                 'id': post.id,
@@ -103,6 +98,14 @@ def posts():
             'page': paginated_posts.page,
             'total_pages': paginated_posts.pages
         })
+    
+@app.route('/posts/summary')
+def post_summaries():
+    posts = Post.query.order_by(Post.id.desc()).all()
+    return jsonify([
+        {'id': post.id, 'title': post.title, 'type': post.type}
+        for post in posts
+    ])
 
 @app.route('/create', methods=['GET'])
 def create_post_page():
@@ -167,9 +170,14 @@ def search():
 @app.route('/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
-    db.session.delete(post)
-    db.session.commit()
-    return jsonify({'message': 'Post deleted successfully'}), 200
+    requester_ip = request.remote_addr
+
+    if requester_ip == post.ip_address or requester_ip == '192.168.100.133':
+        db.session.delete(post)
+        db.session.commit()
+        return jsonify({'message': 'Post deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Unauthorized to delete this post'}), 403
 
 @app.route('/posts/<int:post_id>')
 def get_post(post_id):

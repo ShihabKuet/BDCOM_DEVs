@@ -1,7 +1,7 @@
 let quill;
 
 async function loadReferenceOptions() {
-    const res = await fetch('/posts', {
+    const res = await fetch('/posts/summary', {
         headers: {
             'Accept': 'application/json'  // ensures server returns JSON
         }
