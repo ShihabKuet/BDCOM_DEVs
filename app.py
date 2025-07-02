@@ -6,7 +6,14 @@ from datetime import datetime
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bdcom0061@localhost:5432/bdcom_dev_forum'
+
+# PostgreSQL credentials
+DB_USERNAME = 'postgres'
+DB_PASSWORD = 'bdcom0061'
+DB_NAME = 'bdcom_dev_forum'
+DB_HOST = 'localhost'
+DB_PORT = '5432'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
