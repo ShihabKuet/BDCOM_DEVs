@@ -5,7 +5,8 @@ from sqlalchemy import or_, and_
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bdcom0061@localhost:5432/bdcom_dev_forum'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -39,6 +40,45 @@ class Comment(db.Model):
     ip_address = db.Column(db.String(45))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
+
+class Notice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class UserIP(db.Model):
+    __tablename__ = 'user_ip'
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(45), unique=True, nullable=False)
+    username = db.Column(db.String(100), nullable=False)
+
+@app.route('/notices')
+def get_notices():
+    notices = Notice.query.order_by(Notice.created_at.desc()).limit(5).all()
+    return jsonify([{'id': n.id, 'content': n.content} for n in notices])
+
+@app.route('/notices', methods=['POST'])
+def add_notice():
+    if not is_admin():  # If you have an `is_admin()` check
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    content = data.get('content')
+    if not content:
+        return jsonify({'error': 'Content is required'}), 400
+
+    notice = Notice(content=content)
+    db.session.add(notice)
+    db.session.commit()
+    return jsonify({'message': 'Notice posted successfully'}), 201
+
+@app.route('/admin/notice')
+def notice_admin():
+    return render_template('admin_notice.html')
+
+@app.route('/bdf_manual')
+def manual():
+    return render_template('bdf_manual.html')
 
 def is_admin():
     return request.remote_addr == ADMIN_IP
@@ -183,7 +223,13 @@ def delete_post(post_id):
 @app.route('/posts/<int:post_id>')
 def get_post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('post.html', post=post)
+    # Try to find username for submitter
+    submitter = UserIP.query.filter_by(ip_address=post.ip_address).first()
+    last_editor = UserIP.query.filter_by(ip_address=post.last_modified_ip).first()
+
+    submitted_by = submitter.username if submitter and submitter.username else post.ip_address
+    modified_by = last_editor.username if last_editor and last_editor.username else post.last_modified_ip
+    return render_template('post.html', post=post, submitted_by=submitted_by, modified_by=modified_by)
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):

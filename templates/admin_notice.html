@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Notice - BDCOM Devs Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="post-single">
+        <h1>📢 Send a New Notice</h1>
+        <form id="noticeForm" class="modern-form">
+            <textarea id="noticeContent" placeholder="Write your notice here..." required></textarea>
+            <button type="submit" class="modern-submit">📨 Post Notice</button>
+        </form>
+
+        <br><br>
+        <h3>🕘 Last 5 Notices</h3>
+        <ul id="noticeList"></ul>
+
+        <a href="{{ url_for('index') }}">← Back to Forum</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin_notice.js') }}"></script>
+</body>
+</html>

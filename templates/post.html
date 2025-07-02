@@ -15,6 +15,11 @@
     <div class="post-single">
         <h1>{{ post.title }}</h1>
         <div class="{{ post.type }} post-type">{{ post.type.upper() }}</div>
+        <div class="post-meta">
+            <span><strong>Submitted by:</strong> {{ submitted_by }}</span> |
+            <span><strong>Last modified by:</strong> {{ modified_by }}</span>
+        </div>
+        <br>
         <div class="post-body">{{ post.content | safe }}</div><br><br>
         {% if post.reference %}
         <div class="reference-banner">

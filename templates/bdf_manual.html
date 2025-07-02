@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>📘 Manual - BDCOM Devs Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bdf_manual.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="manual-container">
+        <h1>📘 BDCOM Devs Forum Manual</h1>
+        <p class="intro">This manual helps you understand how to use and contribute to the BDCOM Devs Forum effectively.</p>
+
+        <div class="manual-section">
+            <h2>📝 Creating a Post</h2>
+            <ul>
+                <li>Click the <strong>“Create”</strong> button (right corner of the Navigation bar).</li>
+                <li>Fill in the <strong>Title</strong>, <strong>Type</strong> (Query or Patch), <strong>Category</strong>, and the <strong>Content</strong>.</li>
+                <li>You can reference another post by selecting a <strong>Reference ID</strong> if needed.</li>
+                <li>Click “Submit” to publish.</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>🧩 What is Query & Patch?</h2>
+            <ul>
+                <li><strong>Query</strong> is something that you have faced problematic or challenging. You may need help for this. Mainly it means - you are asking for help.</li>
+                <li>On the other hand <strong>Patch</strong> is a fancy name for Quick Fix or Solution. The solution can be either be:
+                    <ul>
+                        <li>In response to a specific <strong>Query</strong> (i.e., a previously raised problem or issue), or</li>
+                        <li>A standalone tip, trick, workaround, or best practice that can help others avoid or resolve similar issues in the future.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>💬 Giving Feedback</h2>
+            <ul>
+                <li>Open a post and scroll to the <strong>Feedback</strong> section.</li>
+                <li>Write your feedback and click “Give Feedback”.</li>
+                <li>If it’s your feedback, you can edit or delete it.</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>🌟 Endorsing  Posts</h2>
+            <ul>
+                <li>Click the “🌟 Endorse” button under any post to show your support or agreement.</li>
+                <li>Each user can endorse a post only once. Clicking the button again will remove your endorsement.</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>📌 Add Reference to Post</h2>
+            <ul>
+                <li>You can optionally link your post to a previous <strong>Query</strong> or <strong>Patch</strong> by selecting it from the <strong>🔗 Reference</strong> dropdown.</li>
+                <li>This helps others understand the context or origin of your post, especially when submitting a follow-up fix or related discussion.</li>
+                <li>Referencing posts promotes better traceability and keeps related topics connected.</li>
+                <li>ou can see whether a post has a reference attached by checking the post detail page—this information is displayed below the post content by <strong>Addressing to [post_title]</strong></strong></li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>📬 Notices & Features</h2>
+            <ul>
+                <li>View current <strong>Notices</strong> in the right sidebar of the homepage.</li>
+                <li>See upcoming <strong>Features</strong> in the same section.</li>
+            </ul>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>

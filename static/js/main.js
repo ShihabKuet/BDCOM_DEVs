@@ -40,6 +40,13 @@ function renderPaginationControls(currentPage, totalPages, query, category) {
     }
 }
 
+async function loadNotices() {
+    const res = await fetch('/notices');
+    const notices = await res.json();
+
+    const list = document.getElementById('noticeList');
+    list.innerHTML = notices.map(n => `<li>${n.content}</li>`).join('');
+}
 
 async function loadPosts(query = '', category = '', page = 1) {
     // Construct query params for search and filter
@@ -73,7 +80,7 @@ async function loadPosts(query = '', category = '', page = 1) {
                 <div class="post-footer-bar">
                     <div class="post-likes">
                         <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
-                            ⚡ <span id="likes-${post.id}">${post.likes}</span>
+                            🌟 <span id="likes-${post.id}">${post.likes}</span>
                         </button>
                     </div>
                     <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
@@ -145,6 +152,8 @@ async function loadPosts(query = '', category = '', page = 1) {
 document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.getElementById("hamburger");
     const navMenu = document.getElementById("navMenu");
+
+    loadNotices();
 
     if (hamburger && navMenu) {
         hamburger.addEventListener("click", () => {

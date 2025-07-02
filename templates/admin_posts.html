@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Admin Panel - Manage Posts</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_notice.css') }}">
     <style>
         .admin-post-table {
             width: 100%;
@@ -18,34 +18,16 @@
     </style>
 </head>
 <body>
-    <h1>🛠️ Admin Panel - Manage Posts</h1>
-    <table class="admin-post-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Type</th>
-                <th>IP</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for post in posts %}
-            <tr id="post-row-{{ post.id }}">
-                <td>{{ post.id }}</td>
-                <td contenteditable="true" onblur="editPostField({{ post.id }}, 'title', this.innerText)">{{ post.title }}</td>
-                <td contenteditable="true" onblur="editPostField({{ post.id }}, 'category', this.innerText)">{{ post.category }}</td>
-                <td contenteditable="true" onblur="editPostField({{ post.id }}, 'type', this.innerText)">{{ post.type }}</td>
-                <td>{{ post.ip_address }}</td>
-                <td class="admin-actions">
-                    <button onclick="window.location.href='/posts/{{ post.id }}'">🔍 View</button>
-                    <button onclick="deletePost({{ post.id }})">🗑️ Delete</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="notice-form-container">
+        <h1>Admin Notice Board</h1>
+
+        <form id="noticeForm" onsubmit="submitNotice(event)">
+            <textarea id="noticeContent" placeholder="Write your notice here..." required></textarea>
+            <button type="submit">Post Notice</button>
+        </form>
+
+        <ul id="noticeList"></ul>
+    </div>
 
     <script src="{{ url_for('static', filename='js/admin_panel.js') }}"></script>
 
