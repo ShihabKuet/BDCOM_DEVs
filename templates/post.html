@@ -15,11 +15,12 @@
     <div class="post-single">
         <h1>{{ post.title }}</h1>
         <div class="{{ post.type }} post-type">{{ post.type.upper() }}</div>
+        <br><br>
         <div class="post-meta">
             <span><strong>Submitted by:</strong> {{ submitted_by }}</span> |
             <span><strong>Last modified by:</strong> {{ modified_by }}</span>
         </div>
-        <br>
+        <hr><br>
         <div class="post-body">{{ post.content | safe }}</div><br><br>
         {% if post.reference %}
         <div class="reference-banner">
@@ -31,7 +32,9 @@
 
         <div class="post-actions-single">
             <button class="editBtn" onclick="startEdit()">✏️ Edit</button>
+            {% if current_ip == post.ip_address or current_ip == admin_ip %}
             <button class="deleteBtn" onclick="deletePost({{ post.id }})">🗑️ Delete</button>
+            {% endif %}
         </div>
 
         <form id="editForm" class="filter-form" style="display:none;" onsubmit="submitEdit(event, {{ post.id }})">

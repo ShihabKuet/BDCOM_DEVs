@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-ADMIN_IP = '127.0.0.1'
+ADMIN_IP = '192.168.100.133'
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -229,7 +229,8 @@ def get_post(post_id):
 
     submitted_by = submitter.username if submitter and submitter.username else post.ip_address
     modified_by = last_editor.username if last_editor and last_editor.username else post.last_modified_ip
-    return render_template('post.html', post=post, submitted_by=submitted_by, modified_by=modified_by)
+    current_ip = request.remote_addr  # Get current user's IP
+    return render_template('post.html', post=post, submitted_by=submitted_by, modified_by=modified_by, current_ip=current_ip, admin_ip=ADMIN_IP)
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
@@ -313,7 +314,7 @@ def delete_comment(comment_id):
 #only for admin
 @app.route('/admin/posts')
 def admin_posts():
-    if request.remote_addr != '127.0.0.1':
+    if request.remote_addr != ADMIN_IP:
         abort(403)  # Forbidden
 
     posts = Post.query.order_by(Post.id.desc()).all()

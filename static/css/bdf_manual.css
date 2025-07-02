@@ -54,3 +54,54 @@
     left: 0;
     color: #3498db;
 }
+
+.category-manual {
+    max-width: 800px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.category-manual h2 {
+    font-size: 1.5em;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.category-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 15px 0;
+}
+
+.category-list li {
+    margin-bottom: 12px;
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: white;
+    margin-right: 10px;
+}
+
+.category-vxworks {
+    background-color: #e67e22;
+}
+.category-linux {
+    background-color: #3498db;
+}
+.category-technical {
+    background-color: #27ae60;
+}
+.category-non-technical {
+    background-color: #7f8c8d;
+}

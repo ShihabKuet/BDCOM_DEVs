@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bdf_manual.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -15,12 +16,12 @@
         <h1>📘 BDCOM Devs Forum Manual</h1>
         <p class="intro">This manual helps you understand how to use and contribute to the BDCOM Devs Forum effectively.</p>
 
-        <div class="manual-section">
+        <div class="manual-section category-manual">
             <h2>📝 Creating a Post</h2>
             <ul>
                 <li>Click the <strong>“Create”</strong> button (right corner of the Navigation bar).</li>
                 <li>Fill in the <strong>Title</strong>, <strong>Type</strong> (Query or Patch), <strong>Category</strong>, and the <strong>Content</strong>.</li>
-                <li>You can reference another post by selecting a <strong>Reference ID</strong> if needed.</li>
+                <li>You can add reference of another post by selecting a <strong>Reference ID</strong> if needed.</li>
                 <li>Click “Submit” to publish.</li>
             </ul>
         </div>
@@ -29,7 +30,7 @@
             <h2>🧩 What is Query & Patch?</h2>
             <ul>
                 <li><strong>Query</strong> is something that you have faced problematic or challenging. You may need help for this. Mainly it means - you are asking for help.</li>
-                <li>On the other hand <strong>Patch</strong> is a fancy name for Quick Fix or Solution. The solution can be either be:
+                <li>On the other hand <strong>Patch</strong> is a fancy name for Quick Fix or Solution. The solution can either be:
                     <ul>
                         <li>In response to a specific <strong>Query</strong> (i.e., a previously raised problem or issue), or</li>
                         <li>A standalone tip, trick, workaround, or best practice that can help others avoid or resolve similar issues in the future.</li>
@@ -37,6 +38,35 @@
                 </li>
             </ul>
         </div>
+
+        <section class="manual-section category-manual">
+            <h2>📂 Post Categories</h2>
+            <p>
+                When creating a post on <strong>BDF</strong>, you must select a category. Categories help organize content and make it easier for others to filter and find relevant discussions.
+            </p>
+
+            <ul class="category-list">
+                <li>
+                <span class="category-badge category-vxworks">VxWorks</span> - For anything related to VxWorks: development, bugs, features, or usage.
+                </li>
+                <li>
+                <span class="category-badge category-linux">Linux</span> - For posts about Linux-based Development, tools, kernel issues, scripting, or troubleshooting.
+                </li>
+                <li>
+                <span class="category-badge category-technical">Technical</span> - For technical topics that don’t fall under a specific OS. This includes networking, protocols, code snippets, tools, debugging tips, etc.
+                </li>
+                <li>
+                <span class="category-badge category-non-technical">Non Technical</span> - For general or casual discussions that are not directly technical. Use this for community news, announcements, or casual sharing.
+                </li>
+            </ul>
+
+            <p><strong>Tips:</strong></p>
+            <ul>
+                <li>✅ Choose the most relevant category — it helps others find it faster.</li>
+                <li>🔄 Admins may re-categorize posts if needed.</li>
+                <li>🔍 Filtering by category is available on the homepage for focused browsing.</li>
+            </ul>
+        </section>
 
         <div class="manual-section">
             <h2>💬 Giving Feedback</h2>
@@ -47,25 +77,26 @@
             </ul>
         </div>
 
-        <div class="manual-section">
+        <div class="manual-section category-manual">
             <h2>🌟 Endorsing  Posts</h2>
             <ul>
                 <li>Click the “🌟 Endorse” button under any post to show your support or agreement.</li>
                 <li>Each user can endorse a post only once. Clicking the button again will remove your endorsement.</li>
+                <li>In simple term - it is the <strong>LIKE</strong> button.</li>
             </ul>
         </div>
 
         <div class="manual-section">
             <h2>📌 Add Reference to Post</h2>
             <ul>
-                <li>You can optionally link your post to a previous <strong>Query</strong> or <strong>Patch</strong> by selecting it from the <strong>🔗 Reference</strong> dropdown.</li>
+                <li>You can optionally link your post to a previously posted <strong>Query</strong> or <strong>Patch</strong> by selecting it from the <strong>🔗 Reference</strong> dropdown.</li>
                 <li>This helps others understand the context or origin of your post, especially when submitting a follow-up fix or related discussion.</li>
                 <li>Referencing posts promotes better traceability and keeps related topics connected.</li>
-                <li>ou can see whether a post has a reference attached by checking the post detail page—this information is displayed below the post content by <strong>Addressing to [post_title]</strong></strong></li>
+                <li>You can see whether a post has a reference attached by checking the post detail page—this information is displayed below the post content by <strong>Addressing to [<i>post_title</i>]</strong></strong></li>
             </ul>
         </div>
 
-        <div class="manual-section">
+        <div class="manual-section category-manual">
             <h2>📬 Notices & Features</h2>
             <ul>
                 <li>View current <strong>Notices</strong> in the right sidebar of the homepage.</li>

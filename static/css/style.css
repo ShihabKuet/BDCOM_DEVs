@@ -497,11 +497,29 @@ form, .posts {
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+/* Base style for post type badge */
 .post-type {
-    margin: 10px 0;
-    font-weight: bold;
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
     text-transform: uppercase;
+    border-radius: 20px;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    letter-spacing: 0.5px;
 }
+
+.post-single .post-type.query {
+    background-color: #ff0000;
+    color: #ffeeee;
+}
+
+.post-single .post-type.patch {
+    background-color: #009100;
+    color: #f0fff6;
+}
+
 
 .post-header {
     display: flex;
