@@ -3,6 +3,7 @@
 <head>
     <title>Send Notice - BDCOM Devs Forum</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -21,6 +22,8 @@
 
         <a href="{{ url_for('index') }}">← Back to Forum</a>
     </div>
+
+    {% include 'footer.html' %}
 
     <script src="{{ url_for('static', filename='js/admin_notice.js') }}"></script>
 </body>

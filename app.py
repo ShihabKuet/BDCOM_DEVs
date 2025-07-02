@@ -72,6 +72,32 @@ def add_notice():
     db.session.commit()
     return jsonify({'message': 'Notice posted successfully'}), 201
 
+@app.route('/notices/<int:notice_id>', methods=['PUT'])
+def edit_notice(notice_id):
+    if not is_admin():
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    content = data.get('content', '').strip()
+    if not content:
+        return jsonify({'error': 'Content is required'}), 400
+
+    notice = Notice.query.get_or_404(notice_id)
+    notice.content = content
+    db.session.commit()
+    return jsonify({'message': 'Notice updated successfully'}), 200
+
+@app.route('/notices/<int:notice_id>', methods=['DELETE'])
+def delete_notice(notice_id):
+    if not is_admin():
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    notice = Notice.query.get_or_404(notice_id)
+    db.session.delete(notice)
+    db.session.commit()
+    return jsonify({'message': 'Notice deleted successfully'}), 200
+
+
 @app.route('/admin/notice')
 def notice_admin():
     return render_template('admin_notice.html')
@@ -329,6 +355,23 @@ def delete_comment(comment_id):
     return jsonify({'message': 'Comment deleted successfully'})
 
 #only for admin
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if not is_admin():
+        return abort(403)
+
+    total_posts = Post.query.count()
+    total_comments = Comment.query.count()
+    total_users = UserIP.query.count()
+    total_notices = Notice.query.count()
+
+    return render_template('admin_dashboard.html',
+                           total_posts=total_posts,
+                           total_comments=total_comments,
+                           total_users=total_users,
+                           total_notices=total_notices)
+
+
 @app.route('/admin/posts')
 def admin_posts():
     if request.remote_addr != ADMIN_IP:

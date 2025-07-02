@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - BDCOM Devs Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="admin-dashboard">
+        <h1>👨‍💻 Admin Dashboard</h1>
+
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h2>{{ total_posts }}</h2>
+                <p>Total Posts</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ total_comments }}</h2>
+                <p>Total Comments</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ total_users }}</h2>
+                <p>Registered IPs</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ total_notices }}</h2>
+                <p>Notices</p>
+            </div>
+        </div>
+
+        <div class="admin-links">
+            <a href="/admin/posts" class="admin-link">📝 Manage Posts</a>
+            <a href="/admin/notice" class="admin-link">📢 Send Notice</a>
+            <a href="/register-ip" class="admin-link">🔐 Register IP-Username</a>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+</body>
+</html>
