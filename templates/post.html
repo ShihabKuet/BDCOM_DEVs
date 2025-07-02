@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <!-- Quill Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
 </head>
 <body>
 
@@ -38,11 +39,12 @@
         </div>
 
         <form id="editForm" class="filter-form" style="display:none;" onsubmit="submitEdit(event, {{ post.id }})">
+            <h1>Modify</h1>
             <input type="text" id="editTitle" value="{{ post.title }}" required><br><br>
             <!-- Hidden preloaded HTML for JavaScript to set into Quill -->
             <div id="editContentRaw" style="display: none;">{{ post.content|safe }}</div>
             <!-- Quill editor container -->
-            <div id="edit-quill-container" style="height: 200px;"></div>
+            <div id="edit-quill-container"></div>
             <input type="hidden" id="editContent">
             <br><br>
             <label><input type="radio" name="editType" value="query" {% if post.type == 'Query' %}checked{% endif %}> Query</label>

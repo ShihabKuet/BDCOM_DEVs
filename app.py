@@ -267,15 +267,32 @@ def toggle_like(post_id):
         db.session.commit()
         return jsonify({'likes': post.likes, 'liked': True}), 201
 
+# @app.route('/comments/<int:post_id>', methods=['GET'])
+# def get_comments(post_id):
+#     comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.timestamp.asc()).all()
+#     return jsonify([{
+#         'id': c.id,
+#         'content': c.content,
+#         'ip_address': c.ip_address,
+#         'timestamp': c.timestamp.strftime('%Y-%m-%d %H:%M')
+#     } for c in comments])
+
 @app.route('/comments/<int:post_id>', methods=['GET'])
 def get_comments(post_id):
     comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.timestamp.asc()).all()
-    return jsonify([{
-        'id': c.id,
-        'content': c.content,
-        'ip_address': c.ip_address,
-        'timestamp': c.timestamp.strftime('%Y-%m-%d %H:%M')
-    } for c in comments])
+    response = []
+
+    for comment in comments:
+        commenter = UserIP.query.filter_by(ip_address=comment.ip_address).first()
+        commented_by = commenter.username if commenter and commenter.username else commenter.ip_address
+        response.append({
+            'id': comment.id,
+            'content': comment.content,
+            'ip_address': comment.ip_address,
+            'commented_by': commented_by,
+            'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M')
+        })
+    return jsonify(response)
 
 @app.route('/comments/<int:post_id>', methods=['POST'])
 def add_comment(post_id):
@@ -355,4 +372,4 @@ def update_or_delete_post(post_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='192.168.100.133', port=5000, debug=True)

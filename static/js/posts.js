@@ -40,7 +40,7 @@ async function loadComments(postId) {
     container.innerHTML = comments.map((c, index) => `
         <div class="comment" data-id="${index}">
             <p class="comment-content">${c.content}</p>
-            <small>By ${c.ip_address} at ${c.timestamp}</small>
+            <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
             ${c.ip_address === userIP.ip ? `
                 <div class="comment-actions">
                     <button onclick="startEditComment(${index}, '${c.content.replace(/'/g, "\\'")}', ${postId})">✏️</button>

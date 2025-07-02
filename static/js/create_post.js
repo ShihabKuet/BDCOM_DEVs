@@ -23,7 +23,18 @@ async function loadReferenceOptions() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const quill = new Quill('#editor-container', { theme: 'snow' });
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ 'header': [1, 2, 3, false] }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],  // ← image button
+            ['clean']
+            ]
+        }
+    });
 
     loadReferenceOptions();
 
