@@ -54,6 +54,9 @@ class UserIP(db.Model):
 
 @app.route('/notices')
 def get_notices():
+    if request.remote_addr != ADMIN_IP:
+        abort(403)  # Forbidden
+
     notices = Notice.query.order_by(Notice.created_at.desc()).limit(5).all()
     return jsonify([{'id': n.id, 'content': n.content} for n in notices])
 
@@ -100,6 +103,8 @@ def delete_notice(notice_id):
 
 @app.route('/admin/notice')
 def notice_admin():
+    if request.remote_addr != ADMIN_IP:
+        abort(403)  # Forbidden
     return render_template('admin_notice.html')
 
 @app.route('/bdf_manual')
@@ -415,4 +420,4 @@ def update_or_delete_post(post_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.100.133', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

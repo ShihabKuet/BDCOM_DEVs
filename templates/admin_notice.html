@@ -23,8 +23,30 @@
         <a href="{{ url_for('index') }}">← Back to Forum</a>
     </div>
 
+    <a href="{{ url_for('admin_dashboard') }}" class="back-admin-link">← Back to Admin Dashboard</a>
     {% include 'footer.html' %}
 
     <script src="{{ url_for('static', filename='js/admin_notice.js') }}"></script>
+    <!-- <style>
+        .back-admin-link {
+    display: inline-block;
+    margin-top: 30px;
+    font-size: 1rem;
+    color: #0056b3;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: linear-gradient(to right, #e0f7ff, #f0faff);
+    transition: all 0.3s ease;
+}
+
+.back-admin-link:hover {
+    color: white;
+    background: linear-gradient(to right, #007bff, #3399ff);
+    border-color: #007bff;
+}
+
+    </style> -->
 </body>
 </html>

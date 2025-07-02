@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             toolbar: [
             ['bold', 'italic', 'underline'],
             [{ 'header': [1, 2, 3, false] }],
+            ['code', 'code-block'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'image'],  // ← image button
             ['clean']
