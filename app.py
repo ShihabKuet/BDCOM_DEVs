@@ -28,6 +28,7 @@ class Post(db.Model):
     category = db.Column(db.String(20)) 
     ip_address = db.Column(db.String(45))  # to store IPv4 or IPv6
     last_modified_ip = db.Column(db.String(45)) 
+    submitted_by = db.Column(db.String(50))
     likes = db.Column(db.Integer, default=0)
     comments = db.relationship('Comment', backref='post', cascade='all, delete-orphan')
     likes_relation = db.relationship('PostLike', backref='post', cascade='all, delete-orphan')
@@ -139,6 +140,8 @@ def posts():
         data = request.json
         ip = request.remote_addr
         reference_id = data.get('reference_id')
+        submitted_by = data.get('submitted_by', ip)  # fallback to IP if username not provided
+
         new_post = Post(
             title=data['title'],
             content=data['content'],
@@ -146,6 +149,7 @@ def posts():
             category=data['category'],
             ip_address=ip,
             last_modified_ip=ip,
+            submitted_by=submitted_by,
             reference_id=reference_id
         )
         db.session.add(new_post)
@@ -188,7 +192,9 @@ def post_summaries():
 
 @app.route('/create', methods=['GET'])
 def create_post_page():
-    return render_template('create_post.html')
+    user_ip = request.remote_addr
+    known_user = db.session.query(UserIP).filter_by(ip_address=user_ip).first()
+    return render_template('create_post.html', known_user=known_user.username if known_user else None)
 
 @app.route('/search')
 def search():
@@ -226,6 +232,7 @@ def search():
             'ip_address': post.ip_address,
             'category': post.category,
             'last_modified_ip': post.last_modified_ip,
+            'submitted_by': post.submitted_by,
             'likes': post.likes,
             'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
         } for post in paginated_posts.items],
@@ -234,17 +241,6 @@ def search():
         'page': paginated_posts.page,
         'total_pages': paginated_posts.pages
     })
-    # return jsonify([{
-    #     'id': post.id,
-    #     'title': post.title,
-    #     'content': post.content,
-    #     'type': post.type,
-    #     'ip_address': post.ip_address,
-    #     'category': post.category,
-    #     'last_modified_ip': post.last_modified_ip,
-    #     'likes': post.likes,
-    #     'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
-    # } for post in posts])
 
 @app.route('/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
@@ -262,13 +258,10 @@ def delete_post(post_id):
 def get_post(post_id):
     post = Post.query.get_or_404(post_id)
     # Try to find username for submitter
-    submitter = UserIP.query.filter_by(ip_address=post.ip_address).first()
     last_editor = UserIP.query.filter_by(ip_address=post.last_modified_ip).first()
-
-    submitted_by = submitter.username if submitter and submitter.username else post.ip_address
     modified_by = last_editor.username if last_editor and last_editor.username else post.last_modified_ip
     current_ip = request.remote_addr  # Get current user's IP
-    return render_template('post.html', post=post, submitted_by=submitted_by, modified_by=modified_by, current_ip=current_ip, admin_ip=ADMIN_IP)
+    return render_template('post.html', post=post, modified_by=modified_by, current_ip=current_ip, admin_ip=ADMIN_IP)
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):

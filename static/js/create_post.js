@@ -1,5 +1,24 @@
 let quill;
 
+function setUsername(name) {
+    document.getElementById('username').value = name;
+    document.getElementById('username').readOnly = true;
+}
+
+function enableUsernameField() {
+    document.getElementById('username').value = '';
+    document.getElementById('username').readOnly = false;
+}
+
+function handleUsernameConfirm() {
+    const username = document.getElementById('username').value.trim();
+    if (!username) {
+        alert("Please enter your username.");
+        return false;
+    }
+    return true;
+}
+
 async function loadReferenceOptions() {
     const res = await fetch('/posts/summary', {
         headers: {
@@ -47,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const category = document.getElementById('category').value;
         const content = quill.root.innerHTML;
         const reference_id = document.getElementById('referenceSelect').value || null;
+        const submitted_by = document.getElementById('username').value;
 
         if (!title || !content) {
             alert("Title and content are required.");
@@ -58,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await fetch('/posts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, type, category, reference_id })
+            body: JSON.stringify({ title, content, type, category, reference_id, submitted_by })
         });
 
         // alert("Post submitted successfully!");

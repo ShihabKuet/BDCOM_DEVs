@@ -16,7 +16,23 @@
     <div class="create-post-container">
         <h1>Create a New Post</h1>
         <form id="postForm">
-            <label for="title">Title:</label>
+            <div class="username-check-container">
+            {% if known_user %}
+            <div id="username-confirm-section" class="username-confirm-box">
+                <label class="username-question">Are you Mr. <strong>{{ known_user }}</strong>?</label>
+                <div class="username-btn-group">
+                <button type="button" class="username-btn yes" onclick="setUsername('{{ known_user }}')">Yes</button>
+                <button type="button" class="username-btn no" onclick="enableUsernameField()">No</button>
+                </div>
+            </div>
+            {% endif %}
+            <div id="username-input-section" class="username-input-field-row">
+                <label for="username">I am Mr.</label>
+                <input type="text" id="username" name="username" {% if known_user %}readonly value="{{ known_user }}"{% endif %} required>
+            </div>
+            </div>
+
+            <label for="title">Post Title:</label>
             <input type="text" id="title" placeholder="Enter post title" required>
 
             <label for="type">Type:</label>
@@ -37,7 +53,7 @@
             <div id="editor-container"></div>
             <input type="hidden" id="hiddenContent" name="content">
             <!-- Reference Post (optional) -->
-            <label for="referenceSelect">🔗 Reference to:</label>
+            <label for="referenceSelect">🔗 Reference to: (optional)</label>
             <select id="referenceSelect" style="width: 100%; padding: 5px;">
                 <option value="">-- Select a Query/Patch (optional) --</option>
             </select>
