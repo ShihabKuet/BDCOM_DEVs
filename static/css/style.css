@@ -28,8 +28,8 @@ form, .posts {
     background-color: #f7f9fc;
     border-bottom: 1px solid #ddd;
     margin-bottom: 1rem;
-    margin-left: 5em;
-    margin-right: 5em;
+    margin-left: 1em;
+    margin-right: 1em;
     border-radius: 8px;
 }
 
@@ -521,18 +521,46 @@ form, .posts {
 }
 
 
+/* Stylish post header */
 .post-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
+    flex-wrap: wrap;
     margin-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 6px;
 }
 
 .post-header h3 {
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1.3rem;
     margin: 0;
-    font-size: 1.2em;
-    flex: 1;
+    color: #2c3e50;
 }
+
+.post-header h3 a {
+    text-decoration: none;
+    color: #2c3e50;
+    transition: color 0.2s ease;
+}
+
+.post-header h3 a:hover {
+    color: #007bff;
+}
+
+/* Post Type Pill */
+/* .post-type {
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(to right, #007bff, #00c6ff);
+    color: white;
+} */
 
 .post-header .post-type {
     font-weight: bold;
@@ -540,6 +568,26 @@ form, .posts {
     padding: 4px 10px;
     border-radius: 6px;
     white-space: nowrap;
+}
+
+/* Stylish post content */
+.post-content {
+    font-family: 'Open Sans', sans-serif;
+    color: #444;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    padding: 4px 0 10px 0;
+}
+
+/* Read more link */
+.post-content a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.post-content a:hover {
+    text-decoration: underline;
 }
 
 .post-meta {

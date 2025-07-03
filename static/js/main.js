@@ -71,12 +71,13 @@ async function loadPosts(query = '', category = '', page = 1) {
                     <h3><a href="/posts/${post.id}">${post.title}</a></h3>
                     <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
                 </div>
-                <p>${
-                    stripHTML(post.content).length > 200
-                        ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
-                        : stripHTML(post.content)
-                }</p>
-
+                <div class="post-content">
+                    ${
+                        stripHTML(post.content).length > 200
+                            ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
+                            : stripHTML(post.content)
+                    }
+                </div>
                 <div class="post-footer-bar">
                     <div class="post-likes">
                         <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">

@@ -44,7 +44,8 @@
             <input type="text" id="editTitle" value="{{ post.title }}" required><br><br>
             <!-- Hidden preloaded HTML for JavaScript to set into Quill -->
             <div id="editContentRaw" style="display: none;">{{ post.content|safe }}</div>
-            <!-- Quill editor container -->
+            <!-- Quill editor container : for fixed height, try style-->
+            <!-- <div id="edit-quill-container" style="height: 200px;"></div> -->
             <div id="edit-quill-container"></div>
             <input type="hidden" id="editContent">
             <br><br>
