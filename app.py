@@ -29,6 +29,7 @@ class Post(db.Model):
     ip_address = db.Column(db.String(45))  # to store IPv4 or IPv6
     last_modified_ip = db.Column(db.String(45)) 
     submitted_by = db.Column(db.String(50))
+    last_modified_by = db.Column(db.String(50))
     likes = db.Column(db.Integer, default=0)
     comments = db.relationship('Comment', backref='post', cascade='all, delete-orphan')
     likes_relation = db.relationship('PostLike', backref='post', cascade='all, delete-orphan')
@@ -134,6 +135,36 @@ def index():
 def get_my_ip():
     return jsonify({'ip': request.remote_addr})
 
+@app.route('/register_ip', methods=['GET', 'POST'])
+def register_ip():
+    if request.method == 'POST':
+        data = request.get_json()
+        ip_address = data.get('ip_address')
+        username = data.get('username')
+
+        if not ip_address or not username:
+            return jsonify({'error': 'Both fields are required'}), 400
+
+        # Check if IP exists already
+        existing = UserIP.query.filter_by(ip_address=ip_address).first()
+        if existing:
+            existing.username = username  # update existing
+        else:
+            new_entry = UserIP(ip_address=ip_address, username=username)
+            db.session.add(new_entry)
+
+        db.session.commit()
+        return jsonify({'message': 'IP registered successfully'}), 201
+
+    return render_template('register_ip.html')
+
+@app.route('/api/user_ips')
+def get_user_ips():
+    all_users = UserIP.query.order_by(UserIP.id.desc()).all()
+    return jsonify([
+        {'ip': u.ip_address, 'username': u.username} for u in all_users
+    ])
+
 @app.route('/posts', methods=['GET', 'POST'])
 def posts():
     if request.method == 'POST':
@@ -141,6 +172,7 @@ def posts():
         ip = request.remote_addr
         reference_id = data.get('reference_id')
         submitted_by = data.get('submitted_by', ip)  # fallback to IP if username not provided
+        last_modified_by = data.get('last_modified_by', ip)  # fallback to IP if username not provided
 
         new_post = Post(
             title=data['title'],
@@ -150,6 +182,7 @@ def posts():
             ip_address=ip,
             last_modified_ip=ip,
             submitted_by=submitted_by,
+            last_modified_by=last_modified_by,
             reference_id=reference_id
         )
         db.session.add(new_post)
@@ -233,6 +266,7 @@ def search():
             'category': post.category,
             'last_modified_ip': post.last_modified_ip,
             'submitted_by': post.submitted_by,
+            'last_modified_by': post.last_modified_by,
             'likes': post.likes,
             'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
         } for post in paginated_posts.items],
@@ -257,11 +291,9 @@ def delete_post(post_id):
 @app.route('/posts/<int:post_id>')
 def get_post(post_id):
     post = Post.query.get_or_404(post_id)
-    # Try to find username for submitter
-    last_editor = UserIP.query.filter_by(ip_address=post.last_modified_ip).first()
-    modified_by = last_editor.username if last_editor and last_editor.username else post.last_modified_ip
     current_ip = request.remote_addr  # Get current user's IP
-    return render_template('post.html', post=post, modified_by=modified_by, current_ip=current_ip, admin_ip=ADMIN_IP)
+    known_user = db.session.query(UserIP).filter_by(ip_address=current_ip).first()
+    return render_template('post.html', post=post, current_ip=current_ip, admin_ip=ADMIN_IP, known_user=known_user.username if known_user else None)
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
@@ -272,6 +304,7 @@ def update_post(post_id):
     post.content = data.get('content', post.content)
     post.type = data.get('type', post.type)
     post.category = data.get('category', post.category)
+    post.last_modified_by = data.get('last_modified_by', post.last_modified_by)
     post.last_modified_ip = request.remote_addr
 
     db.session.commit()

@@ -3,11 +3,26 @@ let quill;
 function setUsername(name) {
     document.getElementById('username').value = name;
     document.getElementById('username').readOnly = true;
+    highlightSelected('yes');
 }
 
 function enableUsernameField() {
     document.getElementById('username').value = '';
     document.getElementById('username').readOnly = false;
+    highlightSelected('no');
+}
+
+function highlightSelected(selected) {
+    const yesBtn = document.querySelector('.username-btn.yes');
+    const noBtn = document.querySelector('.username-btn.no');
+
+    if (selected === 'yes') {
+        yesBtn.classList.add('active');
+        noBtn.classList.remove('active');
+    } else {
+        noBtn.classList.add('active');
+        yesBtn.classList.remove('active');
+    }
 }
 
 function handleUsernameConfirm() {
@@ -67,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const content = quill.root.innerHTML;
         const reference_id = document.getElementById('referenceSelect').value || null;
         const submitted_by = document.getElementById('username').value;
+        const last_modified_by = document.getElementById('username').value;
 
         if (!title || !content) {
             alert("Title and content are required.");
@@ -78,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await fetch('/posts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, type, category, reference_id, submitted_by })
+            body: JSON.stringify({ title, content, type, category, reference_id, submitted_by, last_modified_by })
         });
 
         // alert("Post submitted successfully!");

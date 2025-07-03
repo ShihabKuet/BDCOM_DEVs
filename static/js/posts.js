@@ -14,11 +14,12 @@ async function submitEdit(e, postId) {
     const content = editQuill.root.innerHTML;
     const type = document.querySelector('input[name="editType"]:checked').value;
     const category = document.getElementById('editCategory').value;
+    const last_modified_by = document.getElementById('editUsername').value;
 
     await fetch(`/posts/${postId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, type, category })
+        body: JSON.stringify({ title, content, type, category, last_modified_by })
     });
 
     location.reload();
@@ -71,6 +72,25 @@ function startEditComment(index, content, postId) {
 function cancelEditComment(index) {
     document.getElementById(`edit-comment-${index}`).style.display = 'none';
 }
+
+function setEditUsername(name) {
+    document.getElementById('editUsername').value = name;
+    document.getElementById('editUsername').readOnly = true;
+    document.getElementById('editUsername').style.backgroundColor = '#f0f0f0';
+    document.querySelector('#edit-username-confirm-section .yes').classList.add('active');
+    document.querySelector('#edit-username-confirm-section .no').classList.remove('active');
+}
+
+function enableEditUsernameField() {
+    const input = document.getElementById('editUsername');
+    input.readOnly = false;
+    input.value = '';
+    input.focus();
+    input.style.backgroundColor = '#ffffff';
+    document.querySelector('#edit-username-confirm-section .yes').classList.remove('active');
+    document.querySelector('#edit-username-confirm-section .no').classList.add('active');
+}
+
 
 async function submitCommentEdit(e, index, postId) {
     e.preventDefault();

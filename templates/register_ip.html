@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register IP & Username</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register_ip.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="register-container">
+        <h2>🖥️ Register IP and Username</h2>
+        <form id="ipForm" class="register-form">
+            <input type="text" id="ip_address" placeholder="Enter IP Address" required>
+            <input type="text" id="username" placeholder="Enter Username" required>
+            <button type="submit">Register</button>
+        </form>
+        <div id="statusMessage" class="status"></div>
+
+        <hr>
+        <h3>📜 Registered IPs</h3>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Search IP or Username...">
+        </div>
+        <div class="ip-table-wrapper">
+            <table class="ip-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>IP Address</th>
+                        <th>Username</th>
+                    </tr>
+                </thead>
+                <tbody id="ipTableBody">
+                    <!-- JS will fill this -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+    
+    {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/register_ip.js') }}"></script>
+</body>
+</html>

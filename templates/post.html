@@ -19,8 +19,8 @@
         <div class="{{ post.type }} post-type">{{ post.type.upper() }}</div>
         <br><br>
         <div class="post-meta">
-            <span><strong>Submitted by:</strong> {{ post.submitted_by }}</span> |
-            <span><strong>Last modified by:</strong> {{ modified_by }}</span>
+            <span><strong>Author:</strong> {{ post.submitted_by }}</span> |
+            <span><strong>Last modified by:</strong> {{ post.last_modified_by }}</span>
         </div>
         <hr><br>
         <div class="post-body">{{ post.content | safe }}</div><br><br>
@@ -58,6 +58,25 @@
                 <option value="technical" {% if post.category == 'technical' %}selected{% endif %}>💡 Technical</option>
                 <option value="non technical" {% if post.category == 'non technical' %}selected{% endif %}>📖 Non Technical</option>
             </select><br><br>
+
+            <div class="username-check-container">
+                {% if known_user %}
+                <div id="edit-username-confirm-section" class="username-confirm-box">
+                    <label class="username-question">Are you <strong>{{ known_user }}</strong>?</label>
+                    <div class="username-btn-group">
+                        <button type="button" class="username-btn yes" onclick="setEditUsername('{{ known_user }}')">Yes</button>
+                        <button type="button" class="username-btn no" onclick="enableEditUsernameField()">No</button>
+                    </div>
+                </div>
+                {% endif %}
+                <div id="edit-username-input-section" class="username-input-field">
+                    <label for="editUsername">I am Mr.</label>
+                    <input type="text" id="editUsername" name="editUsername"
+                        {% if known_user %}readonly value="{{ known_user }}"{% else %}value="{{ post.submitted_by }}"{% endif %}
+                        required>
+                </div>
+            </div>
+            
             <button type="submit" class="saveEditBtn">💾 Save</button>
             <button type="button" class="cancelEditBtn" onclick="cancelEdit()">✖️ Cancel</button>
         </form>

@@ -90,8 +90,8 @@ async function loadPosts(query = '', category = '', page = 1) {
                 </div>
 
                 <div class="post-footer">
-                    <small><strong>Last modified by:</strong> ${post.last_modified_ip}</small>
-                    <small><strong>Submitted by:</strong> ${post.submitted_by}</small>
+                    <small><strong>Last modified by:</strong> ${post.last_modified_by}</small>
+                    <small><strong>Author:</strong> ${post.submitted_by}</small>
                 </div>
             </div>
         </div>
