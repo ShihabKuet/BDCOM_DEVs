@@ -112,7 +112,7 @@ h3 {
 }
 
 .ip-table tbody tr:hover {
-    background-color: #eaf1fb;
+    background-color: #81b6ff;
 }
 
 .ip-table th:first-child,
@@ -121,3 +121,55 @@ h3 {
     text-align: center;
 }
 
+.ip-table tr {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.ip-table tr:hover {
+    transform: scale(1.025);    /* Slight zoom effect */
+    cursor: pointer;
+}
+
+/* Dialog Box */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 10000;
+}
+
+.modal-box {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.modal-actions button {
+    padding: 8px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#confirmYes {
+    background-color: #28a745;
+    color: white;
+}
+
+#confirmNo {
+    background-color: #ccc;
+    color: black;
+}

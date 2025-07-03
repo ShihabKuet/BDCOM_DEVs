@@ -135,6 +135,24 @@ def index():
 def get_my_ip():
     return jsonify({'ip': request.remote_addr})
 
+@app.route('/confirm_register_ip', methods=['POST'])
+def confirm_register_ip():
+    data = request.get_json()
+    ip_address = data.get('ip_address')
+
+    if not ip_address:
+        return jsonify({'error': 'IP address is required'}), 400
+
+    existing = UserIP.query.filter_by(ip_address=ip_address).first()
+    if existing:
+        return jsonify({
+            'exists': True,
+            'current_username': existing.username
+        }), 200
+    else:
+        return jsonify({'exists': False}), 200
+
+
 @app.route('/register_ip', methods=['GET', 'POST'])
 def register_ip():
     if request.method == 'POST':

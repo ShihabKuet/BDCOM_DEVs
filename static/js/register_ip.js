@@ -6,7 +6,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ip_address = document.getElementById('ip_address').value.trim();
         const username = document.getElementById('username').value.trim();
+        const statusDiv = document.getElementById('statusMessage');
 
+        if (!ip_address || !username) return alert('Both fields are required.');
+
+        // Step 1: Check with confirm_register_ip
+        const confirmRes = await fetch('/confirm_register_ip', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ip_address })
+        });
+        const confirmResult = await confirmRes.json();
+
+        let message;
+        if (confirmResult.exists) {
+            message = `⚠️ IP ${ip_address} already has username "${confirmResult.current_username}". Do you want to overwrite with "${username}"?`;
+        } else {
+            message = `✅ Do you confirm registering "${username}" for IP ${ip_address}?`;
+        }
+
+        const proceed = await showConfirmDialog(message);
+        if (!proceed) {
+            statusDiv.textContent = 'Registration cancelled.';
+            statusDiv.style.color = 'gray';
+            return;
+        }
+
+        // Step 2: Actually register
         const res = await fetch('/register_ip', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -14,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const result = await res.json();
-        const statusDiv = document.getElementById('statusMessage');
 
         if (res.ok) {
             statusDiv.textContent = result.message;
@@ -40,6 +65,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function showConfirmDialog(message) {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-box">
+                <p>${message}</p>
+                <div class="modal-actions">
+                    <button id="confirmYes">✅ Yes</button>
+                    <button id="confirmNo">❌ No</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.querySelector('#confirmYes').onclick = () => {
+            document.body.removeChild(modal);
+            resolve(true);
+        };
+        modal.querySelector('#confirmNo').onclick = () => {
+            document.body.removeChild(modal);
+            resolve(false);
+        };
+    });
+}
 
 async function loadUserIPs() {
     const res = await fetch('/api/user_ips');
