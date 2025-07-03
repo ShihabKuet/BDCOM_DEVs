@@ -20,9 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let message;
         if (confirmResult.exists) {
-            message = `⚠️ IP ${ip_address} already has username "${confirmResult.current_username}". Do you want to overwrite with "${username}"?`;
+            message = `⚠️ IP ${ip_address} already has username <strong>"${confirmResult.current_username}"</strong>. Do you want to overwrite with <strong>"${username}"</strong>?`;
         } else {
-            message = `✅ Do you confirm registering "${username}" for IP ${ip_address}?`;
+            message = `✅ Do you confirm registering <strong>"${username}"</strong> for IP ${ip_address}?`;
         }
 
         const proceed = await showConfirmDialog(message);
