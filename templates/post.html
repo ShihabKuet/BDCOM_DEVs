@@ -16,7 +16,7 @@
 
     <div class="post-single">
         <h1>{{ post.title }}</h1>
-        <div class="{{ post.type }} post-type">{{ post.type.upper() }}</div>
+        <div class="{{ post.type|lower }} post-type">{{ post.type.upper() }}</div>
         <br><br>
         <div class="post-meta">
             <span><strong>Author:</strong> {{ post.submitted_by }}</span> |

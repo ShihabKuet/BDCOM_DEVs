@@ -26,10 +26,21 @@
                 <button type="button" class="username-btn no" onclick="enableUsernameField()">No</button>
                 </div>
             </div>
+            {% else %}
+            <div id="register-hint" class="" style="display: block; text-align: center;">
+                <p>Please register your IP and username. 
+                    <a href="/register_ip" class="register-link">Register here</a>.
+                </p>
+            </div>
             {% endif %}
             <div id="username-input-section" class="username-input-field-row">
                 <label for="username">I am Mr.</label>
                 <input type="text" id="username" name="username" {% if known_user %}readonly value="{{ known_user }}"{% endif %} required>
+            </div>
+            <div id="register-hint" class="register-hint" style="display: none;">
+                <p>Please register your IP and username. 
+                    <a href="/register_ip" class="register-link">Register here</a>.
+                </p>
             </div>
             </div>
 
@@ -50,7 +61,12 @@
                 <option value="non technical">Non Technical</option>
             </select>
 
-            <label for="editor-container">Content:</label>
+            <div class="editor-header">
+                <label for="editor-container">📝 Content</label>
+                <!-- Under Development -->
+                <button type="button" id="loadTemplateBtn" class="template-btn">📄 Load Template</button>
+                <!-- Under Development -->
+            </div>
             <div id="editor-container"></div>
             <input type="hidden" id="hiddenContent" name="content">
             <!-- Reference Post (optional) -->

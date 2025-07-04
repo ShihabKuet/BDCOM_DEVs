@@ -1,15 +1,36 @@
 let quill;
 
+// Template content as Quill Delta or HTML
+const templateHTML = `
+    <p><strong>Problem Description:</strong></p>
+    <p>Write your problem Description here....</p>
+    <p><strong>Probable Reason behind:</strong></p>
+    <p>If you have any clue about it, you can write it....</p>
+`;
+
 function setUsername(name) {
     document.getElementById('username').value = name;
     document.getElementById('username').readOnly = true;
     highlightSelected('yes');
+
+    // Fade out the register hint if visible
+    const hint = document.getElementById("register-hint");
+    if (hint && hint.style.display !== "none") {
+        hint.classList.add("fade-out");
+        setTimeout(() => {
+            hint.style.display = "none";
+            hint.classList.remove("fade-out");
+        }, 300); // Match animation duration
+    }
 }
 
 function enableUsernameField() {
     document.getElementById('username').value = '';
     document.getElementById('username').readOnly = false;
     highlightSelected('no');
+
+    // Show register suggestion
+    document.getElementById("register-hint").style.display = "block";
 }
 
 function highlightSelected(selected) {
@@ -70,6 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         }
     });
+
+    // Under Development
+    // Button click handler to load template
+    document.getElementById('loadTemplateBtn').addEventListener('click', () => {
+        quill.root.innerHTML = templateHTML;
+    });
+
+    // Under Development
 
     loadReferenceOptions();
 

@@ -1,0 +1,16 @@
+<!-- base.html -->
+<html>
+<head>
+    <title>{% block title %}BDF Forum{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    {% include 'footer.html' %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>
