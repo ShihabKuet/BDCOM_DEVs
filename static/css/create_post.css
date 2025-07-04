@@ -374,3 +374,24 @@ button[type="submit"]:hover {
     }
 }
 
+/* Tooltip*/
+
+.info-tooltip {
+    text-decoration: none;
+    font-size: 0.75em;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    transition: background-color 0.3s ease;
+}
+
+.info-tooltip:hover {
+    background-color: #0056b3;
+}

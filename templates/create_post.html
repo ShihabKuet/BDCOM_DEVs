@@ -47,7 +47,7 @@
             <label for="title">Post Title:</label>
             <input type="text" id="title" placeholder="Enter post title" required>
 
-            <label for="type" class="type-label">What are you posting?</label>
+            <label for="type" class="type-label">What are you posting? <a href="/bdf_manual#what-is-query-patch" target="_blank" class="info-tooltip" title="Learn about Query and Patch">?</a></label>
             <div class="radio-group-modern">
                 <label class="radio-option">
                     <input type="radio" name="type" value="query" checked>
@@ -89,7 +89,7 @@
         <div class="back-link-container">
             <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
         </div>
-        
+
     </div>
 
     {% include 'footer.html' %}
