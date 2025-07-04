@@ -50,6 +50,58 @@ select {
     background: #fefefe;
 }
 
+/* Heading */
+.create-post-container h1 {
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #004181;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+/* Optional: Add underline effect */
+.create-post-container h1::after {
+    content: '';
+    display: block;
+    width: 50%;
+    max-width: 700px;
+    height: 4px;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    margin: 12px auto 0;
+    border-radius: 2px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: scaleX(0);
+        transform-origin: center;
+        opacity: 0;
+    }
+    to {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+}
+
+/* Modern label styling */
+form label {
+    display: block;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    margin-top: 20px;
+    color: #004181;
+    font-family: 'Segoe UI', sans-serif;
+    transition: color 0.3s ease;
+}
+
+/* Optional hover effect for label */
+form label:hover {
+    color: #0077cc;
+}
+
 /* Label styling */
 .type-label {
     font-weight: 600;

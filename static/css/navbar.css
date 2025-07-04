@@ -59,8 +59,9 @@
 
 /* Navigation Links */
 .forum-nav a {
+    font-family: 'Poppins', sans-serif;
     position: relative;
-    margin-left: 20px;
+    margin-left: 10px;
     text-decoration: none;
     color: #2c3e50;
     font-weight: 600;
@@ -71,8 +72,28 @@
     font-size: 16px;
 }
 
+.forum-nav a.create {
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    margin-left: 10px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 600;
+    background-color: rgb(182, 72, 255);
+    padding: 8px 14px;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+}
+
 .forum-nav a.active {
     color: #3498db;
+    font-weight: bold;
+}
+
+.forum-nav a.active_create {
+    color: #faf3ff;
+    background-color: rgb(6, 0, 85);
     font-weight: bold;
 }
 
@@ -90,6 +111,11 @@
 .forum-nav a:hover {
     color: #3498db;
 }
+
+.forum-nav a.create:hover {
+    color: #f1dff7;
+}
+
 
 .forum-nav a:hover::after {
     width: 100%;

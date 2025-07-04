@@ -85,7 +85,11 @@
             <br><br>
             <button type="submit" class="submit-btn">🚀 Submit Post</button>
         </form>
-        <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+
+        <div class="back-link-container">
+            <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+        </div>
+        
     </div>
 
     {% include 'footer.html' %}

@@ -25,12 +25,26 @@ async function submitEdit(e, postId) {
     location.reload();
 }
 
+/* Delete Post */
+let pendingDeletePostId = null;
+
 async function deletePost(postId) {
-    if (confirm('Are you sure you want to delete this post?')) {
-        await fetch(`/posts/${postId}`, { method: 'DELETE' });
-        window.location.href = '/';  // or reload the list
-    }
+    pendingDeletePostId = postId;
+    document.getElementById('deleteModal').style.display = 'flex';
 }
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+    if (pendingDeletePostId !== null) {
+        await fetch(`/posts/${pendingDeletePostId}`, { method: 'DELETE' });
+        window.location.href = '/';
+    }
+});
+
+document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+    document.getElementById('deleteModal').style.display = 'none';
+    pendingDeletePostId = null;
+});
+/* Delete post ends*/
 
 async function loadComments(postId) {
     const res = await fetch(`/comments/${postId}`);

@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
     <!-- Quill Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/a11y-dark.min.css">
@@ -101,8 +102,21 @@
         </div>
     </div>
 
-    <br>
-    <a href="{{ url_for('index') }}">← Back to Forum</a>
+    <!-- Custom Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2>🗑️ Confirm Deletion</h2>
+            <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn" class="btn-danger">Yes, Delete</button>
+                <button id="cancelDeleteBtn" class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-link-container">
+        <a href="{{ url_for('index') }}" class="back-link">← Back to Forum</a>
+    </div>
 
     {% include 'footer.html' %}
 
