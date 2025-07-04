@@ -315,11 +315,16 @@ def get_similar_posts(post_id):
     original = Post.query.get_or_404(post_id)
     limit_no = 3 # max number of similar posts to return
 
+    # Get a meaningful keyword from title and content (fallback if empty)
+    title_keyword = original.title.split()[0] if original.title else ""
+    content_keyword = original.content.split()[0] if original.content else ""
+
     similar = Post.query.filter(
         Post.id != post_id,
         or_(
+            Post.title.ilike(f"%{title_keyword}%"),
             Post.category == original.category,
-            Post.title.ilike(f"%{original.title.split()[0]}%")
+            Post.content.ilike(f"%{content_keyword}%")
         )
     ).order_by(Post.id.desc()).limit(limit_no).all()  # 👈 LIMIT to limit_no
 

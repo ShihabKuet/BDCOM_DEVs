@@ -534,6 +534,7 @@ form, .posts {
 
 .post-header h3 {
     font-family: 'Segoe UI', 'Roboto', sans-serif;
+    max-width: 85%;
     font-weight: 600;
     font-size: 1.3rem;
     margin: 0;

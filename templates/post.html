@@ -47,7 +47,7 @@
             <div id="editContentRaw" style="display: none;">{{ post.content|safe }}</div>
             <!-- Quill editor container : for fixed height, try style-->
             <!-- <div id="edit-quill-container" style="height: 200px;"></div> -->
-            <div id="edit-quill-container"></div>
+            <div id="edit-quill-container" style="height: 600px;"></div>
             <input type="hidden" id="editContent">
             <br><br>
             <label><input type="radio" name="editType" value="query" {% if post.type == 'Query' %}checked{% endif %}> Query</label>
