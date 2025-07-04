@@ -49,75 +49,91 @@ async function loadNotices() {
 }
 
 async function loadPosts(query = '', category = '', page = 1) {
-    // Construct query params for search and filter
+    const container = document.getElementById('postsContainer');
+    const loader = document.getElementById('loader');
+
+    // Show loader and hide container
+    loader.style.display = 'flex';
+    container.style.display = 'none';
+
     const params = new URLSearchParams();
     if (query) params.append('q', query);
     if (category) params.append('category', category);
-    // For Pagination
     params.append('page', page);
     params.append('per_page', 10);
-    // For Pagination Ends
+
     const url = params.toString() ? `/search?${params.toString()}` : '/posts';
 
-    const response = await fetch(url);
-    //const posts = await response.json();
-    const data = await response.json();
-    const posts = data.posts;
-    const container = document.getElementById('postsContainer');
-    container.innerHTML = posts.map(post => `
-        <div class="card">
-            <div class="post">
-                <div class="post-header">
-                    <h3><a href="/posts/${post.id}">${post.title}</a></h3>
-                    <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
-                </div>
-                <div class="post-content">
-                    ${
-                        stripHTML(post.content).length > 200
-                            ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
-                            : stripHTML(post.content)
-                    }
-                </div>
-                <div class="post-footer-bar">
-                    <div class="post-likes">
-                        <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
-                            🌟 <span id="likes-${post.id}">${post.likes}</span>
-                        </button>
-                    </div>
-                    <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
-                        ${getCategoryIcon(post.category)} ${post.category}
-                    </div>
-                </div>
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const posts = data.posts;
 
-                <div class="post-footer">
-                    <small><strong>Last modified by:</strong> ${post.last_modified_by}</small>
-                    <small><strong>Author:</strong> ${post.submitted_by}</small>
+        container.innerHTML = posts.map(post => `
+            <div class="card">
+                <div class="post">
+                    <div class="post-header">
+                        <h3><a href="/posts/${post.id}">${post.title}</a></h3>
+                        <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
+                    </div>
+                    <div class="post-content">
+                        ${
+                            stripHTML(post.content).length > 200
+                                ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
+                                : stripHTML(post.content)
+                        }
+                    </div>
+                    <div class="post-footer-bar">
+                        <div class="post-likes">
+                            <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
+                                🌟 <span id="likes-${post.id}">${post.likes}</span>
+                            </button>
+                        </div>
+                        <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
+                            ${getCategoryIcon(post.category)} ${post.category}
+                        </div>
+                    </div>
+
+                    <div class="post-footer">
+                        <small><strong>Last modified by:</strong> ${post.last_modified_by}</small>
+                        <small><strong>Author:</strong> ${post.submitted_by}</small>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
 
-    renderPaginationControls(data.page, data.total_pages, query, category);
+        renderPaginationControls(data.page, data.total_pages, query, category);
 
-    // Attach event listeners for delete buttons
+        // Show container after rendering
+        container.style.display = 'block';
+
+    } catch (err) {
+        console.error('Error loading posts:', err);
+        container.innerHTML = '<p style="color:red;">Failed to load posts. Try again later.</p>';
+        container.style.display = 'block';
+    } finally {
+        loader.style.display = 'none';
+    }
+
+    // DELETE post
     document.querySelectorAll('.deleteBtn').forEach(button => {
         button.addEventListener('click', async (e) => {
             const postId = e.target.getAttribute('data-id');
             if (confirm('Are you sure you want to delete this post?')) {
                 await fetch(`/posts/${postId}`, { method: 'DELETE' });
-                loadPosts(query);  // reload posts, preserving search query
+                loadPosts(query, category, page);  // Keep same page
             }
         });
     });
 
-    // Edit button handling
+    // EDIT post
     document.querySelectorAll('.editBtn').forEach(button => {
         button.addEventListener('click', (e) => {
             const postId = e.target.getAttribute('data-id');
             const postDiv = e.target.closest('.post');
             const currentTitle = postDiv.querySelector('h3').innerText;
-            const currentContent = postDiv.querySelector('p').innerText;
-            const currentType = postDiv.querySelector('div').className;
+            const currentContent = postDiv.querySelector('.post-content').innerText;
+            const currentType = postDiv.querySelector('.post-type').textContent.toLowerCase();
 
             postDiv.innerHTML = `
                 <input type="text" id="editTitle" value="${currentTitle}" style="width: 100%; padding: 5px;"><br><br>
@@ -139,15 +155,14 @@ async function loadPosts(query = '', category = '', page = 1) {
                     body: JSON.stringify({ title, content, type })
                 });
 
-                loadPosts();
+                loadPosts(query, category, page);  // reload with current context
             });
 
             postDiv.querySelector('.cancelEditBtn').addEventListener('click', () => {
-                loadPosts();
+                loadPosts(query, category, page);
             });
         });
     });
-
 }
 
 document.addEventListener("DOMContentLoaded", () => {

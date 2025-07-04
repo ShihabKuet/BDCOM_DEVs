@@ -63,9 +63,6 @@ class UserIP(db.Model):
 
 @app.route('/notices')
 def get_notices():
-    if request.remote_addr != ADMIN_IP:
-        abort(403)  # Forbidden
-
     notices = Notice.query.order_by(Notice.created_at.desc()).limit(5).all()
     return jsonify([{'id': n.id, 'content': n.content} for n in notices])
 
@@ -366,7 +363,10 @@ def get_comments(post_id):
 
     for comment in comments:
         commenter = UserIP.query.filter_by(ip_address=comment.ip_address).first()
-        commented_by = commenter.username if commenter and commenter.username else commenter.ip_address
+        if commenter:
+            commented_by = commenter.username or commenter.ip_address
+        else:
+            commented_by = "Unknown"
         response.append({
             'id': comment.id,
             'content': comment.content,
@@ -471,4 +471,4 @@ def update_or_delete_post(post_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='192.168.100.133', port=5000, debug=True)
