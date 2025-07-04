@@ -483,8 +483,15 @@ def update_or_delete_post(post_id):
         post.last_modified_ip = user_ip
         db.session.commit()
         return jsonify({'message': 'Updated'}), 200
-
 #only for admin ends
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/why_bdf')
+def why_bdf():
+    return render_template('why_bdf.html')
 
 if __name__ == '__main__':
     with app.app_context():

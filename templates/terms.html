@@ -1,0 +1,30 @@
+<!-- templates/terms.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Terms & Conditions - BDCOM Devs Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/terms.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="static-page-container">
+        <h1>📄 Terms & Conditions</h1>
+        <p>By using <strong>BDF</strong> - BDCOM Devs Forum, you agree to the following:</p>
+        <ul>
+            <li>✅ Posts should be relevant to technical or office-related matters.</li>
+            <li>🚫 Do not post <strong>confidential</strong>  or sensitive company information or code.</li>
+            <li>🔄 Admins reserve the right to modify, remove, or re-categorize posts.</li>
+            <li>🕵️ Respect your coworkers — no offensive or inappropriate content.</li>
+            <li>📌 This platform is for internal knowledge sharing and problem-solving.</li>
+        </ul>
+        <p>If you disagree with these terms, kindly refrain from using the platform.</p>
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>

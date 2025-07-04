@@ -1,0 +1,30 @@
+<!-- templates/why_bdf.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Why BDF? - BDCOM Devs Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/terms.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="static-page-container">
+        <h1>💡 Why BDF?</h1>
+        <p>BDCOM Devs Forum (BDF) was created to serve as an internal knowledge-sharing hub. It helps team members:</p>
+        <ul>
+            <li>🧠 Share issues they’re facing during development</li>
+            <li>🔧 Post patches and solutions to common problems</li>
+            <li>📚 Learn from each other’s work and practices</li>
+            <li>🗂️ Keep a centralized archive of technical references</li>
+            <li>💬 Encourage team discussion, feedback, and innovation</li>
+        </ul>
+        <p>With BDF, knowledge no longer remains siloed. It grows, spreads, and stays accessible for everyone.</p>
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>
