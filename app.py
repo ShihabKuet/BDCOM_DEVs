@@ -310,6 +310,24 @@ def get_post(post_id):
     known_user = db.session.query(UserIP).filter_by(ip_address=current_ip).first()
     return render_template('post.html', post=post, current_ip=current_ip, admin_ip=ADMIN_IP, known_user=known_user.username if known_user else None)
 
+@app.route("/similar-posts/<int:post_id>")
+def get_similar_posts(post_id):
+    original = Post.query.get_or_404(post_id)
+    limit_no = 3 # max number of similar posts to return
+
+    similar = Post.query.filter(
+        Post.id != post_id,
+        or_(
+            Post.category == original.category,
+            Post.title.ilike(f"%{original.title.split()[0]}%")
+        )
+    ).order_by(Post.id.desc()).limit(limit_no).all()  # 👈 LIMIT to limit_no
+
+    return jsonify([
+        {"id": p.id, "title": p.title, "submitted_by": p.submitted_by}
+        for p in similar
+    ])
+
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)

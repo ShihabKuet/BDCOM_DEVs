@@ -153,4 +153,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contentHTML) {
         editQuill.root.innerHTML = contentHTML;
     }
+
+    // Load similar posts
+    fetch(`/similar-posts/${postId}`)
+    .then(res => res.json())
+    .then(data => {
+        const container = document.getElementById('similar-posts-list');
+        if (data.length === 0) {
+            container.innerHTML = "<p>No similar posts found.</p>";
+            return;
+        }
+
+        container.innerHTML = data.map(post => `
+            <div class="similar-post-item">
+                <a href="/posts/${post.id}">${post.title}</a>
+                <small>by <strong>${post.submitted_by}</strong></small>
+            </div>
+        `).join('');
+    });
+
 });

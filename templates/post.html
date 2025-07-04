@@ -93,10 +93,16 @@
             </form>
         </div>
 
-        <br>
-
-        <a href="{{ url_for('index') }}">← Back to Forum</a>
+        <div id="similar-posts-container" class="similar-posts-box">
+            <h3>🧩 Similar Posts</h3>
+            <div id="similar-posts-list">
+                <p>Loading similar posts...</p>
+            </div>
+        </div>
     </div>
+
+    <br>
+    <a href="{{ url_for('index') }}">← Back to Forum</a>
 
     {% include 'footer.html' %}
 

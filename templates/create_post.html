@@ -47,11 +47,19 @@
             <label for="title">Post Title:</label>
             <input type="text" id="title" placeholder="Enter post title" required>
 
-            <label for="type">Type:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="type" value="query" checked> Query</label>
-                <label><input type="radio" name="type" value="patch"> Patch </label>
-            </div>
+            <label for="type" class="type-label">What are you posting?</label>
+            <div class="radio-group-modern">
+                <label class="radio-option">
+                    <input type="radio" name="type" value="query" checked>
+                    <span class="custom-radio"></span>
+                    Query
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="type" value="patch">
+                    <span class="custom-radio"></span>
+                    Patch
+                </label>
+            </div><br>
 
             <label for="category">Category:</label>
             <select id="category" required>

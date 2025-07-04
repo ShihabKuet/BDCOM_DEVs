@@ -939,6 +939,38 @@ form, .posts {
     font-size: 1rem;
 }
 
+/* Similar Post */
+.similar-posts-box {
+    background: #fdfdfd;
+    border: 1px solid #e1e6ed;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.similar-post-item {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: #e1e6ff;
+    border-left: 4px solid #3498db;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.similar-post-item:hover {
+    background: #f3f9ff;
+    transform: translateX(5px);
+}
+
+.similar-post-item a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #2c3e50;
+}
+
+
 /* Loading Post */
 .loader-container {
   display: flex;
