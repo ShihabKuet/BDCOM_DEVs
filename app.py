@@ -33,6 +33,7 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default=0)
     comments = db.relationship('Comment', backref='post', cascade='all, delete-orphan')
     likes_relation = db.relationship('PostLike', backref='post', cascade='all, delete-orphan')
+    history_relation = db.relationship('PostHistory', backref='original_post', cascade='all, delete-orphan', passive_deletes=True)
     reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     reference = db.relationship('Post', remote_side=[id], backref='patches')
 
@@ -46,7 +47,6 @@ class PostHistory(db.Model):
     edited_at = db.Column(db.DateTime, default=datetime.utcnow)
     edited_by = db.Column(db.String(50))
     edited_by_ip = db.Column(db.String(45))
-    post = db.relationship('Post', backref='edit_history')
 
 class PostLike(db.Model):
     id = db.Column(db.Integer, primary_key=True)

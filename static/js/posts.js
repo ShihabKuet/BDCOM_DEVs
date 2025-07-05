@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="history-meta">
                             <div class="meta-block">
                             <span class="meta-icon">✍️</span>
-                            <span class="meta-label">The post below was edited by:</span>
+                            <span class="meta-label">Edited by:</span>
                             <span class="meta-value">${h.edited_by}</span>
                             </div>
                             <div class="meta-block">
@@ -198,12 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="meta-block">
                             <span class="meta-icon">🧩</span>
                             <span class="meta-label">Type:</span>
-                            <span class="meta-value">${h.type}</span>
+                            <span class="meta-value">${h.type.toUpperCase()}</span>
                             </div>
                             <div class="meta-block">
                             <span class="meta-icon">📁</span>
                             <span class="meta-label">Category:</span>
-                            <span class="meta-value">${h.category}</span>
+                            <span class="meta-value">${h.category.toUpperCase()}</span>
                             </div>
                         </div>
 
