@@ -36,6 +36,18 @@ class Post(db.Model):
     reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     reference = db.relationship('Post', remote_side=[id], backref='patches')
 
+class PostHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
+    title = db.Column(db.String(100))
+    content = db.Column(db.Text)
+    type = db.Column(db.String(10))
+    category = db.Column(db.String(20))
+    edited_at = db.Column(db.DateTime, default=datetime.utcnow)
+    edited_by = db.Column(db.String(50))
+    edited_by_ip = db.Column(db.String(45))
+    post = db.relationship('Post', backref='edit_history')
+
 class PostLike(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
@@ -338,6 +350,19 @@ def update_post(post_id):
     post = Post.query.get_or_404(post_id)
     data = request.json
 
+    # Save history before changing
+    history = PostHistory(
+        post_id=post.id,
+        title=post.title,
+        content=post.content,
+        type=post.type,
+        category=post.category,
+        edited_by=data.get('last_modified_by', post.last_modified_by),
+        edited_by_ip=request.remote_addr
+    )
+    db.session.add(history)
+
+    # Apply updates
     post.title = data.get('title', post.title)
     post.content = data.get('content', post.content)
     post.type = data.get('type', post.type)
@@ -347,6 +372,26 @@ def update_post(post_id):
 
     db.session.commit()
     return jsonify({'message': 'Post updated successfully'}), 200
+
+@app.route('/posts/<int:post_id>/history')
+def post_history(post_id):
+    post = Post.query.get_or_404(post_id)
+    history = PostHistory.query.filter_by(post_id=post.id).order_by(PostHistory.edited_at.desc()).all()
+
+    history_data = []
+    for h in history:
+        user = UserIP.query.filter_by(ip_address=h.edited_by_ip).first()
+        history_data.append({
+            'title': h.title,
+            'content': h.content,
+            'type': h.type,
+            'category': h.category,
+            'edited_at': h.edited_at.strftime('%Y-%m-%d %H:%M'),
+            'edited_by': h.edited_by if h.edited_by else h.edited_by_ip
+        })
+
+    return jsonify(history_data)
+
 
 @app.route('/like/<int:post_id>', methods=['POST'])
 def toggle_like(post_id):
@@ -501,4 +546,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='192.168.0.126', port=5000, debug=True)

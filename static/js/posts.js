@@ -168,6 +168,63 @@ document.addEventListener('DOMContentLoaded', () => {
         editQuill.root.innerHTML = contentHTML;
     }
 
+    // Show Edit History
+    const showHistoryBtn = document.getElementById('showHistoryBtn');
+    if (showHistoryBtn) {
+        showHistoryBtn.addEventListener('click', async () => {
+            const container = document.getElementById('historyContainer');
+            const postId = window.currentPostId || window.location.pathname.split('/').pop();
+
+            try {
+                const res = await fetch(`/posts/${postId}/history`);
+                const history = await res.json();
+
+                if (history.length === 0) {
+                    container.innerHTML = '<p>No edit history available.</p>';
+                } else {
+                    container.innerHTML = history.map(h => `
+                        <div class="history-entry">
+                        <div class="history-meta">
+                            <div class="meta-block">
+                            <span class="meta-icon">✍️</span>
+                            <span class="meta-label">The post below was edited by:</span>
+                            <span class="meta-value">${h.edited_by}</span>
+                            </div>
+                            <div class="meta-block">
+                            <span class="meta-icon">🕒</span>
+                            <span class="meta-label">Edited at:</span>
+                            <span class="meta-value">${h.edited_at}</span>
+                            </div>
+                            <div class="meta-block">
+                            <span class="meta-icon">🧩</span>
+                            <span class="meta-label">Type:</span>
+                            <span class="meta-value">${h.type}</span>
+                            </div>
+                            <div class="meta-block">
+                            <span class="meta-icon">📁</span>
+                            <span class="meta-label">Category:</span>
+                            <span class="meta-value">${h.category}</span>
+                            </div>
+                        </div>
+
+                        <h3 class="history-title">Title: ${h.title}</h3>
+
+                        <div class="history-content">
+                            ${h.content}
+                        </div>
+                        </div>
+                    `).join('');
+                }
+
+                container.style.display = 'block';
+                container.scrollIntoView({ behavior: 'smooth' });  // 👈 scrolls down smoothly
+            } catch (error) {
+                container.innerHTML = '<p>Error loading history.</p>';
+                container.scrollIntoView({ behavior: 'smooth' });  // also scroll on error
+            }
+        });
+    }
+
     // Load similar posts
     fetch(`/similar-posts/${postId}`)
     .then(res => res.json())
@@ -184,6 +241,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 <small>by <strong>${post.submitted_by}</strong></small>
             </div>
         `).join('');
-    });
-
+    }); 
 });

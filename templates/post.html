@@ -19,11 +19,18 @@
         <h1>{{ post.title }}</h1>
         <div class="{{ post.type|lower }} post-type">{{ post.type.upper() }}</div>
         <br><br>
-        <div class="post-meta">
-            <span><strong>Author:</strong> {{ post.submitted_by }}</span> |
-            <span><strong>Last modified by:</strong> {{ post.last_modified_by }}</span>
+        <div class="post-meta-flex">
+            <div class="meta-left">
+                <span><strong>Author:</strong> {{ post.submitted_by }}</span> |
+                <span><strong>Last modified by:</strong> {{ post.last_modified_by }}</span>
+            </div>
+            <div class="meta-right">
+                <button id="showHistoryBtn">🕘 See Edit History</button>
+            </div>
         </div>
+
         <hr><br>
+
         <div class="post-body">{{ post.content | safe }}</div><br><br>
         {% if post.reference %}
         <div class="reference-banner">
@@ -81,6 +88,9 @@
             <button type="submit" class="saveEditBtn">💾 Save</button>
             <button type="button" class="cancelEditBtn" onclick="cancelEdit()">✖️ Cancel</button>
         </form>
+
+        <!-- Show edit history here -->
+        <div id="historyContainer" style="display: none;"></div><br>
 
         <br>
 
