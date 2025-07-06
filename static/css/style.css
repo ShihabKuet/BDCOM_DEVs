@@ -1113,7 +1113,7 @@ form, .posts {
 }
 
 .history-entry {
-    background: #ffffff;
+    background: #f7f6fd;
     border: 1px solid #e1e5ec;
     border-left: 5px solid #3498db;
     border-radius: 10px;
@@ -1163,7 +1163,7 @@ form, .posts {
 }
 
 .history-content {
-    background: #f9fbfc;
+    background: #ceeaf7;
     padding: 16px 20px;
     border-radius: 8px;
     border: 1px solid #dde6ee;

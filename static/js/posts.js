@@ -8,6 +8,22 @@ function cancelEdit() {
     document.getElementById('editForm').style.display = 'none';
 }
 
+
+// 🔴 Diff helper functions
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.innerText = str;
+    return div.innerHTML;
+}
+
+function highlightDiff(oldText, newText) {
+    const diff = Diff.diffWords(escapeHTML(oldText), escapeHTML(newText));
+    return diff.map(part => {
+        const color = part.added ? 'red' : part.removed ? 'gray' : 'inherit';
+        return `<span style="color: ${color};">${part.value}</span>`;
+    }).join('');
+}
+
 async function submitEdit(e, postId) {
     e.preventDefault();
     const title = document.getElementById('editTitle').value;
@@ -177,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const res = await fetch(`/posts/${postId}/history`);
-                const history = await res.json();
+                const history = await res.json();;
 
                 if (history.length === 0) {
                     container.innerHTML = '<p>No edit history available.</p>';
@@ -208,10 +224,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <h3 class="history-title">Title: ${h.title}</h3>
-
                         <div class="history-content">
-                            ${h.content}
+                           ${h.content}
                         </div>
+
                         </div>
                     `).join('');
                 }

@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import abort
 from sqlalchemy import or_, and_
 from datetime import datetime
+from html_diff import diff as html_diff
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
@@ -350,11 +351,28 @@ def update_post(post_id):
     post = Post.query.get_or_404(post_id)
     data = request.json
 
+    # Extract new values from request
+    new_title = data.get('title', post.title)
+    new_content = data.get('content', post.content)
+
+    # Use html_diff to get basic <ins>/<del> diff
+    raw_title_diff = html_diff(post.title or "", new_title or "")
+    raw_content_diff = html_diff(post.content or "", new_content or "")
+
+    # Wrap <ins> and <del> with custom styles for yellow highlight
+    def apply_yellow_highlight(diff_text):
+        return (diff_text
+            .replace('<ins>', '<ins style="background-color: yellow;">')
+            .replace('<del>', '<del style="background-color: #ffeeba; text-decoration: line-through;">'))
+
+    highlighted_title = apply_yellow_highlight(raw_title_diff)
+    highlighted_content = apply_yellow_highlight(raw_content_diff)
+
     # Save history before changing
     history = PostHistory(
         post_id=post.id,
-        title=post.title,
-        content=post.content,
+        title=highlighted_title,
+        content=highlighted_content,
         type=post.type,
         category=post.category,
         edited_by=data.get('last_modified_by', post.last_modified_by),
