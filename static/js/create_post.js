@@ -2,11 +2,35 @@ let quill;
 
 // Template content as Quill Delta or HTML
 const templateHTML = `
-    <p><strong>Problem Description:</strong></p>
-    <p>Write your problem Description here....</p>
-    <p><strong>Probable Reason behind:</strong></p>
-    <p>If you have any clue about it, you can write it....</p>
+<h3>🛠️ Problem Statement:</h3>
+<p>Describe the exact problem in one or two lines.</p>
+
+<h3>📋 Problem Description:</h3>
+<p>Explain the issue in detail — when it occurs, frequency, and impact.</p>
+
+<h3>🚩 Reproduction Steps:</h3>
+<ol>
+  <li>Step 1</li>
+  <li>Step 2</li>
+  <li>Step 3</li>
+</ol>
+
+<h3>🔍 Observed Logs / Behavior:</h3>
+<pre><code>// Paste logs or console output here</code></pre>
+
+<h3>📂 Related Code Snippet (if any):</h3>
+<pre><code>// Paste relevant code here</code></pre>
+
+<h3>🔎 Root Cause Analysis (if known):</h3>
+<p>Explain what you think is causing the problem and why.</p>
+
+<h3>✅ Proposed Solution / Workaround:</h3>
+<p>Suggest how it can be fixed, even if it's partial.</p>
+
+<h3>💡 Additional Notes:</h3>
+<p>Anything else worth mentioning?</p>
 `;
+
 
 function setUsername(name) {
     document.getElementById('username').value = name;

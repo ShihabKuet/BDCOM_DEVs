@@ -619,6 +619,53 @@ form, .posts {
     background-color: #dde4ff;
 }
 
+.post-body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.05em;
+    line-height: 1.7;
+    color: #333;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    white-space: pre-wrap; /* preserves newlines */
+    word-wrap: break-word;
+    margin-bottom: 20px;
+}
+
+.post-body h1, 
+.post-body h2, 
+.post-body h3 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.post-body code {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    font-size: 0.95em;
+}
+
+.post-body pre {
+    padding: 12px;
+    border-left: 4px solid #007bff;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: Consolas, monospace;
+    font-size: 0.95em;
+    margin-bottom: 1em;
+}
+
+.post-body blockquote {
+    border-left: 4px solid #ccc;
+    padding-left: 12px;
+    margin: 1em 0;
+    color: #555;
+    font-style: italic;
+}
 
 .post-body img {
   max-width: 80%;
@@ -1183,6 +1230,11 @@ form, .posts {
     color: #007acc;
 }
 
+.history-content img {
+    max-width: 80%;
+    max-height: 15rem;
+    margin: 10px auto;
+}
 
 @keyframes fadeInUp {
     from {
