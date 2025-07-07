@@ -1216,3 +1216,48 @@ form, .posts {
 .info-tooltip:hover {
     background-color: #0056b3;
 }
+
+/* Post edit status */
+/* Stylish alert box */
+.alert-box {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    min-width: 300px;
+    max-width: 600px;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 1em;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transition: top 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Type-based styles */
+.alert-success {
+    background-color: #d1f7d6;
+    color: #186a2e;
+    border: 1px solid #92e3a9;
+}
+.alert-warning {
+    background-color: #fff7d6;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+.alert-error {
+    background-color: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+}
+
+/* Show animation */
+.alert-box.show {
+    top: 20px;
+    opacity: 1;
+    pointer-events: auto;
+}
+

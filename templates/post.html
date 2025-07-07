@@ -25,8 +25,10 @@
                 <span><strong>Last modified by:</strong> {{ post.last_modified_by }}</span>
             </div>
             <div class="meta-right">
+                {% if history_count > 1 %}
                 <button id="showHistoryBtn">🕘 See Edit History</button>
                 <a href="/bdf_manual#show-edit-history" target="_blank" class="info-tooltip" title="How 'show edit history' works">?</a>
+                {% endif %}
             </div>
         </div>
 
@@ -58,8 +60,8 @@
             <div id="edit-quill-container" style="height: 600px;"></div>
             <input type="hidden" id="editContent">
             <br><br>
-            <label><input type="radio" name="editType" value="query" {% if post.type == 'Query' %}checked{% endif %}> Query</label>
-            <label><input type="radio" name="editType" value="patch" {% if post.type == 'Patch' %}checked{% endif %}> Patch</label><br><br>
+            <label><input type="radio" name="editType" value="query" {% if post.type == 'query' %}checked{% endif %}> Query</label>
+            <label><input type="radio" name="editType" value="patch" {% if post.type == 'patch' %}checked{% endif %}> Patch</label><br><br>
             <label for="editCategory">Category:</label>
             <select id="editCategory" required>
                 <option value="vxworks" {% if post.category == 'vxworks' %}selected{% endif %}>🛠️ VxWorks</option>
@@ -100,6 +102,9 @@
             <button type="submit" class="saveEditBtn">💾 Save</button>
             <button type="button" class="cancelEditBtn" onclick="cancelEdit()">✖️ Cancel</button>
         </form>
+
+        <!-- Dialog Box - "Nothing is modified" or "Post updated successfully" -->
+        <div id="topAlert" class="alert-box"></div>
 
         <!-- Show edit history here -->
         <div id="historyContainer" style="display: none;"></div><br>

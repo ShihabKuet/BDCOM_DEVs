@@ -335,9 +335,10 @@ def delete_post(post_id):
 @app.route('/posts/<int:post_id>')
 def get_post(post_id):
     post = Post.query.get_or_404(post_id)
+    history_count = PostHistory.query.filter_by(post_id=post.id).count() # To render 'see edit history' or not
     current_ip = request.remote_addr  # Get current user's IP
     known_user = db.session.query(UserIP).filter_by(ip_address=current_ip).first()
-    return render_template('post.html', post=post, current_ip=current_ip, admin_ip=ADMIN_IP, known_user=known_user.username if known_user else None)
+    return render_template('post.html', post=post, current_ip=current_ip, admin_ip=ADMIN_IP, history_count=history_count, known_user=known_user.username if known_user else None)
 
 @app.route("/similar-posts/<int:post_id>")
 def get_similar_posts(post_id):
@@ -375,6 +376,8 @@ def update_post(post_id):
     # Extract new values from request
     new_title = data.get('title', post.title)
     new_content = data.get('content', post.content)
+    new_type=data.get('type', post.type)
+    new_category=data.get('category', post.category)
 
     # Use html_diff to get basic <ins>/<del> diff
     raw_title_diff = html_diff(post.title or "", new_title or "")
@@ -383,23 +386,32 @@ def update_post(post_id):
     highlighted_title = apply_yellow_highlight(raw_title_diff)
     highlighted_content = apply_yellow_highlight(raw_content_diff)
 
+    # Check if any field has changed
+    if (
+        new_title == post.title and
+        new_content == post.content and
+        new_type == post.type and
+        new_category == post.category
+    ):
+        return jsonify({'message': 'Nothing is modified'}), 200
+
     # Save history before changing
     history = PostHistory(
         post_id=post.id,
         title=highlighted_title,
         content=highlighted_content,
-        type=data.get('type', post.type),
-        category=data.get('category', post.category),
+        type=new_type,
+        category=new_category,
         edited_by=data.get('last_modified_by', post.last_modified_by),
         edited_by_ip=request.remote_addr
     )
     db.session.add(history)
 
     # Apply updates
-    post.title = data.get('title', post.title)
-    post.content = data.get('content', post.content)
-    post.type = data.get('type', post.type)
-    post.category = data.get('category', post.category)
+    post.title = new_title
+    post.content = new_content
+    post.type = new_type
+    post.category = new_category
     post.last_modified_by = data.get('last_modified_by', post.last_modified_by)
     post.last_modified_ip = request.remote_addr
 

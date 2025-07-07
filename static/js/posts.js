@@ -1,5 +1,15 @@
 let editQuill;  // Declare once at the top
 
+function showTopAlert(message, type = 'success', duration = 3000) {
+    const alertEl = document.getElementById('topAlert');
+    alertEl.className = `alert-box alert-${type} show`;
+    alertEl.innerHTML = message;
+
+    setTimeout(() => {
+        alertEl.classList.remove('show');
+    }, duration);
+}
+
 function startEdit() {
     document.getElementById('editForm').style.display = 'block';
 }
@@ -10,20 +20,37 @@ function cancelEdit() {
 
 async function submitEdit(e, postId) {
     e.preventDefault();
+
     const title = document.getElementById('editTitle').value;
     const content = editQuill.root.innerHTML;
     const type = document.querySelector('input[name="editType"]:checked').value;
     const category = document.getElementById('editCategory').value;
     const last_modified_by = document.getElementById('editUsername').value;
 
-    await fetch(`/posts/${postId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, type, category, last_modified_by })
-    });
+    try {
+        const response = await fetch(`/posts/${postId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, type, category, last_modified_by })
+        });
 
-    location.reload();
+        const data = await response.json();
+
+        if (data.message === 'Nothing is modified') {
+            showTopAlert("⚠️ No changes detected.", "warning");
+        } else {
+            showTopAlert("✅ Post updated successfully.", "success");
+
+            document.getElementById('editForm').style.display = 'none';
+            // Delay reload to let user see success message
+            setTimeout(() => location.reload(), 1000);
+        }
+    } catch (error) {
+        console.error(error);
+        showTopAlert("❌ Failed to update post.", "error");
+    }
 }
+
 
 /* Delete Post */
 let pendingDeletePostId = null;
