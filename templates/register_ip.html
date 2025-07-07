@@ -16,7 +16,10 @@
     <div class="register-container">
         <h2>🖥️ Register IP and Username</h2>
         <form id="ipForm" class="register-form">
-            <input type="text" id="ip_address" placeholder="Enter IP Address" required>
+            <div class="ip-input-group">
+                <input type="text" id="ip_address" placeholder="Enter IP Address" required>
+                <button type="button" id="loadIpBtn" title="Load your IP">📡</button>
+            </div>
             <input type="text" id="username" placeholder="Enter Username" required>
             <button type="submit">Register</button>
         </form>

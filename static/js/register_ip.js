@@ -1,6 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadUserIPs();
 
+    // 🆕 Load My IP Button
+    document.getElementById('loadIpBtn').addEventListener('click', async () => {
+        try {
+            const res = await fetch('/my-ip');
+            const data = await res.json();
+            document.getElementById('ip_address').value = data.ip || '';
+        } catch (err) {
+            alert("Failed to load your IP.");
+            console.error(err);
+        }
+    });
+
+    // 📝 Form submission
     document.getElementById('ipForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
