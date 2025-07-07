@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
 from sqlalchemy import or_, and_
-from datetime import datetime
+from datetime import datetime, timedelta
 from html_diff import diff as html_diff
 
 app = Flask(__name__)
@@ -38,14 +38,17 @@ class Post(db.Model):
     reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     reference = db.relationship('Post', remote_side=[id], backref='patches')
 
+def dhaka_time():
+    return datetime.utcnow() + timedelta(hours=6)
+
 class PostHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
-    title = db.Column(db.String(100))
+    title = db.Column(db.Text)
     content = db.Column(db.Text)
     type = db.Column(db.String(10))
     category = db.Column(db.String(20))
-    edited_at = db.Column(db.DateTime, default=datetime.utcnow)
+    edited_at = db.Column(db.DateTime, default=dhaka_time)
     edited_by = db.Column(db.String(50))
     edited_by_ip = db.Column(db.String(45))
 
@@ -215,6 +218,19 @@ def posts():
         )
         db.session.add(new_post)
         db.session.commit()
+
+        # Save history before changing
+        history = PostHistory(
+            post_id=new_post.id,
+            title=new_post.title,
+            content=new_post.content,
+            type=new_post.type,
+            category=new_post.category,
+            edited_by=new_post.last_modified_by,
+            edited_by_ip=new_post.last_modified_ip
+        )
+        db.session.add(history)
+        db.session.commit()
         return jsonify({'message': 'Post added successfully'}), 201
     else:
         # Pagination parameters
@@ -346,6 +362,11 @@ def get_similar_posts(post_id):
         for p in similar
     ])
 
+def apply_yellow_highlight(diff_text):
+    return (diff_text
+        .replace('<ins>', '<ins style="background-color: yellow;">')
+        .replace('<del>', '<del style="background-color: #ffeeba; text-decoration: line-through;">'))
+
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -359,12 +380,6 @@ def update_post(post_id):
     raw_title_diff = html_diff(post.title or "", new_title or "")
     raw_content_diff = html_diff(post.content or "", new_content or "")
 
-    # Wrap <ins> and <del> with custom styles for yellow highlight
-    def apply_yellow_highlight(diff_text):
-        return (diff_text
-            .replace('<ins>', '<ins style="background-color: yellow;">')
-            .replace('<del>', '<del style="background-color: #ffeeba; text-decoration: line-through;">'))
-
     highlighted_title = apply_yellow_highlight(raw_title_diff)
     highlighted_content = apply_yellow_highlight(raw_content_diff)
 
@@ -373,8 +388,8 @@ def update_post(post_id):
         post_id=post.id,
         title=highlighted_title,
         content=highlighted_content,
-        type=post.type,
-        category=post.category,
+        type=data.get('type', post.type),
+        category=data.get('category', post.category),
         edited_by=data.get('last_modified_by', post.last_modified_by),
         edited_by_ip=request.remote_addr
     )
@@ -431,16 +446,6 @@ def toggle_like(post_id):
         post.likes += 1
         db.session.commit()
         return jsonify({'likes': post.likes, 'liked': True}), 201
-
-# @app.route('/comments/<int:post_id>', methods=['GET'])
-# def get_comments(post_id):
-#     comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.timestamp.asc()).all()
-#     return jsonify([{
-#         'id': c.id,
-#         'content': c.content,
-#         'ip_address': c.ip_address,
-#         'timestamp': c.timestamp.strftime('%Y-%m-%d %H:%M')
-#     } for c in comments])
 
 @app.route('/comments/<int:post_id>', methods=['GET'])
 def get_comments(post_id):
@@ -564,4 +569,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.0.126', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

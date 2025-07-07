@@ -8,22 +8,6 @@ function cancelEdit() {
     document.getElementById('editForm').style.display = 'none';
 }
 
-
-// 🔴 Diff helper functions
-function escapeHTML(str) {
-    const div = document.createElement('div');
-    div.innerText = str;
-    return div.innerHTML;
-}
-
-function highlightDiff(oldText, newText) {
-    const diff = Diff.diffWords(escapeHTML(oldText), escapeHTML(newText));
-    return diff.map(part => {
-        const color = part.added ? 'red' : part.removed ? 'gray' : 'inherit';
-        return `<span style="color: ${color};">${part.value}</span>`;
-    }).join('');
-}
-
 async function submitEdit(e, postId) {
     e.preventDefault();
     const title = document.getElementById('editTitle').value;
@@ -117,6 +101,10 @@ function enableEditUsernameField() {
     input.value = '';
     input.focus();
     input.style.backgroundColor = '#ffffff';
+
+    // Show register suggestion
+    document.getElementById("register-hint").style.display = "block";
+    
     document.querySelector('#edit-username-confirm-section .yes').classList.remove('active');
     document.querySelector('#edit-username-confirm-section .no').classList.add('active');
 }
@@ -198,17 +186,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (history.length === 0) {
                     container.innerHTML = '<p>No edit history available.</p>';
                 } else {
-                    container.innerHTML = history.map(h => `
+                    container.innerHTML = history.map((h, i) => `
                         <div class="history-entry">
                         <div class="history-meta">
                             <div class="meta-block">
                             <span class="meta-icon">✍️</span>
-                            <span class="meta-label">Edited by:</span>
+                            <span class="meta-label">${i === history.length - 1 ? 'Created by:' : 'Edited by:'}</span>
                             <span class="meta-value">${h.edited_by}</span>
                             </div>
                             <div class="meta-block">
                             <span class="meta-icon">🕒</span>
-                            <span class="meta-label">Edited at:</span>
+                            <span class="meta-label">${i === history.length - 1 ? 'Created at:' : 'Edited at:'}</span>
                             <span class="meta-value">${h.edited_at}</span>
                             </div>
                             <div class="meta-block">

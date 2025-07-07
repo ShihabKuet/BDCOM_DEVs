@@ -26,6 +26,7 @@
             </div>
             <div class="meta-right">
                 <button id="showHistoryBtn">🕘 See Edit History</button>
+                <a href="/bdf_manual#show-edit-history" target="_blank" class="info-tooltip" title="How 'show edit history' works">?</a>
             </div>
         </div>
 
@@ -76,12 +77,23 @@
                         <button type="button" class="username-btn no" onclick="enableEditUsernameField()">No</button>
                     </div>
                 </div>
+                {% else %}
+                <div id="register-hint" class="" style="display: block; text-align: center;">
+                    <p>Please register your IP and username. 
+                        <a href="/register_ip" class="register-link">Register here</a>.
+                    </p>
+                </div>
                 {% endif %}
                 <div id="edit-username-input-section" class="username-input-field">
                     <label for="editUsername">I am Mr.</label>
                     <input type="text" id="editUsername" name="editUsername"
                         {% if known_user %}readonly value="{{ known_user }}"{% else %}value="{{ post.submitted_by }}"{% endif %}
                         required>
+                </div>
+                <div id="register-hint" class="" style="display: none; text-align: center;">
+                    <p>Please register your IP and username. 
+                        <a href="/register_ip" class="register-link">Register here</a>.
+                    </p>
                 </div>
             </div>
             
