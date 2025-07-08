@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
 from sqlalchemy import or_, and_
+from sqlalchemy.sql import true
 from datetime import datetime, timedelta
 from html_diff import diff as html_diff
 
@@ -294,7 +295,7 @@ def search():
     if category:
         filters.append(Post.category.ilike(category))  # case-insensitive match
 
-    filtered_query = Post.query.filter(and_(*filters)).order_by(Post.id.desc())
+    filtered_query = Post.query.filter(and_(true(), *filters)).order_by(Post.id.desc())
     paginated_posts = filtered_query.paginate(page=page, per_page=per_page, error_out=False)
 
     # Combine all filters with AND
