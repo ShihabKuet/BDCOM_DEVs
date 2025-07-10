@@ -10,9 +10,39 @@
             <a href="/register_ip" class="{{ 'active' if request.path == '/register_ip' else ''}}">RegisterIP</a>
             <a href="/create" class="{{ 'active_create' if request.path == '/create' else 'create' }}">Create</a>
             <!-- Future: <a href="/login">Login</a> -->
+            <button class="notification-button" id="notificationBell">
+                🔔<span id="unreadCount" class="notification-badge"></span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+                <!-- Notifications will be loaded here via JS -->
+            </div>             
         </nav>
         <div class="hamburger" id="hamburger">
             &#9776;
         </div>
     </div>
 </header>
+
+<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+
+<!-- Toast Notification Box -->
+<div id="toast" style="
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #333;
+    color: white;
+    padding: 10px;
+    display: none;
+    border-radius: 5px;
+    z-index: 9999;
+"></div>
+
+<script>
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 4000);
+}
+</script>

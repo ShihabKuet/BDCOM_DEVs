@@ -64,19 +64,60 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     ip_address = db.Column(db.String(45))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=dhaka_time)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
 
 class Notice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_time)
 
 class UserIP(db.Model):
     __tablename__ = 'user_ip'
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.String(45), unique=True, nullable=False)
     username = db.Column(db.String(100), nullable=False)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_ip = db.Column(db.String(45), nullable=False)  # Receiver's IP
+    message = db.Column(db.Text, nullable=False)
+    related_post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+    is_read = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=dhaka_time)
+
+# Utility function to create notifications
+def create_notification(user_ip, message, related_post_id=None):
+    notification = Notification(user_ip=user_ip, message=message, related_post_id=related_post_id)
+    db.session.add(notification)
+    db.session.commit()
+
+@app.route('/notifications')
+def get_notifications():
+    ip = request.remote_addr
+    notifications = Notification.query.filter_by(user_ip=ip).order_by(Notification.timestamp.desc()).all()
+    return jsonify([{
+        'id': n.id,
+        'message': n.message,
+        'related_post_id': n.related_post_id,
+        'is_read': n.is_read,
+        'timestamp': n.timestamp.strftime('%Y-%m-%d %H:%M')
+    } for n in notifications])
+
+@app.route('/notifications/mark_all_read', methods=['POST'])
+def mark_all_read():
+    ip = request.remote_addr
+    Notification.query.filter_by(user_ip=ip, is_read=False).update({'is_read': True})
+    db.session.commit()
+    return jsonify({'message': 'All marked as read'})
+
+@app.route('/notifications/clear', methods=['DELETE'])
+def clear_notifications():
+    ip = request.remote_addr
+    Notification.query.filter_by(user_ip=ip).delete()
+    db.session.commit()
+    return jsonify({'message': 'Notifications cleared'})
+
 
 @app.route('/notices')
 def get_notices():
@@ -458,6 +499,26 @@ def toggle_like(post_id):
         db.session.add(new_like)
         post.likes += 1
         db.session.commit()
+
+        # Lookup liker username from UserIP table
+        liker_user = UserIP.query.filter_by(ip_address=user_ip).first()
+        liker_name = liker_user.username if liker_user else user_ip or "Someone"
+
+        # Count how many others liked this post (excluding current liker)
+        other_likes_count = PostLike.query.filter(
+            PostLike.post_id == post_id,
+            PostLike.ip_address != user_ip
+        ).count()
+        others_text = f" &amp; {other_likes_count} others" if other_likes_count > 0 else ""
+
+        # Send notification if liker is not the post owner
+        if user_ip != post.ip_address:
+            message = (
+                f"Your post <strong>{post.title}</strong> got a new 🌟 appreciation by "
+                f"<strong>{liker_name}</strong>{others_text}."
+            )
+            create_notification(post.ip_address, message, post.id)
+
         return jsonify({'likes': post.likes, 'liked': True}), 201
 
 @app.route('/comments/<int:post_id>', methods=['GET'])
@@ -582,4 +643,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.100.133', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
