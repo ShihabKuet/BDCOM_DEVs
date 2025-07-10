@@ -169,7 +169,9 @@
 /* ========== Notification Button Styling ========== */
 .notification-button {
     font-family: 'Poppins', sans-serif;
-    background-color: #007bff;
+    background: linear-gradient(270deg, #010d52, #0072ff);
+    background-position: left center;
+    border-color: rgb(0, 0, 0);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -177,13 +179,44 @@
     cursor: pointer;
     position: relative;
     font-weight: 600;
-    font-size: 12px;
-    transition: background-color 0.3s ease;
+    font-size: 16px;
+    transition: transform 0.3s ease;
 }
 
 .notification-button:hover {
-    background-color: #0056b3;
+    transform: scale(1.1);
 }
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 16px;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.clear-btn {
+    background: transparent;
+    border: none;
+    color: #d9534f;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: normal;
+    padding: 2px 4px;
+}
+
+.clear-btn:hover {
+    text-decoration: underline;
+    color: #c9302c;
+}
+
+.notification-items {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 
 /* ========== Notification Badge Styling ========== */
 .notification-badge {
@@ -201,8 +234,8 @@
 /* ========== Dropdown Styling ========== */
 .notification-dropdown {
     position: absolute;
-    top: 60px;
-    right: 30px;
+    top: 90px;
+    right: 40px;
     background: white;
     border: 1px solid #ccc;
     width: 350px;
@@ -242,6 +275,7 @@
     margin-top: 4px;
 }
 
+
 /* Individual notification item */
 .notification-item {
     padding: 10px 16px;
@@ -259,6 +293,13 @@
 
 .notification-item:hover {
     background-color: #f8f9fa;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #6c757d;
+    text-align: right;
+    display: block;
 }
 
 /* Optional: Empty state */

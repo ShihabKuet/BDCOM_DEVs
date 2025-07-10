@@ -514,7 +514,7 @@ def toggle_like(post_id):
         # Send notification if liker is not the post owner
         if user_ip != post.ip_address:
             message = (
-                f"Your post <strong>{post.title}</strong> got a new 🌟 appreciation by "
+                f"🌟 Your post <strong>{post.title}</strong> got a new appreciation by "
                 f"<strong>{liker_name}</strong>{others_text}."
             )
             create_notification(post.ip_address, message, post.id)
@@ -545,11 +545,23 @@ def get_comments(post_id):
 def add_comment(post_id):
     data = request.get_json()
     content = data.get('content')
-    ip_address = request.remote_addr
+    user_ip = request.remote_addr
+    post = Post.query.get_or_404(post_id)
 
-    comment = Comment(post_id=post_id, content=content, ip_address=ip_address)
+    comment = Comment(post_id=post_id, content=content, ip_address=user_ip)
     db.session.add(comment)
     db.session.commit()
+
+    # Lookup commenter username from UserIP table
+    commenter = UserIP.query.filter_by(ip_address=user_ip).first()
+    commenter_name = commenter.username if commenter else user_ip or "Someone"
+
+    # Send notification if commenter is not the post owner
+    if user_ip != post.ip_address:
+        message = (
+            f"💬 <strong>{commenter_name}</strong> gave feedback on your post <strong>{post.title}</strong>"
+        )
+        create_notification(post.ip_address, message, post.id)
 
     return jsonify({'message': 'Comment added successfully'}), 201
 

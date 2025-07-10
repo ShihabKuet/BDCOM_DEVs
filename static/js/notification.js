@@ -36,12 +36,32 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.length === 0) {
                 dropdown.innerHTML = `<div class="notification-item">No notifications</div>`;
             } else {
-                dropdown.innerHTML = data.map(n => `
-                    <div class="notification-item ${n.is_read ? '' : 'unread'}">
-                        ${n.related_post_id ? `<a href="/posts/${n.related_post_id}">${n.message}</a>` : n.message}
-                        <br><small class="notification-time">${timeAgo(n.timestamp)}</small>
+                dropdown.innerHTML = `
+                    <div class="notification-header">
+                        <span>Notifications</span>
+                        <button class="clear-btn" id="clearNotificationsBtn">🗑️ Clear All</button>
                     </div>
-                `).join('');
+                    <div class="notification-items">
+                        ${data.length === 0 ? `
+                            <div class="notification-item">No notifications</div>
+                        ` : data.map(n => `
+                            <div class="notification-item ${n.is_read ? '' : 'unread'}">
+                                ${n.related_post_id ? `<a href="/posts/${n.related_post_id}">${n.message}</a>` : n.message}
+                                <div class="notification-time">${timeAgo(n.timestamp)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Attach Clear All event if button exists
+                const clearBtn = document.getElementById('clearNotificationsBtn');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', async () => {
+                        if (!confirm('Clear all notifications?')) return;
+                        await fetch('/notifications/clear', { method: 'DELETE' });
+                        fetchNotifications(); // Refresh after clearing
+                    });
+                }
             }
 
             // Show toast for new unread notifications (optional)
