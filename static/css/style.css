@@ -571,6 +571,37 @@ form, .posts {
     white-space: nowrap;
 }
 
+.post-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.follow-button {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.follow-button:hover {
+    background-color: #0056b3;
+}
+
+.following {
+    background-color: #28a745;
+}
+
+.following:hover {
+    background-color: #218838;
+}
+
+
 /* Stylish post content */
 .post-content {
     font-family: 'Open Sans', sans-serif;

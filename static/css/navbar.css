@@ -310,11 +310,11 @@
     font-size: 14px;
     padding: 2px;
     margin-left: 10px;
-    transition: color 0.2s ease;
+    transition: background 0.3s ease-in-out;
 }
 
 .notification-delete:hover {
-    color: red;
+    background: #e7e7e7;
 }
 
 /* Optional: Empty state */
