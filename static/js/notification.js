@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 dropdown.innerHTML = `
                     <div class="notification-header">
-                        <span>Notifications</span>
-                        <button class="clear-btn" id="clearNotificationsBtn">🗑️ Clear All</button>
+                        <span>Logs</span>
+                        <button class="clear-btn" id="clearNotificationsBtn">🗑️ Clear All Logs</button>
                     </div>
                     <div class="notification-items">
                         ${data.length === 0 ? `
@@ -47,7 +47,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         ` : data.map(n => `
                             <div class="notification-item ${n.is_read ? '' : 'unread'}">
                                 ${n.related_post_id ? `<a href="/posts/${n.related_post_id}">${n.message}</a>` : n.message}
-                                <div class="notification-time">${timeAgo(n.timestamp)}</div>
+                                <div class="notification-time">
+                                    ${timeAgo(n.timestamp)}
+                                    <button class="notification-delete" data-id="${n.id}" title="Delete">🗑️</button>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
@@ -62,6 +65,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         fetchNotifications(); // Refresh after clearing
                     });
                 }
+
+                // Attach delete button click handlers
+                document.querySelectorAll('.notification-delete').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation(); // prevent closing dropdown
+                        const id = btn.dataset.id;
+                        try {
+                            await fetch(`/notifications/${id}`, { method: 'DELETE' });
+                            fetchNotifications(); // Refresh list
+                        } catch (err) {
+                            console.error("Failed to delete notification", err);
+                        }
+                    });
+                });
             }
 
             // Show toast for new unread notifications (optional)

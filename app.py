@@ -118,6 +118,15 @@ def clear_notifications():
     db.session.commit()
     return jsonify({'message': 'Notifications cleared'})
 
+@app.route('/notifications/<int:notification_id>', methods=['DELETE'])
+def delete_notification(notification_id):
+    ip = request.remote_addr
+    notification = Notification.query.filter_by(id=notification_id, user_ip=ip).first()
+    if notification:
+        db.session.delete(notification)
+        db.session.commit()
+        return jsonify({'message': 'Notification deleted'}), 200
+    return jsonify({'error': 'Not found'}), 404
 
 @app.route('/notices')
 def get_notices():
