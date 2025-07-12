@@ -156,6 +156,14 @@ form, .posts {
     background-color: white;
 }
 
+.no-posts {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-size: 1.2em;
+}
+
+
 .post {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;

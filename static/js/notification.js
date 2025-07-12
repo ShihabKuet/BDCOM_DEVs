@@ -46,7 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="notification-item">No notifications</div>
                         ` : data.map(n => `
                             <div class="notification-item ${n.is_read ? '' : 'unread'}">
-                                ${n.related_post_id ? `<a href="/posts/${n.related_post_id}">${n.message}</a>` : n.message}
+                                ${n.related_post_id 
+                                    ? `<a href="/posts/${n.related_post_id}">${n.message}</a>` 
+                                    : `<div class="plain-message">${n.message}</div>`}
                                 <div class="notification-time">
                                     ${timeAgo(n.timestamp)}
                                     <button class="notification-delete" data-id="${n.id}" title="Delete">🗑️</button>

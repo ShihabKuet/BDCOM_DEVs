@@ -249,7 +249,9 @@
 }
 
 /* Reset styles for links inside notification dropdown */
-.notification-dropdown a {
+.notification-dropdown a,
+.notification-dropdown .plain-message {
+    font-family: 'Poppins', sans-serif;
     display: block;
     padding: 10px 14px;
     margin: 4px 0;
@@ -257,10 +259,15 @@
     border-radius: 8px;
     color: #333;
     text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: bold;
     transition: background-color 0.2s ease, color 0.2s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.notification-dropdown strong {
+    font-weight: bold;
+    color: #007bff;
 }
 
 .notification-dropdown a:hover {

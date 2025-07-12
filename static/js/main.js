@@ -69,38 +69,42 @@ async function loadPosts(query = '', category = '', page = 1) {
         const data = await response.json();
         const posts = data.posts;
 
-        container.innerHTML = posts.map(post => `
-            <div class="card">
-                <div class="post">
-                    <div class="post-header">
-                        <h3><a href="/posts/${post.id}">${post.title}</a></h3>
-                        <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
-                    </div>
-                    <div class="post-content">
-                        ${
-                            stripHTML(post.content).length > 200
-                                ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
-                                : stripHTML(post.content)
-                        }
-                    </div>
-                    <div class="post-footer-bar">
-                        <div class="post-likes">
-                            <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
-                                🌟 <span id="likes-${post.id}">${post.likes}</span>
-                            </button>
+        if (posts.length === 0) {
+            container.innerHTML = `<div class="no-posts">No posts available</div>`;
+        } else {
+            container.innerHTML = posts.map(post => `
+                <div class="card">
+                    <div class="post">
+                        <div class="post-header">
+                            <h3><a href="/posts/${post.id}">${post.title}</a></h3>
+                            <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
                         </div>
-                        <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
-                            ${getCategoryIcon(post.category)} ${post.category}
+                        <div class="post-content">
+                            ${
+                                stripHTML(post.content).length > 200
+                                    ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
+                                    : stripHTML(post.content)
+                            }
                         </div>
-                    </div>
+                        <div class="post-footer-bar">
+                            <div class="post-likes">
+                                <button class="like-btn ${post.liked ? 'liked' : ''}" data-id="${post.id}">
+                                    🌟 <span id="likes-${post.id}">${post.likes}</span>
+                                </button>
+                            </div>
+                            <div class="post-category-label category-${post.category.toLowerCase().replace(/\s+/g, '-')}" title="${post.category}">
+                                ${getCategoryIcon(post.category)} ${post.category}
+                            </div>
+                        </div>
 
-                    <div class="post-footer">
-                        <small><strong>Last modified by:</strong> ${post.last_modified_by}</small>
-                        <small><strong>Author:</strong> ${post.submitted_by}</small>
+                        <div class="post-footer">
+                            <small><strong>Last modified by:</strong> ${post.last_modified_by}</small>
+                            <small><strong>Author:</strong> ${post.submitted_by}</small>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');            
+        }
 
         renderPaginationControls(data.page, data.total_pages, query, category);
 

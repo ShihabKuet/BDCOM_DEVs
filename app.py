@@ -236,6 +236,13 @@ def register_ip():
             db.session.add(new_entry)
 
         db.session.commit()
+    
+        # Send notification to the user of this IP address
+        message = (
+            f"👤 Username of this ip address ({ip_address}) has been changed to <strong>{username}</strong>"
+        )
+        create_notification(ip_address, message, None)
+            
         return jsonify({'message': 'IP registered successfully'}), 201
 
     return render_template('register_ip.html')
@@ -458,6 +465,8 @@ def update_post(post_id):
     )
     db.session.add(history)
 
+    old_title = post.title # keep old title for notification
+    
     # Apply updates
     post.title = new_title
     post.content = new_content
@@ -467,6 +476,13 @@ def update_post(post_id):
     post.last_modified_ip = request.remote_addr
 
     db.session.commit()
+
+    # Send notification after edit 
+    if post.last_modified_ip != post.ip_address:
+        message = (
+            f"✏️ Your post <strong>{old_title}</strong> has been modified by <strong>{post.last_modified_by}</strong>"
+        )
+        create_notification(post.ip_address, message, post.id)
     return jsonify({'message': 'Post updated successfully'}), 200
 
 @app.route('/posts/<int:post_id>/history')
@@ -664,4 +680,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='192.168.0.100', port=5000, debug=True)
