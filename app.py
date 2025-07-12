@@ -38,6 +38,7 @@ class Post(db.Model):
     history_relation = db.relationship('PostHistory', backref='original_post', cascade='all, delete-orphan', passive_deletes=True)
     reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     reference = db.relationship('Post', remote_side=[id], backref='patches')
+    featured = db.relationship('FeaturedPost', backref='feat_post', cascade='all, delete-orphan', passive_deletes=True)
 
 def dhaka_time():
     return datetime.utcnow() + timedelta(hours=6)
@@ -82,18 +83,16 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_ip = db.Column(db.String(45), nullable=False)  # Receiver's IP
     message = db.Column(db.Text, nullable=False)
-    related_post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+    related_post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='SET NULL'), nullable=True)
     is_read = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, default=dhaka_time)
     
 class FeaturedPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     link = db.Column(db.String(255), nullable=False)
     added_at = db.Column(db.DateTime, default=dhaka_time)
-    post = db.relationship('Post')
-
 
 # Utility function to create notifications
 def create_notification(user_ip, message, related_post_id=None):
