@@ -219,6 +219,15 @@ form, .posts {
     flex: 3;
 }
 
+@media print {
+    .forum-navbar, 
+    .print-btn, 
+    .notification-dropdown, 
+    .forum-footer {
+        display: none;
+    }
+}
+
 .sidebar {
     flex: 1;
     display: flex;

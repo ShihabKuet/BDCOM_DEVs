@@ -85,6 +85,15 @@ class Notification(db.Model):
     related_post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     is_read = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, default=dhaka_time)
+    
+class FeaturedPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    link = db.Column(db.String(255), nullable=False)
+    added_at = db.Column(db.DateTime, default=dhaka_time)
+    post = db.relationship('Post')
+
 
 # Utility function to create notifications
 def create_notification(user_ip, message, related_post_id=None):
@@ -127,6 +136,19 @@ def delete_notification(notification_id):
         db.session.commit()
         return jsonify({'message': 'Notification deleted'}), 200
     return jsonify({'error': 'Not found'}), 404
+
+@app.route('/api/featured_posts')
+def get_featured_posts():
+    featured = FeaturedPost.query.order_by(FeaturedPost.added_at.desc()).limit(2).all()
+    return jsonify([
+        {'id': f.id, "title": f.title, "link": f.link}
+        for f in featured
+    ])
+    
+@app.route('/api/all_posts')
+def get_all_posts():
+    posts = Post.query.order_by(Post.id.desc()).all()
+    return jsonify([{"id": p.id, "title": p.title} for p in posts])
 
 @app.route('/notices')
 def get_notices():
@@ -667,6 +689,46 @@ def update_or_delete_post(post_id):
         post.last_modified_ip = user_ip
         db.session.commit()
         return jsonify({'message': 'Updated'}), 200
+    
+@app.route('/admin/featured_posts', methods=['POST'])
+def add_featured_post():
+    # if request.remote_addr != ADMIN_IP:
+    #     return jsonify({'error': 'Unauthorized'}), 403
+    
+    data = request.get_json()
+    post_id = data.get('post_id')
+    title = data.get('title')
+    link = data.get('link')
+
+    # Check if already exists
+    existing = FeaturedPost.query.filter_by(post_id=post_id).first()
+    if existing:
+        return jsonify({'message': 'Already featured'}), 200
+
+    featured = FeaturedPost(post_id=post_id, title=title, link=link)
+    db.session.add(featured)
+    db.session.commit()
+
+    return jsonify({'message': 'Featured post added'}), 201
+
+
+@app.route('/admin/featured_posts/<int:fid>', methods=['DELETE'])
+def delete_featured_post(fid):
+    # if request.remote_addr != ADMIN_IP:
+    #     return jsonify({'error': 'Unauthorized'}), 403
+    
+    featured = FeaturedPost.query.get_or_404(fid)
+    db.session.delete(featured)
+    db.session.commit()
+    return jsonify({'message': 'Deleted'})
+
+
+@app.route('/admin/manage_featured')
+def admin_manage_featured():
+    # if not is_admin():
+    #     abort(403)
+    return render_template('admin_featured.html')
+
 #only for admin ends
 
 @app.route('/terms')

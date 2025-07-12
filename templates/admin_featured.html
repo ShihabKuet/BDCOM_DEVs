@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Manage Featured Posts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_featured.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>🚀 Manage Featured Posts</h2>
+        
+        <div>
+            <select id="postSelector">
+                <option value="">-- Select a post to feature --</option>
+            </select>
+            <button onclick="addFeatured()">Add Featured Post</button>
+        </div>
+
+        <h3>🌟 Current Featured Posts</h3>
+        <ul id="featuredList"></ul>
+    </div>
+
+    <script>
+        async function loadPosts() {
+            const res = await fetch('/api/all_posts');  // you'll create this
+            const posts = await res.json();
+            const selector = document.getElementById('postSelector');
+            selector.innerHTML = `<option value="">-- Select a post to feature --</option>` +
+                posts.map(p => `<option value="${p.id}">${p.title}</option>`).join('');
+        }
+
+        async function loadFeatured() {
+            const res = await fetch('/api/featured_posts');
+            const data = await res.json();
+            const list = document.getElementById('featuredList');
+            list.innerHTML = data.map(f => `
+                <li>
+                    <span><strong>${f.title}</strong> - <a href="${f.link}" target="_blank">${f.link}</a></span>
+                    <button onclick="deleteFeatured('${f.id}')">Delete</button>
+                </li>
+            `).join('');
+        }
+
+        async function addFeatured() {
+            const selector = document.getElementById('postSelector');
+            const postId = selector.value;
+            const postTitle = selector.options[selector.selectedIndex].text;
+            if (!postId) return alert('Select a post to feature');
+
+            await fetch('/admin/featured_posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_id: postId, title: postTitle, link: `/posts/${postId}` })
+            });
+            loadFeatured();
+        }
+
+        async function deleteFeatured(id) {
+            await fetch(`/admin/featured_posts/${id}`, { method: 'DELETE' });
+            loadFeatured();
+        }
+
+        loadPosts();
+        loadFeatured();
+    </script>
+</body>
+</html>
