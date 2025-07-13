@@ -39,6 +39,8 @@ class Post(db.Model):
     reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     reference = db.relationship('Post', remote_side=[id], backref='patches')
     featured = db.relationship('FeaturedPost', backref='feat_post', cascade='all, delete-orphan', passive_deletes=True)
+    followers = db.relationship('PostFollow', backref='followed_post', cascade='all, delete-orphan', passive_deletes=True)
+
 
 def dhaka_time():
     return datetime.utcnow() + timedelta(hours=6)
@@ -93,6 +95,13 @@ class FeaturedPost(db.Model):
     title = db.Column(db.String(255), nullable=False)
     link = db.Column(db.String(255), nullable=False)
     added_at = db.Column(db.DateTime, default=dhaka_time)
+    
+class PostFollow(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
+    follower_ip = db.Column(db.String(45), nullable=False)
+    __table_args__ = (db.UniqueConstraint('post_id', 'follower_ip', name='unique_post_follow'),)
+
 
 # Utility function to create notifications
 def create_notification(user_ip, message, related_post_id=None):
@@ -274,6 +283,24 @@ def get_user_ips():
     return jsonify([
         {'ip': u.ip_address, 'username': u.username} for u in all_users
     ])
+    
+@app.route('/follow/<int:post_id>', methods=['POST'])
+def toggle_follow(post_id):
+    post = Post.query.get_or_404(post_id)
+    user_ip = request.remote_addr
+
+    existing = PostFollow.query.filter_by(post_id=post_id, follower_ip=user_ip).first()
+
+    if existing:
+        db.session.delete(existing)
+        db.session.commit()
+        return jsonify({'followed': False}), 200
+    else:
+        new_follow = PostFollow(post_id=post_id, follower_ip=user_ip)
+        db.session.add(new_follow)
+        db.session.commit()
+        return jsonify({'followed': True}), 201
+
 
 @app.route('/posts', methods=['GET', 'POST'])
 def posts():
@@ -417,7 +444,8 @@ def get_post(post_id):
     history_count = PostHistory.query.filter_by(post_id=post.id).count() # To render 'see edit history' or not
     current_ip = request.remote_addr  # Get current user's IP
     known_user = db.session.query(UserIP).filter_by(ip_address=current_ip).first()
-    return render_template('post.html', post=post, current_ip=current_ip, admin_ip=ADMIN_IP, history_count=history_count, known_user=known_user.username if known_user else None)
+    is_following = PostFollow.query.filter_by(post_id=post.id, follower_ip=request.remote_addr).first() is not None
+    return render_template('post.html', post=post, current_ip=current_ip, admin_ip=ADMIN_IP, history_count=history_count, is_following=is_following, known_user=known_user.username if known_user else None)
 
 @app.route("/similar-posts/<int:post_id>")
 def get_similar_posts(post_id):
@@ -608,6 +636,16 @@ def add_comment(post_id):
             f"💬 <strong>{commenter_name}</strong> gave feedback on your post <strong>{post.title}</strong>"
         )
         create_notification(post.ip_address, message, post.id)
+        
+    # Notify all followers except who commented
+    followers = PostFollow.query.filter(
+        PostFollow.post_id == post.id,
+        PostFollow.follower_ip != user_ip
+    ).all()
+
+    for follower in followers:
+        message = f"🔔 A post you follow (<strong>{post.title}</strong>) has got a feedback"
+        create_notification(follower.follower_ip, message, post.id)
 
     return jsonify({'message': 'Comment added successfully'}), 201
 

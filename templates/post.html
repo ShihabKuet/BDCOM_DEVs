@@ -19,7 +19,27 @@
         <h1>{{ post.title }}</h1>
         <div class="post-header-actions">
             <div class="{{ post.type|lower }} post-type">{{ post.type.upper() }}</div>
-            <button id="followBtn" class="follow-button">⭐ Follow</button>
+            <button id="followBtn" class="follow-button">
+                {{ '✅ Following' if is_following else '⭐ Follow' }}
+            </button>
+            <script>
+                document.getElementById('followBtn').addEventListener('click', function() {
+                    fetch('/follow_post/{{ post.id }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: '{{ "unfollow" if is_following else "follow" }}' })
+                    }).then(response => response.json())
+                      .then(data => {
+                          if (data.success) {
+                              this.textContent = data.new_text;
+                          } else {
+                              alert('Error: ' + data.message);
+                          }
+                      });
+                });
+            </script>   
         </div>
         <br><br>
         <div class="post-meta-flex">
@@ -160,6 +180,17 @@
         document.querySelectorAll('pre.ql-syntax').forEach((block) => {
         hljs.highlightElement(block);
         });
+    });
+
+    // Follow/Unfollow button
+    document.getElementById('followBtn').addEventListener('click', async () => {
+        const res = await fetch(`/follow/{{ post.id }}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.followed) {
+            document.getElementById('followBtn').innerText = '✅ Following';
+        } else {
+            document.getElementById('followBtn').innerText = '⭐ Follow';
+        }
     });
     </script>
 
