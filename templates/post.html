@@ -19,9 +19,11 @@
         <h1>{{ post.title }}</h1>
         <div class="post-header-actions">
             <div class="{{ post.type|lower }} post-type">{{ post.type.upper() }}</div>
+            {% if post.ip_address != current_ip %}
             <button id="followBtn" class="follow-button">
                 {{ '✅ Following' if is_following else '⭐ Follow' }}
             </button>
+            {% endif %}
             <script>
                 document.getElementById('followBtn').addEventListener('click', function() {
                     fetch('/follow_post/{{ post.id }}', {

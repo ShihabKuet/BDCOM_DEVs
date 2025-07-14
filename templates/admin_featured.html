@@ -3,9 +3,12 @@
 <head>
     <title>Admin - Manage Featured Posts</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_featured.css') }}">
 </head>
 <body>
+    {% include 'navbar.html' %}
     <div class="container">
         <h2>🚀 Manage Featured Posts</h2>
         
@@ -19,6 +22,8 @@
         <h3>🌟 Current Featured Posts</h3>
         <ul id="featuredList"></ul>
     </div>
+    <a href="{{ url_for('admin_dashboard') }}" class="back-admin-link">← Back to Admin Dashboard</a>
+    {% include 'footer.html' %}
 
     <script>
         async function loadPosts() {
