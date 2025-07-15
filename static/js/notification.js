@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                         `).join('')}
                     </div>
+                    <div style="text-align:center; margin-top: 8px;">
+                        <a href="/all_notifications" style="font-size: 12px; color:rgb(55, 87, 19); background-color:rgb(232, 228, 255)">View All Logs</a>
+                    </div>                    
                 `;
 
                 // Attach Clear All event if button exists

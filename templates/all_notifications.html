@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Logs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+</head>
+<body class="notifications-body">
+    {% include 'navbar.html' %}
+    <div class="notification-container">
+        <div class="notification-title">All Logs</div>
+        {% if notifications %}
+            <div style="text-align: right; margin-bottom: 10px;">
+                <button id="deleteAllBtn" class="clear-btn">🗑️ Delete All</button>
+            </div>
+            {% for n in notifications %}
+                <div class="all-notification-item {% if not n.is_read %}unread{% endif %}">
+                    {% if n.related_post_id %}
+                        <a href="/posts/{{ n.related_post_id }}">{{ n.message | safe }}</a>
+                    {% else %}
+                        {{ n.message | safe }}
+                    {% endif %}
+                    <div class="all-notification-time">{{ n.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <button class="notification-delete" data-id="{{ n.id }}" title="Delete">🗑️</button>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No notifications found.</p>
+        {% endif %}
+    </div>
+
+    <div class="back-link-container">
+        <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="confirm-modal-overlay">
+        <div class="confirm-modal">
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="confirm-actions">
+                <button id="confirmYes" class="confirm-btn yes">Yes</button>
+                <button id="confirmNo" class="confirm-btn no">No</button>
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('confirmModal');
+            const messageBox = document.getElementById('confirmMessage');
+            const yesBtn = document.getElementById('confirmYes');
+            const noBtn = document.getElementById('confirmNo');
+
+            function showConfirm(message) {
+                return new Promise((resolve) => {
+                    messageBox.textContent = message;
+                    modal.style.display = 'flex';
+
+                    // Define the handlers
+                    const handleYes = () => {
+                        cleanup();
+                        resolve(true);
+                    };
+
+                    const handleNo = () => {
+                        cleanup();
+                        resolve(false);
+                    };
+
+                    function cleanup() {
+                        modal.style.display = 'none';
+                        yesBtn.removeEventListener('click', handleYes);
+                        noBtn.removeEventListener('click', handleNo);
+                    }
+
+                    // Attach fresh listeners each time
+                    yesBtn.addEventListener('click', handleYes);
+                    noBtn.addEventListener('click', handleNo);
+                });
+            }
+
+            // Delete single notification
+            document.querySelectorAll('.notification-delete').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    const confirmed = await showConfirm("Delete this notification?");
+                    if (!confirmed) return;
+
+                    try {
+                        const res = await fetch(`/notifications/${id}`, { method: 'DELETE' });
+                        if (res.ok) location.reload();
+                    } catch (err) {
+                        console.error("Delete failed", err);
+                    }
+                });
+            });
+
+            // Delete all
+            document.getElementById('deleteAllBtn')?.addEventListener('click', async () => {
+                const confirmed = await showConfirm("Delete all notifications?");
+                if (!confirmed) return;
+
+                try {
+                    const res = await fetch('/notifications/clear', { method: 'DELETE' });
+                    if (res.ok) location.reload();
+                } catch (err) {
+                    console.error("Delete all failed", err);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

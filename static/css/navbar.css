@@ -239,7 +239,7 @@
     background: white;
     border: 1px solid #ccc;
     width: 350px;
-    max-height: 350px;
+    max-height: 400px;
     overflow-y: auto;
     display: none;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.15);

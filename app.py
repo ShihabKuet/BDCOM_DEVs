@@ -158,6 +158,12 @@ def delete_notification(notification_id):
         return jsonify({'message': 'Notification deleted'}), 200
     return jsonify({'error': 'Not found'}), 404
 
+@app.route('/all_notifications')
+def all_notifications():
+    ip = request.remote_addr
+    notifications = Notification.query.filter_by(user_ip=ip).order_by(Notification.timestamp.desc()).all()
+    return render_template('all_notifications.html', notifications=notifications)
+
 @app.route('/api/featured_posts')
 def get_featured_posts():
     featured = FeaturedPost.query.order_by(FeaturedPost.added_at.desc()).limit(2).all()
@@ -835,4 +841,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='192.168.100.133', port=5005, debug=True)

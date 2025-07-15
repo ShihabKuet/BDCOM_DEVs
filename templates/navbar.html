@@ -39,10 +39,21 @@
 "></div>
 
 <script>
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 4000);
-}
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 4000);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const hamburger = document.getElementById("hamburger");
+        const navMenu = document.getElementById("navMenu");
+
+        if (hamburger && navMenu) {
+            hamburger.addEventListener("click", () => {
+                navMenu.classList.toggle("show");
+            });
+        }
+    });
 </script>
