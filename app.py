@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
+from flask_migrate import Migrate
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import true
 from datetime import datetime, timedelta
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWOR
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app,db)
 
 ADMIN_IP = '192.168.100.133'
 
@@ -38,6 +40,7 @@ class Post(db.Model):
     history_relation = db.relationship('PostHistory', backref='original_post', cascade='all, delete-orphan', passive_deletes=True)
     reference_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     reference = db.relationship('Post', remote_side=[id], backref='patches')
+    notifications = db.relationship('Notification', backref='post', passive_deletes=True)
     featured = db.relationship('FeaturedPost', backref='feat_post', cascade='all, delete-orphan', passive_deletes=True)
     followers = db.relationship('PostFollow', backref='followed_post', cascade='all, delete-orphan', passive_deletes=True)
 
@@ -762,8 +765,8 @@ def delete_featured_post(fid):
 
 @app.route('/admin/manage_featured')
 def admin_manage_featured():
-    # if not is_admin():
-    #     abort(403)
+    if not is_admin():
+        abort(403)
     return render_template('admin_featured.html')
 
 #only for admin ends
@@ -779,4 +782,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.0.100', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
