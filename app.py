@@ -4,8 +4,9 @@ from flask import abort
 from flask_migrate import Migrate
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import true
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from html_diff import diff as html_diff
+from threading import Thread
 import os
 
 app = Flask(__name__)
@@ -47,7 +48,7 @@ class Post(db.Model):
 
 
 def dhaka_time():
-    return datetime.utcnow() + timedelta(hours=6)
+    return datetime.now() + timedelta(hours=6)
 
 class PostHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -490,6 +491,26 @@ def apply_yellow_highlight(diff_text):
         .replace('<ins>', '<ins style="background-color: yellow;">')
         .replace('<del>', '<del style="background-color: #ffeeba; text-decoration: line-through;">'))
 
+def save_post_history_async(post_id, old_title, old_content, new_title, new_content, new_type, new_category, edited_by, edited_by_ip):
+    with app.app_context():            # ✅ this is required in threads: ensures db.session and current_app are bound properly.
+        raw_title_diff = html_diff(old_title or "", new_title or "")
+        raw_content_diff = html_diff(old_content or "", new_content or "")
+
+        highlighted_title = apply_yellow_highlight(raw_title_diff)
+        highlighted_content = apply_yellow_highlight(raw_content_diff)
+
+        history = PostHistory(
+            post_id=post_id,
+            title=highlighted_title,
+            content=highlighted_content,
+            type=new_type,
+            category=new_category,
+            edited_by=edited_by,
+            edited_by_ip=edited_by_ip
+        )
+        db.session.add(history)
+        db.session.commit()
+
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -502,11 +523,11 @@ def update_post(post_id):
     new_category=data.get('category', post.category)
 
     # Use html_diff to get basic <ins>/<del> diff
-    raw_title_diff = html_diff(post.title or "", new_title or "")
-    raw_content_diff = html_diff(post.content or "", new_content or "")
+    # raw_title_diff = html_diff(post.title or "", new_title or "")
+    # raw_content_diff = html_diff(post.content or "", new_content or "")
 
-    highlighted_title = apply_yellow_highlight(raw_title_diff)
-    highlighted_content = apply_yellow_highlight(raw_content_diff)
+    # highlighted_title = apply_yellow_highlight(raw_title_diff)
+    # highlighted_content = apply_yellow_highlight(raw_content_diff)
 
     # Check if any field has changed
     if (
@@ -518,18 +539,27 @@ def update_post(post_id):
         return jsonify({'message': 'Nothing is modified'}), 200
 
     # Save history before changing
-    history = PostHistory(
-        post_id=post.id,
-        title=highlighted_title,
-        content=highlighted_content,
-        type=new_type,
-        category=new_category,
-        edited_by=data.get('last_modified_by', post.last_modified_by),
-        edited_by_ip=request.remote_addr
-    )
-    db.session.add(history)
+    # history = PostHistory(
+    #     post_id=post.id,
+    #     title=highlighted_title,
+    #     content=highlighted_content,
+    #     type=new_type,
+    #     category=new_category,
+    #     edited_by=data.get('last_modified_by', post.last_modified_by),
+    #     edited_by_ip=request.remote_addr
+    # )
+    # db.session.add(history)
+    editor = data.get('last_modified_by', post.last_modified_by)
+    editor_ip = request.remote_addr
 
     old_title = post.title # keep old title for notification
+    old_content = post.content
+
+    Thread(target=save_post_history_async, args=(
+        post.id, old_title, old_content,
+        new_title, new_content, new_type, new_category,
+        editor, editor_ip
+    )).start() 
     
     # Apply updates
     post.title = new_title
