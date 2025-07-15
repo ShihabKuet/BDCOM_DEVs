@@ -6,6 +6,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.sql import true
 from datetime import datetime, timedelta
 from html_diff import diff as html_diff
+import os
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
@@ -105,6 +106,14 @@ class PostFollow(db.Model):
     follower_ip = db.Column(db.String(45), nullable=False)
     __table_args__ = (db.UniqueConstraint('post_id', 'follower_ip', name='unique_post_follow'),)
 
+def load_app_version():
+    with open('version') as f:
+        for line in f:
+            if line.startswith('APP_VERSION'):
+                return line.strip().split('=')[1]
+    return "0.0.0"
+
+APP_VERSION = load_app_version()
 
 # Utility function to create notifications
 def create_notification(user_ip, message, related_post_id=None):
@@ -222,7 +231,10 @@ def is_admin():
 
 @app.context_processor
 def inject_year():
-    return {'current_year': datetime.now().year}
+    return {
+        'current_year': datetime.now().year,
+        'app_version': APP_VERSION
+    }
 
 @app.route('/')
 def index():
@@ -535,6 +547,17 @@ def update_post(post_id):
             f"✏️ Your post <strong>{old_title}</strong> has been modified by <strong>{post.last_modified_by}</strong>"
         )
         create_notification(post.ip_address, message, post.id)
+
+    # Notify all followers except who edited
+    followers = PostFollow.query.filter(
+        PostFollow.post_id == post.id,
+        PostFollow.follower_ip != post.last_modified_ip
+    ).all()
+
+    for follower in followers:
+        message = f"🔔 A post you follow (<strong>{old_title}</strong>) has beed modified by <strong>{post.last_modified_by}</strong>"
+        create_notification(follower.follower_ip, message, post.id)
+
     return jsonify({'message': 'Post updated successfully'}), 200
 
 @app.route('/posts/<int:post_id>/history')
