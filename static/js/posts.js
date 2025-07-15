@@ -62,7 +62,8 @@ async function deletePost(postId) {
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
     if (pendingDeletePostId !== null) {
-        await fetch(`/posts/${pendingDeletePostId}`, { method: 'DELETE' });
+        // await fetch(`/posts/${pendingDeletePostId}`, { method: 'DELETE' });
+        await fetch(`/posts/${pendingDeletePostId}/soft_delete`, { method: 'PATCH' });
         window.location.href = '/';
     }
 });

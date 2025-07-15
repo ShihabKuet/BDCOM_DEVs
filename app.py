@@ -45,7 +45,7 @@ class Post(db.Model):
     notifications = db.relationship('Notification', backref='post', passive_deletes=True)
     featured = db.relationship('FeaturedPost', backref='feat_post', cascade='all, delete-orphan', passive_deletes=True)
     followers = db.relationship('PostFollow', backref='followed_post', cascade='all, delete-orphan', passive_deletes=True)
-
+    is_visible = db.Column(db.Boolean, default=True)
 
 def dhaka_time():
     return datetime.now() + timedelta(hours=6)
@@ -409,7 +409,7 @@ def search():
     per_page = int(request.args.get('per_page', 10))
     user_ip = request.remote_addr
 
-    filters = []
+    filters = [Post.is_visible == True]
 
     # Add search query filter if present
     if query:
@@ -453,12 +453,31 @@ def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     requester_ip = request.remote_addr
 
-    if requester_ip == post.ip_address or requester_ip == '192.168.100.133':
+    if requester_ip == post.ip_address or requester_ip == ADMIN_IP:
         db.session.delete(post)
         db.session.commit()
         return jsonify({'message': 'Post deleted successfully'}), 200
     else:
         return jsonify({'error': 'Unauthorized to delete this post'}), 403
+
+@app.route('/posts/<int:post_id>/soft_delete', methods=['PATCH'])
+def soft_delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.is_visible = False
+    db.session.commit()
+    return jsonify({'message': 'Post soft-deleted'}), 200
+
+@app.route('/posts/<int:post_id>/recover', methods=['PATCH'])
+def recover_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.is_visible = True
+    db.session.commit()
+    return jsonify({'message': 'Post recovered'}), 200
+
+@app.route('/admin/deleted_posts')
+def view_deleted_posts():
+    deleted_posts = Post.query.filter_by(is_visible=False).order_by(Post.id.desc()).all()
+    return render_template('admin_deleted_posts.html', posts=deleted_posts)
 
 @app.route('/posts/<int:post_id>')
 def get_post(post_id):
@@ -743,13 +762,14 @@ def admin_dashboard():
     total_comments = Comment.query.count()
     total_users = UserIP.query.count()
     total_notices = Notice.query.count()
+    total_invisible_posts = Post.query.filter_by(is_visible=False).count()
 
     return render_template('admin_dashboard.html',
                            total_posts=total_posts,
                            total_comments=total_comments,
                            total_users=total_users,
-                           total_notices=total_notices)
-
+                           total_notices=total_notices,
+                           total_invisible_posts=total_invisible_posts)
 
 @app.route('/admin/posts')
 def admin_posts():

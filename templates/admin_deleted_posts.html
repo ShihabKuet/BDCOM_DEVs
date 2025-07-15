@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deleted Posts - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_deleted_posts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="admin-container">
+        <h1>🗑️ Deleted Posts</h1>
+        {% if posts %}
+            <ul class="deleted-posts-list">
+                {% for post in posts %}
+                <li class="deleted-post">
+                    <h3>{{ post.id }}: {{ post.title }}</h3>
+                    <p><strong>Submitted by:</strong> {{ post.submitted_by }}</p>
+                    <p><strong>Category:</strong> {{ post.category }}</p>
+                    <div class="admin-actions">
+                        <button onclick="recoverPost({{ post.id }})">♻️ Recover</button>
+                        <button onclick="deletePostForever({{ post.id }})" style="background: crimson;">🗑️ Delete Forever</button>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No deleted posts found.</p>
+        {% endif %}
+        {% include 'footer.html' %}
+    </div>
+
+    <script>
+    async function recoverPost(postId) {
+        if (confirm('Recover this post?')) {
+            const res = await fetch(`/posts/${postId}/recover`, { method: 'PATCH' });
+            const data = await res.json();
+            alert(data.message);
+            location.reload();
+        }
+    }
+
+    async function deletePostForever(postId) {
+        if (confirm('This will permanently delete the post. Are you sure?')) {
+            const res = await fetch(`/posts/${postId}`, { method: 'DELETE' });
+            const data = await res.json();
+            alert(data.message);
+            location.reload();
+        }
+    }
+    </script>
+
+</body>
+</html>
