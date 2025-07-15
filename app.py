@@ -465,6 +465,13 @@ def soft_delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     post.is_visible = False
     db.session.commit()
+
+    # Send notification to user containing post.id after soft delete 
+    message = (
+        f"🗑️ Your post <strong>{post.title}</strong> has been deleted. Remember POST ID: <strong>{post_id}</strong> in order to request recover."
+    )
+    create_notification(post.ip_address, message, None)
+
     return jsonify({'message': 'Post soft-deleted'}), 200
 
 @app.route('/posts/<int:post_id>/recover', methods=['PATCH'])
@@ -472,6 +479,13 @@ def recover_post(post_id):
     post = Post.query.get_or_404(post_id)
     post.is_visible = True
     db.session.commit()
+
+    # Send notification to user containing post.id after recover 
+    message = (
+        f"🗑️ Your post <strong>{post.title}</strong> (POST ID: <strong>{post_id}</strong>) has been recovered"
+    )
+    create_notification(post.ip_address, message, post.id)
+
     return jsonify({'message': 'Post recovered'}), 200
 
 @app.route('/admin/deleted_posts')
