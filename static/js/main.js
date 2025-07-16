@@ -170,16 +170,8 @@ async function loadPosts(query = '', category = '', page = 1) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const hamburger = document.getElementById("hamburger");
-    const navMenu = document.getElementById("navMenu");
 
     loadNotices();
-
-    if (hamburger && navMenu) {
-        hamburger.addEventListener("click", () => {
-            navMenu.classList.toggle("show");
-        });
-    }
 
     const quill = new Quill('#editor-container', {
         theme: 'snow'

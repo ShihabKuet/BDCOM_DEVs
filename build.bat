@@ -7,7 +7,7 @@ rmdir /S /Q dist
 del /Q app.spec
 
 REM Build the app
-pyinstaller --noconfirm --onefile ^
+pyinstaller --noconfirm --onefile --windowed ^
   --add-data "templates;templates" ^
   --add-data "static;static" ^
   app.py

@@ -375,6 +375,19 @@ def posts():
         )
         db.session.add(history)
         db.session.commit()
+
+        if reference_id:
+            followers = PostFollow.query.filter_by(post_id=reference_id).all()
+
+            ref_post = Post.query.get(reference_id)
+            for follower in followers:
+                if follower.follower_ip != request.remote_addr:
+                    message = (
+                        f"🔗 A new post <strong>{new_post.title}</strong> references a post you follow "
+                        f"(<strong>{ref_post.title}</strong>)."
+                    )
+                    create_notification(follower.follower_ip, message, new_post.id)
+
         return jsonify({'message': 'Post added successfully'}), 201
     else:
         # Pagination parameters
@@ -929,5 +942,5 @@ def exit_app(icon, item):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5005, debug=True)
+    app.run(host='127.0.0.1', port=5005, debug=True)
 
