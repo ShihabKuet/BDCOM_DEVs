@@ -1391,3 +1391,39 @@ form, .posts {
     transform: scale(0.98);
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
+
+.tip-of-day {
+    position: relative;
+    background: linear-gradient(135deg, #eaf6ff, #b0ffb4);
+    border-left: 6px solid #3399ff;
+    padding: 16px 24px;
+    margin: 24px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.tip-of-day h2 {
+    color: rgb(1, 1, 189);
+}
+
+.tip-of-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.15);
+}
+
+.tip-of-day::before {
+    display: block;
+    font-weight: bold;
+    color: #007bff;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.tip-of-day p {
+    margin: 0;
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+}
+

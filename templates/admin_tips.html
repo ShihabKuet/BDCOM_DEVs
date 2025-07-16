@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Tips - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_tips.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <h1>💡 Manage Tips</h1>
+
+    <form method="POST">
+        <textarea name="tip" placeholder="Enter a new tip..." required></textarea><br>
+        <button type="submit">➕ Add Tip</button>
+    </form>
+
+    <hr>
+
+    <h2>All Tips</h2>
+    <ul>
+        {% for tip in tips %}
+        <li>
+            <span>{{ tip.tip_message }}</span>
+            <form method="POST" action="{{ url_for('delete_tip', tip_id=tip.id) }}" onsubmit="return confirm('Delete this tip?')">
+                <button title="Delete">🗑️</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('admin_dashboard') }}" class="back-admin-link">← Back to Admin Dashboard</a>
+    {% include 'footer.html' %}
+</body>
+</html>

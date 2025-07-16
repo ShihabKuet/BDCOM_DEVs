@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
 from flask_migrate import Migrate
@@ -7,8 +7,11 @@ from sqlalchemy.sql import true
 from datetime import datetime, timedelta, timezone
 from html_diff import diff as html_diff
 from threading import Thread
+from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 import os
+import webbrowser
+import random
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
@@ -107,6 +110,11 @@ class PostFollow(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
     follower_ip = db.Column(db.String(45), nullable=False)
     __table_args__ = (db.UniqueConstraint('post_id', 'follower_ip', name='unique_post_follow'),)
+
+class Tip(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tip_message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=dhaka_time)
 
 def load_app_version():
     with open('version') as f:
@@ -872,6 +880,36 @@ def admin_manage_featured():
 
 #only for admin ends
 
+@app.route('/admin/tips', methods=['GET', 'POST'])
+def manage_tips():
+    if request.method == 'POST':
+        tip_msg = request.form.get('tip')
+        if tip_msg:
+            new_tip = Tip(tip_message=tip_msg)
+            db.session.add(new_tip)
+            db.session.commit()
+    tips = Tip.query.order_by(Tip.id.desc()).all()
+    return render_template('admin_tips.html', tips=tips)
+
+
+@app.route('/admin/tips/delete/<int:tip_id>', methods=['POST'])
+def delete_tip(tip_id):
+    tip = Tip.query.get_or_404(tip_id)
+    db.session.delete(tip)
+    db.session.commit()
+    return redirect(url_for('manage_tips'))
+
+
+@app.route('/daily_tip')
+def daily_tip():
+    tips = Tip.query.all()
+    if not tips:
+        return jsonify({"tip": "Stay motivated! 🚀"})
+    
+    # Deterministically rotate tip per day using day of year
+    index = datetime.now().timetuple().tm_yday % len(tips)
+    return jsonify({"tip": tips[index].tip_message})
+
 @app.route('/terms')
 def terms():
     return render_template('terms.html')
@@ -880,7 +918,16 @@ def terms():
 def why_bdf():
     return render_template('why_bdf.html')
 
+# Tray menu actions
+def open_browser(icon, item):
+    webbrowser.open("http://localhost:5005")
+
+def exit_app(icon, item):
+    icon.stop()
+    os._exit(0)  # force quit all threads
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.100.133', port=5005, debug=True)
+    app.run(host='0.0.0.0', port=5005, debug=True)
+
