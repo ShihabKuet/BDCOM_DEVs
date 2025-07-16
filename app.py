@@ -7,6 +7,7 @@ from sqlalchemy.sql import true
 from datetime import datetime, timedelta, timezone
 from html_diff import diff as html_diff
 from threading import Thread
+from PIL import Image, ImageDraw
 import os
 
 app = Flask(__name__)
@@ -115,6 +116,13 @@ def load_app_version():
     return "0.0.0"
 
 APP_VERSION = load_app_version()
+
+# Create a small icon (or load your own)
+def create_image():
+    img = Image.new('RGB', (64, 64), color='blue')
+    d = ImageDraw.Draw(img)
+    d.text((10, 20), "BDF", fill="white")
+    return img
 
 # Utility function to create notifications
 def create_notification(user_ip, message, related_post_id=None):
@@ -875,4 +883,4 @@ def why_bdf():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5005, debug=True)
+    app.run(host='192.168.100.133', port=5005, debug=True)

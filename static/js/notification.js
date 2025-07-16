@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Polling every 60 seconds
-    setInterval(() => fetchNotifications(true), 60000);
+    // Polling every 30 seconds
+    setInterval(() => fetchNotifications(true), 30000);
 
     // Initial fetch
     fetchNotifications();
