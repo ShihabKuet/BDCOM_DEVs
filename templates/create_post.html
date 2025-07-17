@@ -47,7 +47,9 @@
 
             <label for="title">Post Title:</label>
             <input type="text" id="title" placeholder="Enter post title" required>
-
+            <div id="title-warning" class="title-warning" style="color: red; display: none; font-size: 0.9em;">
+                Title should not exceed 140 characters.
+            </div>
             <label for="type" class="type-label">What are you posting? <a href="/bdf_manual#what-is-query-patch" target="_blank" class="info-tooltip" title="Learn about Query and Patch">?</a></label>
             <div class="radio-group-modern">
                 <label class="radio-option">

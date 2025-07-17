@@ -25,6 +25,12 @@ function stripHTML(html) {
     return tmp.textContent || tmp.innerText || "";
 }
 
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.innerText = text;
+    return div.innerHTML;
+}
+
 function renderPaginationControls(currentPage, totalPages, query, category) {
     const container = document.getElementById('paginationControls');
     container.innerHTML = '';
@@ -76,7 +82,7 @@ async function loadPosts(query = '', category = '', page = 1) {
                 <div class="card">
                     <div class="post">
                         <div class="post-header">
-                            <h3><a href="/posts/${post.id}">${post.title}</a></h3>
+                            <h3><a href="/posts/${post.id}">${escapeHtml(post.title)}</a></h3>
                             <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>
                         </div>
                         <div class="post-content">

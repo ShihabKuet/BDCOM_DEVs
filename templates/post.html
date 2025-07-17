@@ -78,7 +78,10 @@
 
         <form id="editForm" class="filter-form" style="display:none;" onsubmit="submitEdit(event, {{ post.id }})">
             <h1>Modify</h1>
-            <input type="text" id="editTitle" value="{{ post.title }}" required><br><br>
+            <input type="text" id="editTitle" value="{{ post.title }}" required>
+            <div id="title-warning" class="title-warning" style="color: red; display: none; font-size: 0.9em;">
+                Title should not exceed 140 characters.
+            </div><br><br>
             <!-- Hidden preloaded HTML for JavaScript to set into Quill -->
             <div id="editContentRaw" style="display: none;">{{ post.content|safe }}</div>
             <!-- Quill editor container : for fixed height, try style-->
@@ -142,7 +145,7 @@
             <div id="comments-container"></div>
 
             <form id="commentForm">
-                <textarea id="commentContent" placeholder="Write a feedback..." required></textarea><br>
+                <textarea id="commentContent" placeholder="Write a feedback..." style="resize: none;" required></textarea><br>
                 <button type="submit">Give Feedback</button>
             </form>
         </div>
@@ -154,7 +157,7 @@
             </div>
         </div>
     </div>
-    
+
 {% else %}
     <h1>Request to admin to recover your post</h1>
 {% endif %}

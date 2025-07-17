@@ -32,7 +32,7 @@ ADMIN_IP = '192.168.100.133'
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
+    title = db.Column(db.String(180))
     content = db.Column(db.Text)
     type = db.Column(db.String(10))  # "Query" or "Patch"
     category = db.Column(db.String(20)) 
@@ -942,5 +942,5 @@ def exit_app(icon, item):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='127.0.0.1', port=5005, debug=True)
+    app.run(host='0.0.0.0', port=5005, debug=True)
 

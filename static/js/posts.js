@@ -18,6 +18,12 @@ function cancelEdit() {
     document.getElementById('editForm').style.display = 'none';
 }
 
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.innerText = text;
+    return div.innerHTML;
+}
+
 async function submitEdit(e, postId) {
     e.preventDefault();
 
@@ -82,7 +88,7 @@ async function loadComments(postId) {
     const container = document.getElementById('comments-container');
     container.innerHTML = comments.map((c, index) => `
         <div class="comment" data-id="${index}">
-            <p class="comment-content">${c.content}</p>
+            <p class="comment-content">${escapeHtml(c.content)}</p>
             <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
             ${c.ip_address === userIP.ip ? `
                 <div class="comment-actions">
@@ -199,6 +205,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contentHTML) {
         editQuill.root.innerHTML = contentHTML;
     }
+
+    // Title length warning
+    const editTitleInput = document.getElementById("editTitle");
+    const titleWarning = document.getElementById("title-warning");
+
+    if (editTitleInput && titleWarning) {
+        editTitleInput.addEventListener("input", () => {
+            if (editTitleInput.value.length > 140) {
+                titleWarning.style.display = "block";
+                editTitleInput.value = editTitleInput.value.slice(0, 140); // truncate
+            } else {
+                titleWarning.style.display = "none";
+            }
+        });
+    }    
 
     // Show Edit History
     const showHistoryBtn = document.getElementById('showHistoryBtn');

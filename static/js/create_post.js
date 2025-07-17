@@ -102,6 +102,20 @@ async function loadReferenceOptions() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const titleInput = document.getElementById('title');
+    const warning = document.getElementById('title-warning');
+    const charLimit = 140;
+
+    // Live check: block input beyond 160 characters
+    titleInput.addEventListener('input', () => {
+        if (titleInput.value.length > charLimit) {
+            warning.style.display = 'block';
+            titleInput.value = titleInput.value.substring(0, charLimit);
+        } else {
+            warning.style.display = 'none';
+        }
+    });
+
     const quill = new Quill('#editor-container', {
         theme: 'snow',
         modules: {
@@ -129,7 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('postForm').addEventListener('submit', async e => {
         e.preventDefault();
 
-        const title = document.getElementById('title').value.trim();
+        const title = titleInput.value.trim();
+        if (title.length > charLimit) {
+            warning.style.display = 'block';
+            return;
+        }
         const type = document.querySelector('input[name="type"]:checked').value;
         const category = document.getElementById('category').value;
         const content = quill.root.innerHTML;
