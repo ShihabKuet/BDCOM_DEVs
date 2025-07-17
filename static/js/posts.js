@@ -82,19 +82,45 @@ document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
 
 const COMMENT_PREVIEW_LENGTH = 150;  // Adjust as needed
 
+const COMMENTS_PER_BATCH = 5;
+let allComments = [];
+
 async function loadComments(postId) {
     const res = await fetch(`/comments/${postId}`);
-    const comments = await res.json();
+    allComments = (await res.json()).reverse();
     const userIP = await (await fetch('/my-ip')).json();
 
+    // Clear container before rendering
+    document.getElementById('comments-container').innerHTML = '';
+
+    renderCommentBatch(postId, 0, COMMENTS_PER_BATCH, userIP);
+
+    // Show or hide "Load More" button
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (allComments.length > COMMENTS_PER_BATCH) {
+        loadMoreBtn.style.display = 'block';
+    } else {
+        loadMoreBtn.style.display = 'none';
+    }
+
+    // Set current batch start
+    loadMoreBtn.dataset.batch = COMMENTS_PER_BATCH;
+}
+
+function renderCommentBatch(postId, start, end, userIP) {
     const container = document.getElementById('comments-container');
-    container.innerHTML = comments.map((c, index) => {
+    const fragment = document.createDocumentFragment();
+
+    for (let index = start; index < end && index < allComments.length; index++) {
+        const c = allComments[index];
         const isLong = c.content.length > COMMENT_PREVIEW_LENGTH;
         const previewText = isLong ? escapeHtml(c.content.substring(0, COMMENT_PREVIEW_LENGTH)) : escapeHtml(c.content);
         const fullText = escapeHtml(c.content);
 
-        return `
-        <div class="comment" data-id="${index}">
+        const commentEl = document.createElement('div');
+        commentEl.className = 'comment';
+        commentEl.dataset.id = index;
+        commentEl.innerHTML = `
             <p class="comment-content" id="comment-content-${index}">
                 ${previewText}${isLong ? `<span id="ellipsis-${index}">…</span>` : ''}
                 <span id="full-text-${index}" style="display:none;">${fullText.substring(COMMENT_PREVIEW_LENGTH)}</span>
@@ -112,23 +138,42 @@ async function loadComments(postId) {
                         <button type="button" class="save-btn" onclick="submitCommentEdit(event, ${index}, ${postId})">💾 Save</button>
                         <button type="button" class="cancel-btn" onclick="cancelEditComment(${index})">✖ Cancel</button>
                     </div>
-                </div>
-            ` : ''}
-        </div>
+                </div>` : ''}
         `;
-    }).join('');
+        fragment.appendChild(commentEl);
+    }
 
-    // Add toggle event listeners after rendering
-    comments.forEach((_, index) => {
-        const toggleBtn = document.getElementById(`toggle-btn-${index}`);
+    container.appendChild(fragment);
+
+    // Attach expand/collapse toggle listeners
+    for (let i = start; i < end && i < allComments.length; i++) {
+        const toggleBtn = document.getElementById(`toggle-btn-${i}`);
         if (toggleBtn) {
             toggleBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                toggleCommentExpand(index);
+                toggleCommentExpand(i);
             });
         }
-    });
+    }
 }
+
+document.getElementById('load-more-btn').addEventListener('click', () => {
+    const postId = window.location.pathname.split('/').pop();
+    const start = parseInt(document.getElementById('load-more-btn').dataset.batch);
+    const end = start + COMMENTS_PER_BATCH;
+    document.getElementById('load-more-btn').dataset.batch = end;
+
+    fetch('/my-ip')
+        .then(res => res.json())
+        .then(userIP => {
+            renderCommentBatch(postId, start, end, userIP);
+
+            if (end >= allComments.length) {
+                document.getElementById('load-more-btn').style.display = 'none';
+            }
+        });
+});
+
 
 function toggleCommentExpand(index) {
     const ellipsis = document.getElementById(`ellipsis-${index}`);
@@ -209,11 +254,17 @@ async function submitCommentEdit(e, index, postId) {
     loadComments(postId);
 }
 
+// async function getCommentIdByIndex(postId, index) {
+//     const res = await fetch(`/comments/${postId}`);
+//     const comments = await res.json();
+//     return comments[index].id;  // you'll need to return `id` from backend!
+// }
+
 async function getCommentIdByIndex(postId, index) {
-    const res = await fetch(`/comments/${postId}`);
-    const comments = await res.json();
-    return comments[index].id;  // you'll need to return `id` from backend!
+    // use global allComments to avoid mismatches
+    return allComments[index].id;
 }
+
 
 document.getElementById('commentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
