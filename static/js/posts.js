@@ -80,30 +80,78 @@ document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
 });
 /* Delete post ends*/
 
+const COMMENT_PREVIEW_LENGTH = 150;  // Adjust as needed
+
 async function loadComments(postId) {
     const res = await fetch(`/comments/${postId}`);
     const comments = await res.json();
     const userIP = await (await fetch('/my-ip')).json();
 
     const container = document.getElementById('comments-container');
-    container.innerHTML = comments.map((c, index) => `
+    container.innerHTML = comments.map((c, index) => {
+        const isLong = c.content.length > COMMENT_PREVIEW_LENGTH;
+        const previewText = isLong ? escapeHtml(c.content.substring(0, COMMENT_PREVIEW_LENGTH)) : escapeHtml(c.content);
+        const fullText = escapeHtml(c.content);
+
+        return `
         <div class="comment" data-id="${index}">
-            <p class="comment-content">${escapeHtml(c.content)}</p>
+            <p class="comment-content" id="comment-content-${index}">
+                ${previewText}${isLong ? `<span id="ellipsis-${index}">…</span>` : ''}
+                <span id="full-text-${index}" style="display:none;">${fullText.substring(COMMENT_PREVIEW_LENGTH)}</span>
+                ${isLong ? `<a href="#" id="toggle-btn-${index}" class="expand-link">Expand</a>` : ''}
+            </p>
             <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
             ${c.ip_address === userIP.ip ? `
                 <div class="comment-actions">
-                    <button onclick="startEditComment(${index}, '${c.content.replace(/'/g, "\\'")}', ${postId})">✏️</button>
+                    <button onclick="startEditComment(${index}, ${postId})">✏️</button>
                     <button onclick="deleteComment(${index}, ${postId})">🗑️</button>
                 </div>
-                <form id="edit-comment-${index}" style="display:none;" onsubmit="submitCommentEdit(event, ${index}, ${postId})">
-                    <textarea id="edit-text-${index}" required>${c.content}</textarea>
-                    <button type="submit">Save</button>
-                    <button type="button" onclick="cancelEditComment(${index})">Cancel</button>
-                </form>
+                <div id="edit-comment-${index}" class="edit-comment-box">
+                    <textarea id="edit-text-${index}" class="edit-comment-text" required>${c.content}</textarea>
+                    <div class="edit-comment-actions">
+                        <button type="button" class="save-btn" onclick="submitCommentEdit(event, ${index}, ${postId})">💾 Save</button>
+                        <button type="button" class="cancel-btn" onclick="cancelEditComment(${index})">✖ Cancel</button>
+                    </div>
+                </div>
             ` : ''}
         </div>
-    `).join('');
+        `;
+    }).join('');
+
+    // Add toggle event listeners after rendering
+    comments.forEach((_, index) => {
+        const toggleBtn = document.getElementById(`toggle-btn-${index}`);
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleCommentExpand(index);
+            });
+        }
+    });
 }
+
+function toggleCommentExpand(index) {
+    const ellipsis = document.getElementById(`ellipsis-${index}`);
+    const fullText = document.getElementById(`full-text-${index}`);
+    const toggleBtn = document.getElementById(`toggle-btn-${index}`);
+
+    if (fullText.style.display === 'none') {
+        // Expand
+        fullText.style.display = 'inline';
+        ellipsis.style.display = 'none';
+        toggleBtn.innerHTML = `Collapse <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
+        toggleBtn.classList.remove('collapsed');
+        toggleBtn.classList.add('expanded');
+    } else {
+        // Collapse
+        fullText.style.display = 'none';
+        ellipsis.style.display = 'inline';
+        toggleBtn.innerHTML = `Expand <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
+        toggleBtn.classList.remove('expanded');
+        toggleBtn.classList.add('collapsed');
+    }
+}
+
 
 async function deleteComment(index, postId) {
     const commentId = await getCommentIdByIndex(postId, index);
@@ -113,12 +161,15 @@ async function deleteComment(index, postId) {
     loadComments(postId);
 }
 
-function startEditComment(index, content, postId) {
-    document.getElementById(`edit-comment-${index}`).style.display = 'block';
+function startEditComment(index, postId) {
+    const box = document.getElementById(`edit-comment-${index}`);
+    box.classList.add('visible');
+    document.getElementById(`edit-text-${index}`).focus();
 }
 
 function cancelEditComment(index) {
-    document.getElementById(`edit-comment-${index}`).style.display = 'none';
+    const box = document.getElementById(`edit-comment-${index}`);
+    box.classList.remove('visible');
 }
 
 function setEditUsername(name) {

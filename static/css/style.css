@@ -1427,3 +1427,131 @@ form, .posts {
     line-height: 1.6;
 }
 
+/* Post comment Expand/Collapse */
+
+.expand-link {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  color: #0d6efd; /* Bootstrap primary blue */
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  gap: 4px;
+}
+
+.expand-link:hover {
+  color: #0a58ca; /* darker blue on hover */
+  text-decoration: underline;
+}
+
+.expand-link svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate arrow when expanded */
+.expand-link.collapsed svg {
+  transform: rotate(0deg);
+}
+.expand-link.expanded svg {
+  transform: rotate(180deg);
+}
+
+.comment-content {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;          /* Comfortable size for reading */
+    line-height: 1.5;         /* Good line spacing */
+    color: #333333;           /* Dark gray for reduced eye strain */
+    background-color: #ffffff; /* Light subtle background for better contrast */
+    padding: 5px 15px;       /* Padding inside comment box */
+    border-radius: 8px;       /* Rounded corners for a modern look */
+    border: 1px solid #ddd;   /* Light border for definition */
+    margin-bottom: 10px;      /* Space below each comment */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* subtle shadow for depth */
+    transition: background-color 0.3s ease;
+}
+
+.comment-content:hover {
+    background-color: #e4e6ff; /* Slight highlight on hover */
+}
+
+/* edit comment form */
+.edit-comment-box {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    padding: 0 1em;
+    margin-top: 10px;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.edit-comment-box.visible {
+    max-height: 400px; /* enough height for textarea */
+    opacity: 1;
+    padding: 1em;
+    border-left-color: #4f46e5;
+    background: #f9fcd4;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+
+.edit-comment-text {
+    width: 96%;
+    min-height: 200px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.75em;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.95rem;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.edit-comment-text:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.edit-comment-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.save-btn, .cancel-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.save-btn {
+    background-color: #4f46e5;
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: #3730a3;
+}
+
+.cancel-btn {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+.cancel-btn:hover {
+    background-color: #d1d5db;
+}
+
