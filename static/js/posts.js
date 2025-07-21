@@ -242,7 +242,11 @@ function enableEditUsernameField() {
 
 async function submitCommentEdit(e, index, postId) {
     e.preventDefault();
-    const content = document.getElementById(`edit-text-${index}`).value;
+    const content = document.getElementById(`edit-text-${index}`).value.trim();
+    if (content === '') {
+        showTopAlert("⚠️ Comment cannot be empty or just spaces.", "warning");
+        return;
+    }
     const commentId = await getCommentIdByIndex(postId, index);
 
     await fetch(`/comments/${commentId}`, {
@@ -268,7 +272,11 @@ async function getCommentIdByIndex(postId, index) {
 
 document.getElementById('commentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const content = document.getElementById('commentContent').value;
+    const content = document.getElementById('commentContent').value.trim(); // Trim whitespace
+    if (content === '') {
+        showTopAlert("⚠️ Comment cannot be empty or just spaces.", "warning");
+        return;
+    }
     const postId = window.location.pathname.split('/').pop();
 
     const res = await fetch(`/comments/${postId}`, {
