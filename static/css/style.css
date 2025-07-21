@@ -171,6 +171,7 @@ form, .posts {
 .post {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
+    word-break: break-word; /* Overflow stops at word boundaries */
 }
 
 .post:last-child {
@@ -516,6 +517,7 @@ form, .posts {
     background: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    word-break: break-word; /* Overflow stops at word boundaries */
 }
 
 /* Base style for post type badge */
