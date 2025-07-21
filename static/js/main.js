@@ -88,8 +88,8 @@ async function loadPosts(query = '', category = '', page = 1) {
                         <div class="post-content">
                             ${
                                 stripHTML(post.content).length > 200
-                                    ? stripHTML(post.content).substring(0, 200).trim() + '... <a href="/posts/' + post.id + '">Read more</a>'
-                                    : stripHTML(post.content)
+                                    ? escapeHtml(stripHTML(post.content).substring(0, 200).trim()) + '... <a href="/posts/' + post.id + '">Read more</a>'
+                                    : escapeHtml(stripHTML(post.content))
                             }
                         </div>
                         <div class="post-footer-bar">
