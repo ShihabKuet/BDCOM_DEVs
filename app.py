@@ -942,5 +942,5 @@ def exit_app(icon, item):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.100.133', port=5005, debug=True)
+    app.run(host='0.0.0.0', port=5005, debug=True)
 

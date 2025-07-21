@@ -392,9 +392,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         container.innerHTML = data.map(post => `
             <div class="similar-post-item">
-                <a href="/posts/${post.id}">${post.title}</a>
+                <a href="/posts/${post.id}">${escapeHtml(post.title)}</a>
                 <small>by <strong>${post.submitted_by}</strong></small>
             </div>
         `).join('');
     }); 
 });
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.innerText = text;
+    return div.innerHTML;
+}
