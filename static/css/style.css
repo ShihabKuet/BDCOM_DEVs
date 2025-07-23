@@ -624,6 +624,50 @@ form, .posts {
     background-color: #218838;
 }
 
+/* Pin button on post - for admin */
+.pin-toggle {
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.pin-btn {
+    background: #f5f7fa;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.pin-btn:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+    color: #1e3a8a;
+}
+
+.pin-btn.pinned {
+    background: #ffe7c2;
+    border-color: #ffb347;
+    color: #5a2e00;
+}
+
+/* Pin capsule on the home page */
+.pinned-capsule {
+    display: inline-block;
+    background-color: #000261a6;
+    color: #ffffff;
+    font-size: 0.75em;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    margin-right: auto;
+    width: fit-content;
+}
 
 /* Stylish post content */
 .post-content {

@@ -81,6 +81,7 @@ async function loadPosts(query = '', category = '', page = 1) {
             container.innerHTML = posts.map(post => `
                 <div class="card">
                     <div class="post">
+                        ${post.pinned ? `<div class="pinned-capsule">📌 Pinned</div>` : ''}
                         <div class="post-header">
                             <h3><a href="/posts/${post.id}">${escapeHtml(post.title)}</a></h3>
                             <span class="post-type ${post.type}">${post.type.toUpperCase()}</span>

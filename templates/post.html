@@ -17,6 +17,18 @@
 
 {% if post.is_visible %}
     <div class="post-single">
+        <!-- Only for admin to pin a post -->
+        {% if current_ip == admin_ip %}
+            <div class="pin-toggle">
+                {% if post.pinned %}
+                    <button class="pin-btn pinned" onclick="togglePin({{ post.id }}, false)">📌 Unpin</button>
+                {% else %}
+                    <button class="pin-btn" onclick="togglePin({{ post.id }}, true)">📌 Pin</button>
+                {% endif %}
+            </div>
+        {% endif %}
+        <!-- Only for admin to pin a post ends -->
+
         <h1>{{ post.title }}</h1>
         <div class="post-header-actions">
             <div class="{{ post.type|lower }} post-type">{{ post.type.upper() }}</div>
@@ -202,6 +214,18 @@
             document.getElementById('followBtn').innerText = '⭐ Follow';
         }
     });
+
+    // Pin/Unpin - only for admin
+    function togglePin(postId, shouldPin) {
+        fetch(`/posts/${postId}/${shouldPin ? 'pin' : 'unpin'}`, {
+            method: 'POST'
+        }).then(res => {
+            if (res.ok) {
+                showTopAlert(`Post ${shouldPin ? 'pinned' : 'unpinned'}`);
+                location.reload();
+            }
+        });
+    }
     </script>
 
 </body>

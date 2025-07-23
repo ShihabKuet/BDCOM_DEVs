@@ -34,6 +34,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(180))
     content = db.Column(db.Text)
+    pinned = db.Column(db.Boolean, default=False)
     type = db.Column(db.String(10))  # "Query" or "Patch"
     category = db.Column(db.String(20)) 
     ip_address = db.Column(db.String(45))  # to store IPv4 or IPv6
@@ -396,7 +397,9 @@ def posts():
         #
         user_ip = request.remote_addr
         #all_posts = Post.query.order_by(Post.id.desc()).all()
-        paginated_posts = Post.query.order_by(Post.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        paginated_posts = Post.query.filter_by(is_visible=True)\
+            .order_by(Post.pinned.desc(), Post.id.desc())\
+            .paginate(page=page, per_page=per_page, error_out=False)
 
         return jsonify({
             'posts': [{
@@ -407,6 +410,7 @@ def posts():
                 'ip_address': post.ip_address,
                 'category': post.category,
                 'last_modified_ip': post.last_modified_ip,
+                'pinned': post.pinned,
                 'likes': post.likes,
                 'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
             } for post in paginated_posts.items],
@@ -451,7 +455,7 @@ def search():
     if category:
         filters.append(Post.category.ilike(category))  # case-insensitive match
 
-    filtered_query = Post.query.filter(and_(true(), *filters)).order_by(Post.id.desc())
+    filtered_query = Post.query.filter(and_(*filters)).order_by(Post.pinned.desc(), Post.id.desc())
     paginated_posts = filtered_query.paginate(page=page, per_page=per_page, error_out=False)
 
     # Combine all filters with AND
@@ -468,6 +472,7 @@ def search():
             'last_modified_ip': post.last_modified_ip,
             'submitted_by': post.submitted_by,
             'last_modified_by': post.last_modified_by,
+            'pinned': post.pinned,
             'likes': post.likes,
             'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
         } for post in paginated_posts.items],
@@ -884,6 +889,19 @@ def delete_featured_post(fid):
     db.session.commit()
     return jsonify({'message': 'Deleted'})
 
+@app.route('/posts/<int:post_id>/pin', methods=['POST'])
+def pin_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.pinned = True
+    db.session.commit()
+    return jsonify({'message': 'Post pinned'})
+
+@app.route('/posts/<int:post_id>/unpin', methods=['POST'])
+def unpin_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.pinned = False
+    db.session.commit()
+    return jsonify({'message': 'Post unpinned'})
 
 @app.route('/admin/manage_featured')
 def admin_manage_featured():
