@@ -54,6 +54,7 @@ async function loadNotices() {
     list.innerHTML = notices.map(n => `<li>${n.content}</li>`).join('');
 }
 
+
 async function loadPosts(query = '', category = '', page = 1) {
     const container = document.getElementById('postsContainer');
     const loader = document.getElementById('loader');

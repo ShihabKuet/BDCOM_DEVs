@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.username if user else 'Not Set' }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="profile-wrapper">
+        <div class="profile-header">
+            <h1>👤 {{ user.username or "Anonymous User" }}</h1>
+            <p class="ip-info">IP Address: {{ current_ip }}</p>
+        </div>
+
+        <!-- Account Info -->
+        <div class="glass-card account-info">
+            <h2>🧾 Account Info</h2>
+            <p><strong>Username:</strong> {{ user.username or "Not set" }}</p>
+            <p><strong>IP Address:</strong> {{ current_ip }}</p>
+        </div>
+
+        <!-- Main Content: Posts and Followed Posts -->
+        <div class="main-grid">
+            <!-- Left: Your Posts -->
+            <div class="your-posts">
+                <div class="glass-card">
+                    <h2>📝 Your Posts</h2>
+                    <ul class="post-list-modern">
+                        {% for post in user_posts %}
+                        <li class="post-card">
+                            <a href="{{ url_for('get_post', post_id=post.id) }}">
+                                <div class="post-icon">📝</div>
+                                <div class="post-info">
+                                    <div class="post-title">{{ post.title }}</div>
+                                </div>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li>No posts found.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right: Followed Posts -->
+            <div class="followed-posts">
+                <div class="glass-card">
+                    <h2>📌 Followed Posts</h2>
+                    {% if followed_posts %}
+                        <ul class="post-list">
+                            {% for post in followed_posts %}
+                                <li><a href="{{ url_for('get_post', post_id=post.id) }}">{{ post.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>You are not following any posts yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -133,6 +133,25 @@ def create_image():
     d.text((10, 20), "BDF", fill="white")
     return img
 
+@app.route('/user')
+def user_profile():
+    current_ip = request.remote_addr
+    user = UserIP.query.filter_by(ip_address=current_ip).first()
+    user_posts = Post.query.filter_by(submitted_by=user.username if user else None).all()
+    followed_posts = (
+        db.session.query(Post)
+        .join(PostFollow, Post.id == PostFollow.post_id)
+        .filter(PostFollow.follower_ip == current_ip)
+        .all()
+    )
+    return render_template(
+        'user_profile.html',
+        user=user,
+        user_posts=user_posts,
+        followed_posts=followed_posts,
+        current_ip=current_ip
+    )
+
 # Utility function to create notifications
 def create_notification(user_ip, message, related_post_id=None):
     notification = Notification(user_ip=user_ip, message=message, related_post_id=related_post_id)
