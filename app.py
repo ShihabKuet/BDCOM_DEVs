@@ -566,6 +566,7 @@ def get_similar_posts(post_id):
 
     similar = Post.query.filter(
         Post.id != post_id,
+        Post.is_visible.is_(True),
         or_(
             Post.title.ilike(f"%{title_keyword}%"),
             Post.category == original.category,

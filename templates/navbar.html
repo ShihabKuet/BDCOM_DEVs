@@ -1,25 +1,26 @@
 <header class="forum-navbar">
-    <div class="forum-header-content">
-        <div class="forum-brand">
-            <!-- <img src="{{ url_for('static', filename='resources/BDF.png') }}" alt="BDCOM Logo" class="forum-logo"> -->
-            <a href="/" class="forum-title">BDCOM Devs Forum</a>
-        </div>
-        <nav class="forum-nav" id="navMenu">
-            <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Home</a>
-            <a href="/bdf_manual" class="{{ 'active' if request.path == '/bdf_manual' else '' }}">Manual</a>
-            <a href="/register_ip" class="{{ 'active' if request.path == '/register_ip' else ''}}">RegisterIP</a>
-            <a href="/user" class="{{ 'active' if request.path == '/user' else '' }}">Profile</a>
-            <a href="/create" class="{{ 'active_create' if request.path == '/create' else 'create' }}">Create</a>
-            <!-- Future: <a href="/login">Login</a> -->
-            <button class="notification-button" id="notificationBell">
-                🔔 <span id="unreadCount" class="notification-badge"></span>
-            </button>
-            <div class="notification-dropdown" id="notificationDropdown">
-                <!-- Notifications will be loaded here via JS -->
-            </div>             
-        </nav>
-        <div class="hamburger" id="hamburger">
-            &#9776;
+        <div class="forum-header-content">
+            <div class="forum-brand">
+                <!-- <img src="{{ url_for('static', filename='resources/BDF.png') }}" alt="BDCOM Logo" class="forum-logo"> -->
+                <a href="/" class="forum-title" data-short="BDF">BDCOM Devs Forum</a>
+            </div>
+            <nav class="forum-nav" id="navMenu">
+                <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Home</a>
+                <!-- <a href="/bdf_manual" class="{{ 'active' if request.path == '/bdf_manual' else '' }}">Manual</a> -->
+                <a href="/register_ip" class="{{ 'active' if request.path == '/register_ip' else ''}}">RegisterIP</a>
+                <a href="/user" class="{{ 'active' if request.path == '/user' else '' }}">Profile</a>
+                <a href="/create" class="{{ 'active_create' if request.path == '/create' else 'create' }}">Create</a>
+                <!-- Future: <a href="/login">Login</a> -->
+                <button class="notification-button" id="notificationBell">
+                    🔔 <span id="unreadCount" class="notification-badge"></span>
+                </button>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <!-- Notifications will be loaded here via JS -->
+                </div>             
+            </nav>
+            <div class="hamburger" id="hamburger">
+                &#9776;
+            </div>
         </div>
     </div>
 </header>
