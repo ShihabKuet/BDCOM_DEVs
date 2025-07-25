@@ -137,7 +137,12 @@ def create_image():
 def user_profile():
     current_ip = request.remote_addr
     user = UserIP.query.filter_by(ip_address=current_ip).first()
-    user_posts = Post.query.filter_by(submitted_by=user.username if user else None).all()
+    user_posts = (
+        Post.query
+        .filter_by(submitted_by=user.username if user else None, is_visible=True)
+        .order_by(Post.id.desc())  # Sort by highest ID first
+        .all()
+    )
     followed_posts = (
         db.session.query(Post)
         .join(PostFollow, Post.id == PostFollow.post_id)

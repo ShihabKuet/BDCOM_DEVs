@@ -309,6 +309,10 @@ form, .posts {
     color: #007bff;
 }
 
+.notice-card {
+    border-left: 4px solid #ff6d19;
+    border-right: 4px solid #95be00;
+}
 
 #noticeList {
     margin-top: 10px;
