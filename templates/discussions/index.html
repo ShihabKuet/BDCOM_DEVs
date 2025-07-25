@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discussion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/discussions/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="discussion-list">
+        <div class="header">
+            <h1>💬 Discussions</h1>
+            <a href="{{ url_for('create_discussion') }}" class="btn btn-primary">+ Create Discussion</a>
+        </div>
+
+        {% if discussions %}
+            <ul class="discussion-ul">
+            {% for d in discussions %}
+                <li class="discussion-li {{ 'closed' if d.is_closed else '' }}">
+                <a href="{{ url_for('view_discussion', discussion_id=d.id) }}">
+                    {{ d.title }}
+                </a>
+                {% if d.is_closed %}
+                    <span class="badge badge-closed">Closed</span>
+                {% endif %}
+                <small>by {{ d.created_by_name or d.created_by_ip }} on {{ d.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                </li>
+            {% endfor %}
+            </ul>
+            <!-- pagination controls here -->
+        {% else %}
+            <p>No discussions yet.</p>
+        {% endif %}
+        </div>
+    
+    {% include 'footer.html' %}
+</body>
+</html>
+
+

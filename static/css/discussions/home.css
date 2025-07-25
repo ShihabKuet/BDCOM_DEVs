@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f8f9fb;
+    color: #333;
+}
+
+.discussion-list {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s ease-in-out;
+}
+
+.discussion-list:hover {
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+}
+
+.discussion-list .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.discussion-list h1 {
+    font-size: 1.8rem;
+    color: #222;
+    font-weight: 600;
+}
+
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 25px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(0,123,255,0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #0094cc);
+    transform: translateY(-2px);
+}
+
+.discussion-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.discussion-li {
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e2e2e2;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.discussion-li:hover {
+    background: #f0f7ff;
+    transform: scale(1.01);
+    border-color: #007bff;
+}
+
+.discussion-li a {
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    transition: color 0.2s ease-in-out;
+}
+
+.discussion-li a:hover {
+    color: #007bff;
+}
+
+.discussion-li small {
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 4px;
+}
+
+.badge-closed {
+    display: inline-block;
+    background: #ff4b5c;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .discussion-list {
+        margin: 20px 10px;
+        padding: 15px;
+    }
+    .discussion-list h1 {
+        font-size: 1.5rem;
+    }
+    .discussion-li a {
+        font-size: 1rem;
+    }
+}

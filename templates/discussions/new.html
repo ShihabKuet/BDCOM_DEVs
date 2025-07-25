@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Discussion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/discussions/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/discussions/create_discussion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <h1>Create a Discussion</h1>
+
+    <form id="newDiscussionForm">
+    <label>Title</label>
+    <input type="text" id="title" placeholder="Enter discussion title..." required>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+
+
+    {% include 'footer.html' %}
+
+    <script>
+        document.getElementById('newDiscussionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value.trim();
+        const res = await fetch('/discussions/new', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ title })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            window.location.href = `/discussions/${data.id}`;
+        } else {
+            alert(data.error || 'Failed');
+        }
+        });
+    </script>
+</body>
+</html>

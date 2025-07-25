@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Discussion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/discussions/show_discussion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="discussion-container">
+    <div class="discussion-header">
+        <h1>{{ discussion.title }}</h1>
+        {% if discussion.is_closed %}
+        <span class="badge badge-closed">Closed</span>
+        {% endif %}
+        {% if is_admin %}
+        {% if discussion.is_closed %}
+            <button class="btn btn-success" onclick="toggleDiscussion(false)">Reopen</button>
+        {% else %}
+            <button class="btn btn-danger" onclick="toggleDiscussion(true)">Close</button>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="discussion-meta">
+        <small>Opened by <strong>{{ discussion.created_by_name or discussion.created_by_ip }}</strong> at {{ discussion.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+    </div>
+
+    <hr>
+
+    <div id="messages"></div>
+
+    {% if not discussion.is_closed %}
+    <form id="messageForm">
+        <textarea id="messageContent" placeholder="Type your message..." required></textarea>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    {% else %}
+    <p><em>This discussion is closed.</em></p>
+    {% endif %}
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script>
+    const discussionId = {{ discussion.id }};
+    async function loadMessages() {
+    const res = await fetch(`/discussions/${discussionId}/messages`);
+    const msgs = await res.json();
+    const container = document.getElementById('messages');
+    container.innerHTML = msgs.map(m => `
+        <div class="message">
+        <div class="meta">
+            <strong>${m.author_name}</strong> &middot; <small>${m.created_at}</small>
+        </div>
+        <div class="body">${m.content}</div>
+        </div>
+    `).join('');
+    }
+    loadMessages();
+    // simple polling (every 10s). Replace with WebSocket/Socket.IO later if you want realtime.
+    setInterval(loadMessages, 10000);
+
+    document.getElementById('messageForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('messageContent').value.trim();
+    if (!content) return;
+    const res = await fetch(`/discussions/${discussionId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({ content })
+    });
+    if (res.ok) {
+        document.getElementById('messageForm').reset();
+        loadMessages();
+    }
+    });
+
+    async function toggleDiscussion(close) {
+    const url = close ? `/discussions/${discussionId}/close` : `/discussions/${discussionId}/reopen`;
+    const res = await fetch(url, { method: 'POST' });
+    if (res.ok) {
+        location.reload();
+    }
+    }
+    </script>
+
+</body>
+</html>
+

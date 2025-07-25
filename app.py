@@ -117,6 +117,43 @@ class Tip(db.Model):
     tip_message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=dhaka_time)
 
+# Discussion
+class Discussion(db.Model):
+    __tablename__ = 'discussion'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(160), nullable=False)
+    created_by_ip = db.Column(db.String(45), nullable=False)
+    created_by_name = db.Column(db.String(80))
+    created_at = db.Column(db.DateTime, default=dhaka_time)  # your tz helper
+    is_closed = db.Column(db.Boolean, default=False)
+    closed_by_ip = db.Column(db.String(45))
+    closed_by_name = db.Column(db.String(80))
+    closed_at = db.Column(db.DateTime)
+
+    messages = db.relationship(
+        'DiscussionMessage',
+        backref='discussion',
+        cascade='all, delete-orphan',
+        order_by='DiscussionMessage.created_at.asc()'
+    )
+
+
+class DiscussionMessage(db.Model):
+    __tablename__ = 'discussion_message'
+
+    id = db.Column(db.Integer, primary_key=True)
+    discussion_id = db.Column(
+        db.Integer, db.ForeignKey('discussion.id', ondelete='CASCADE'),
+        nullable=False
+    )
+    content = db.Column(db.Text, nullable=False)
+    author_ip = db.Column(db.String(45), nullable=False)
+    author_name = db.Column(db.String(80))  # optional from your UserIP table
+    created_at = db.Column(db.DateTime, default=dhaka_time)
+
+# Discussion feature ends
+
 def load_app_version():
     with open('version') as f:
         for line in f:
@@ -973,6 +1010,145 @@ def terms():
 @app.route('/why_bdf')
 def why_bdf():
     return render_template('why_bdf.html')
+
+# Discussion
+@app.route('/discussions', methods=['GET'])
+def list_discussions():
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+
+    qs = Discussion.query.order_by(Discussion.is_closed.desc(), Discussion.created_at.desc())
+    paginated = qs.paginate(page=page, per_page=per_page, error_out=False)
+
+    # HTML page
+    if request.accept_mimetypes.accept_html:
+        return render_template('discussions/index.html', discussions=paginated.items,
+                               page=paginated.page, total_pages=paginated.pages)
+
+    # JSON
+    return jsonify({
+        'items': [{
+            'id': d.id,
+            'title': d.title,
+            'is_closed': d.is_closed,
+            'created_by_name': d.created_by_name,
+            'created_at': d.created_at.isoformat()
+        } for d in paginated.items],
+        'page': paginated.page,
+        'total_pages': paginated.pages
+    })
+
+@app.route('/discussions/new', methods=['GET', 'POST'])
+def create_discussion():
+    if request.method == 'GET':
+        current_ip = request.remote_addr
+        known_user = UserIP.query.filter_by(ip_address=current_ip).first()
+        return render_template('discussions/new.html',
+                               known_user=known_user.username if known_user else None)
+
+    data = request.get_json() or request.form
+    title = data.get('title', '').strip()
+    if not title:
+        return jsonify({'error': 'Title required'}), 400
+
+    ip = request.remote_addr
+    known_user = UserIP.query.filter_by(ip_address=ip).first()
+
+    d = Discussion(
+        title=title,
+        created_by_ip=ip,
+        created_by_name=known_user.username if known_user else ip
+    )
+    db.session.add(d)
+    db.session.commit()
+
+    return jsonify({'message': 'Discussion created', 'id': d.id}), 201
+
+@app.route('/discussions/<int:discussion_id>', methods=['GET'])
+def view_discussion(discussion_id):
+    d = Discussion.query.get_or_404(discussion_id)
+    current_ip = request.remote_addr
+    known_user = UserIP.query.filter_by(ip_address=current_ip).first()
+
+    return render_template('discussions/show.html',
+                           discussion=d,
+                           is_admin=(current_ip == ADMIN_IP or current_ip == d.created_by_ip),
+                           known_user=known_user.username if known_user else None)
+
+@app.route('/discussions/<int:discussion_id>/messages', methods=['GET'])
+def fetch_messages(discussion_id):
+    d = Discussion.query.get_or_404(discussion_id)
+    msgs = DiscussionMessage.query.filter_by(discussion_id=discussion_id)\
+                                  .order_by(DiscussionMessage.created_at.asc()).all()
+
+    return jsonify([{
+        'id': m.id,
+        'content': m.content,
+        'author_name': m.author_name or m.author_ip,
+        'created_at': m.created_at.strftime('%Y-%m-%d %H:%M')
+    } for m in msgs])
+
+@app.route('/discussions/<int:discussion_id>/messages', methods=['POST'])
+def post_message(discussion_id):
+    d = Discussion.query.get_or_404(discussion_id)
+    if d.is_closed:
+        return jsonify({'error': 'Discussion is closed'}), 403
+
+    data = request.get_json()
+    content = data.get('content', '').strip()
+    if not content:
+        return jsonify({'error': 'Message cannot be empty'}), 400
+
+    ip = request.remote_addr
+    known_user = UserIP.query.filter_by(ip_address=ip).first()
+
+    msg = DiscussionMessage(
+        discussion_id=discussion_id,
+        content=content,
+        author_ip=ip,
+        author_name=known_user.username if known_user else None
+    )
+
+    db.session.add(msg)
+    db.session.commit()
+
+    # Optional: notify discussion creator or future “followers” here
+
+    return jsonify({'message': 'Message posted'}), 201
+
+@app.route('/discussions/<int:discussion_id>/close', methods=['POST'])
+def close_discussion(discussion_id):
+    d = Discussion.query.get_or_404(discussion_id)
+    ip = request.remote_addr
+    known_user = UserIP.query.filter_by(ip_address=ip).first()
+
+    if ip != ADMIN_IP and ip != d.created_by_ip:
+        abort(403)
+
+    d.is_closed = True
+    d.closed_by_ip = ip
+    d.closed_by_name = known_user.username if known_user else ip
+    d.closed_at = dhaka_time()
+    db.session.commit()
+
+    return jsonify({'message': 'Discussion closed'})
+
+@app.route('/discussions/<int:discussion_id>/reopen', methods=['POST'])
+def reopen_discussion(discussion_id):
+    d = Discussion.query.get_or_404(discussion_id)
+    ip = request.remote_addr
+    if ip != ADMIN_IP and ip != d.created_by_ip:
+        abort(403)
+
+    d.is_closed = False
+    d.closed_by_ip = None
+    d.closed_by_name = None
+    d.closed_at = None
+    db.session.commit()
+
+    return jsonify({'message': 'Discussion reopened'})
+
+#end discussion
 
 # Tray menu actions
 def open_browser(icon, item):

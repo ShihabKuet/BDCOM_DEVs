@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fb;
+    color: #333;
+}
+
+/* Main Container */
+.discussion-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.discussion-container:hover {
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+}
+
+/* Discussion Header */
+.discussion-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.discussion-header h1 {
+    font-size: 1.8rem;
+    color: #222;
+    font-weight: 600;
+    margin: 0;
+}
+
+.badge-closed {
+    display: inline-block;
+    background: #ff4b5c;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 15px;
+    margin-left: 10px;
+}
+
+/* Meta Info */
+.discussion-meta {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Divider */
+.discussion-container hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 15px 0;
+}
+
+/* Messages */
+#messages {
+    margin-bottom: 20px;
+}
+
+.message {
+    background: #f9f9f9;
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    transition: background 0.2s ease-in-out;
+}
+
+.message:hover {
+    background: #f1f7ff;
+}
+
+.message .meta {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.message .body {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #333;
+}
+
+/* Form */
+#messageForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#messageContent {
+    resize: vertical;
+    min-height: 80px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: inherit;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#messageContent:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.2);
+    outline: none;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 25px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(0,123,255,0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #0094cc);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #ff4b5c, #ff8a65);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(255,75,92,0.3);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(45deg, #e03a4e, #ff7043);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #5cd85c);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(40,167,69,0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, #218838, #4ec04e);
+}
+
+/* Closed Notice */
+p em {
+    color: #888;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .discussion-container {
+        margin: 20px 10px;
+        padding: 15px;
+    }
+    .discussion-header h1 {
+        font-size: 1.4rem;
+    }
+    #messageContent {
+        font-size: 0.95rem;
+    }
+}
