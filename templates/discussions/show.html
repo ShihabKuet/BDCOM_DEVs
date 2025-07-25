@@ -14,83 +14,110 @@
     {% include 'navbar.html' %}
 
     <div class="discussion-container">
-    <div class="discussion-header">
-        <h1>{{ discussion.title }}</h1>
-        {% if discussion.is_closed %}
-        <span class="badge badge-closed">Closed</span>
-        {% endif %}
-        {% if is_admin %}
-        {% if discussion.is_closed %}
-            <button class="btn btn-success" onclick="toggleDiscussion(false)">Reopen</button>
+        <div class="discussion-header">
+            <h1>{{ discussion.title }}</h1>
+            <span class="status-badge {{ discussion.status | lower }}">
+                {{ discussion.status.upper() }}
+            </span>
+
+            {% if is_admin or current_ip == discussion.created_by_ip %}
+            <div class="status-actions">
+                {% if discussion.status == 'Active' %}
+                    <button class="btn-close" onclick="changeStatus('Closed')">Close</button>
+                    <button class="btn-archive" onclick="changeStatus('Archived')">Archive</button>
+                    <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                {% elif discussion.status == 'Closed' %}
+                    <button class="btn-activate" onclick="changeStatus('Active')">Activate</button>
+                    <button class="btn-archive" onclick="changeStatus('Archived')">Archive</button>
+                    <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                {% elif discussion.status == 'Archived' %}
+                    <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="discussion-meta">
+            <small>Opened by <strong>{{ discussion.created_by_name or discussion.created_by_ip }}</strong>
+            at {{ discussion.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        </div>
+
+        <hr>
+
+        <div id="messages"></div>
+
+        {% if discussion.status == 'Active' %}
+        <form id="messageForm">
+            <textarea id="messageContent" placeholder="Type your message..." required></textarea>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+        {% elif discussion.status == 'Closed' %}
+        <p><em>This discussion is closed.</em></p>
         {% else %}
-            <button class="btn btn-danger" onclick="toggleDiscussion(true)">Close</button>
+        <p><em>This discussion is archived and cannot be reopened.</em></p>
         {% endif %}
-        {% endif %}
-    </div>
-
-    <div class="discussion-meta">
-        <small>Opened by <strong>{{ discussion.created_by_name or discussion.created_by_ip }}</strong> at {{ discussion.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-    </div>
-
-    <hr>
-
-    <div id="messages"></div>
-
-    {% if not discussion.is_closed %}
-    <form id="messageForm">
-        <textarea id="messageContent" placeholder="Type your message..." required></textarea>
-        <button type="submit" class="btn btn-primary">Send</button>
-    </form>
-    {% else %}
-    <p><em>This discussion is closed.</em></p>
-    {% endif %}
     </div>
 
     {% include 'footer.html' %}
 
     <script>
     const discussionId = {{ discussion.id }};
+
     async function loadMessages() {
-    const res = await fetch(`/discussions/${discussionId}/messages`);
-    const msgs = await res.json();
-    const container = document.getElementById('messages');
-    container.innerHTML = msgs.map(m => `
-        <div class="message">
-        <div class="meta">
-            <strong>${m.author_name}</strong> &middot; <small>${m.created_at}</small>
-        </div>
-        <div class="body">${m.content}</div>
-        </div>
-    `).join('');
+        const res = await fetch(`/discussions/${discussionId}/messages`);
+        const msgs = await res.json();
+        const container = document.getElementById('messages');
+        container.innerHTML = msgs.map(m => `
+            <div class="message">
+                <div class="meta">
+                    <strong>${m.author_name}</strong> &middot; <small>${m.created_at}</small>
+                </div>
+                <div class="body">${m.content}</div>
+            </div>
+        `).join('');
     }
     loadMessages();
-    // simple polling (every 10s). Replace with WebSocket/Socket.IO later if you want realtime.
-    setInterval(loadMessages, 10000);
+    setInterval(loadMessages, 10000);  // polling
 
     document.getElementById('messageForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const content = document.getElementById('messageContent').value.trim();
-    if (!content) return;
-    const res = await fetch(`/discussions/${discussionId}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({ content })
-    });
-    if (res.ok) {
-        document.getElementById('messageForm').reset();
-        loadMessages();
-    }
+        e.preventDefault();
+        const content = document.getElementById('messageContent').value.trim();
+        if (!content) return;
+        const res = await fetch(`/discussions/${discussionId}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ content })
+        });
+        if (res.ok) {
+            document.getElementById('messageForm').reset();
+            loadMessages();
+        }
     });
 
-    async function toggleDiscussion(close) {
-    const url = close ? `/discussions/${discussionId}/close` : `/discussions/${discussionId}/reopen`;
-    const res = await fetch(url, { method: 'POST' });
-    if (res.ok) {
-        location.reload();
+    async function changeStatus(newStatus) {
+        if (!confirm(`Change status to ${newStatus}?`)) return;
+        const res = await fetch(`/discussions/${discussionId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+            location.reload();
+        } else {
+            const data = await res.json();
+            alert(data.error || "Failed to change status");
+        }
     }
+
+    async function deleteDiscussion() {
+        if (!confirm("Delete this discussion permanently?")) return;
+        const res = await fetch(`/discussions/${discussionId}`, { method: 'DELETE' });
+        if (res.ok) {
+            window.location.href = '/discussions';
+        } else {
+            alert("Failed to delete discussion");
+        }
     }
     </script>
-
 </body>
 </html>
-

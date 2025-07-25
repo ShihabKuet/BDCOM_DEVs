@@ -126,6 +126,7 @@ class Discussion(db.Model):
     created_by_ip = db.Column(db.String(45), nullable=False)
     created_by_name = db.Column(db.String(80))
     created_at = db.Column(db.DateTime, default=dhaka_time)  # your tz helper
+    status = db.Column(db.String(20), default="Active")  # Active, Closed, Archived
     is_closed = db.Column(db.Boolean, default=False)
     closed_by_ip = db.Column(db.String(45))
     closed_by_name = db.Column(db.String(80))
@@ -1074,6 +1075,48 @@ def view_discussion(discussion_id):
                            discussion=d,
                            is_admin=(current_ip == ADMIN_IP or current_ip == d.created_by_ip),
                            known_user=known_user.username if known_user else None)
+
+@app.route('/discussions/<int:discussion_id>/status', methods=['PATCH'])
+def update_discussion_status(discussion_id):
+    discussion = Discussion.query.get_or_404(discussion_id)
+    current_ip = request.remote_addr
+
+    # Only admin or creator can modify
+    if current_ip != ADMIN_IP and current_ip != discussion.created_by_ip:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.json
+    new_status = data.get('status')
+
+    # Ensure Archived cannot be reactivated
+    if discussion.status == "Archived" and new_status != "Archived":
+        return jsonify({'error': 'Archived discussions cannot be reactivated'}), 400
+
+    # Validate status
+    if new_status not in ["Active", "Closed", "Archived"]:
+        return jsonify({'error': 'Invalid status'}), 400
+
+    discussion.status = new_status
+    db.session.commit()
+    return jsonify({'message': f'Discussion status updated to {new_status}'}), 200
+
+
+@app.route('/discussions/<int:discussion_id>', methods=['DELETE'])
+def delete_discussion(discussion_id):
+    discussion = Discussion.query.get_or_404(discussion_id)
+    current_ip = request.remote_addr
+
+    # Only creator or admin can delete
+    if not (is_admin() or discussion.created_by_ip == current_ip):
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    # First delete related messages
+    DiscussionMessage.query.filter_by(discussion_id=discussion_id).delete()
+
+    db.session.delete(discussion)
+    db.session.commit()
+    return jsonify({'message': 'Discussion deleted successfully'}), 200
+
 
 @app.route('/discussions/<int:discussion_id>/messages', methods=['GET'])
 def fetch_messages(discussion_id):

@@ -55,6 +55,35 @@ body {
     margin-bottom: 20px;
 }
 
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-left: 10px;
+}
+.status-badge.active { background: #28a745; color: #fff; }
+.status-badge.closed { background: #ffc107; color: #000; }
+.status-badge.archived { background: #6c757d; color: #fff; }
+
+.status-actions {
+    margin-top: 10px;
+}
+.status-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    margin: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.btn-activate { background-color: #28a745; color: #fff; }
+.btn-close { background-color: #ffc107; color: #000; }
+.btn-archive { background-color: #6c757d; color: #fff; }
+.btn-delete { background-color: #dc3545; color: #fff; }
+
 /* Divider */
 .discussion-container hr {
     border: none;
