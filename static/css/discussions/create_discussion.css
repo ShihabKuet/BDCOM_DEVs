@@ -81,6 +81,11 @@ h1 {
     transform: translateY(-2px);
 }
 
+.back-to-discussion {
+    margin-top: 20px;
+    text-align: center;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
     #newDiscussionForm {

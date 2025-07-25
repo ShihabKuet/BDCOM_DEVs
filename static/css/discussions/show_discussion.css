@@ -147,6 +147,10 @@ body {
     outline: none;
 }
 
+.message-body {
+    word-break: break-word;;
+}
+
 /* Buttons */
 .btn {
     display: inline-block;
@@ -208,4 +212,9 @@ p em {
     #messageContent {
         font-size: 0.95rem;
     }
+}
+
+.back-to-discussion {
+    margin-top: 20px;
+    text-align: center;
 }

@@ -58,10 +58,20 @@
         {% endif %}
     </div>
 
+    <div class="back-to-discussion">
+        <a href="/discussions">← Back to Discussions</a>
+    </div>
+
     {% include 'footer.html' %}
 
     <script>
     const discussionId = {{ discussion.id }};
+
+    function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.innerText = text;
+        return div.innerHTML;
+    }
 
     async function loadMessages() {
         const res = await fetch(`/discussions/${discussionId}/messages`);
@@ -72,7 +82,7 @@
                 <div class="meta">
                     <strong>${m.author_name}</strong> &middot; <small>${m.created_at}</small>
                 </div>
-                <div class="body">${m.content}</div>
+                <div class="message-body">${escapeHtml(m.content)}</div>
             </div>
         `).join('');
     }

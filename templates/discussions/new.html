@@ -17,12 +17,15 @@
     <h1>Create a Discussion</h1>
 
     <form id="newDiscussionForm">
-    <label>Title</label>
-    <input type="text" id="title" placeholder="Enter discussion title..." required>
+        <label>Title</label>
+        <input type="text" id="title" placeholder="Enter discussion title..." required>
 
-    <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">Create</button>
     </form>
 
+    <div class="back-to-discussion">
+        <a href="/discussions">← Back to Discussions</a>
+    </div>
 
     {% include 'footer.html' %}
 

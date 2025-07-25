@@ -89,14 +89,14 @@ body {
 
 /* Active */
 .status-btn.active {
-    background: #28a745;
+    background: #00e632;
     color: #fff;
     border: 1px solid #28a745;
 }
 
 /* Closed */
 .status-btn.closed {
-    background: #dc3545;
+    background: #ff0000;
     color: #fff;
     border: 1px solid #dc3545;
 }
