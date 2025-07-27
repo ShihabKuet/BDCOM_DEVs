@@ -1,0 +1,25 @@
+/* Scroll to top button inside messages */
+#moveTopBtn {
+    position: sticky;
+    bottom: 10px;
+    float: right;
+    margin-right: 10px;
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+#moveTopBtn.show {
+    opacity: 1;
+}
+
+#moveTopBtn:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(45deg, #0056b3, #0094cc);
+}

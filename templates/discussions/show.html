@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-alert.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/discussions/move_to_top.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
 </head>
 <body>
     {% include 'navbar.html' %}
 
-    <div class="discussion-container">
+    <div class="discussion-container" data-discussion-id="{{ discussion.id }}">
         <div class="discussion-header">
             <h1>{{ discussion.title }}</h1>
             <span class="status-badge {{ discussion.status | lower }}">
@@ -46,6 +48,9 @@
 
         <div id="messages"></div>
 
+        <!-- Move to Top Button -->
+        <button id="moveTopBtn" title="Scroll to top">↑</button>
+
         {% if discussion.status == 'Active' %}
         <form id="messageForm">
             <textarea id="messageContent" placeholder="Type your message..." required></textarea>
@@ -58,76 +63,25 @@
         {% endif %}
     </div>
 
+    <!-- Custom Alert Modal -->
+    <div id="customAlert" class="custom-alert-overlay" style="display: none;">
+        <div class="custom-alert-box">
+            <h3 id="alertTitle">Are you sure?</h3>
+            <p id="alertMessage">Do you want to proceed?</p>
+            <div class="custom-alert-actions">
+                <button id="alertCancel" class="btn cancel-btn">Cancel</button>
+                <button id="alertOk" class="btn confirm-btn">Yes</button>
+            </div>
+        </div>
+    </div>
+
     <div class="back-to-discussion">
         <a href="/discussions">← Back to Discussions</a>
     </div>
 
     {% include 'footer.html' %}
 
-    <script>
-    const discussionId = {{ discussion.id }};
-
-    function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.innerText = text;
-        return div.innerHTML;
-    }
-
-    async function loadMessages() {
-        const res = await fetch(`/discussions/${discussionId}/messages`);
-        const msgs = await res.json();
-        const container = document.getElementById('messages');
-        container.innerHTML = msgs.map(m => `
-            <div class="message">
-                <div class="meta">
-                    <strong>${m.author_name}</strong> &middot; <small>${m.created_at}</small>
-                </div>
-                <div class="message-body">${escapeHtml(m.content)}</div>
-            </div>
-        `).join('');
-    }
-    loadMessages();
-    setInterval(loadMessages, 10000);  // polling
-
-    document.getElementById('messageForm')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const content = document.getElementById('messageContent').value.trim();
-        if (!content) return;
-        const res = await fetch(`/discussions/${discussionId}/messages`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({ content })
-        });
-        if (res.ok) {
-            document.getElementById('messageForm').reset();
-            loadMessages();
-        }
-    });
-
-    async function changeStatus(newStatus) {
-        if (!confirm(`Change status to ${newStatus}?`)) return;
-        const res = await fetch(`/discussions/${discussionId}/status`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        });
-        if (res.ok) {
-            location.reload();
-        } else {
-            const data = await res.json();
-            alert(data.error || "Failed to change status");
-        }
-    }
-
-    async function deleteDiscussion() {
-        if (!confirm("Delete this discussion permanently?")) return;
-        const res = await fetch(`/discussions/${discussionId}`, { method: 'DELETE' });
-        if (res.ok) {
-            window.location.href = '/discussions';
-        } else {
-            alert("Failed to delete discussion");
-        }
-    }
-    </script>
+    <script src="{{ url_for('static', filename='js/discussions/show.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/discussions/move_to_top.js') }}"></script>
 </body>
 </html>

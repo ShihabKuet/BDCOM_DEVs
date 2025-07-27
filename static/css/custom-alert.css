@@ -1,0 +1,77 @@
+/* Custom Alert Modal */
+.custom-alert-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.custom-alert-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 25px;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: scaleUp 0.3s ease;
+}
+
+.custom-alert-box h3 {
+    margin-top: 0;
+    color: #222;
+    font-size: 1.4rem;
+}
+
+.custom-alert-box p {
+    font-size: 1rem;
+    color: #555;
+    margin: 10px 0 20px;
+}
+
+.custom-alert-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.custom-alert-actions .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.confirm-btn {
+    background: linear-gradient(45deg, #28a745, #5cd85c);
+    color: #fff;
+}
+
+.confirm-btn:hover {
+    background: linear-gradient(45deg, #218838, #4ec04e);
+}
+
+.cancel-btn {
+    background: #ddd;
+    color: #333;
+}
+
+.cancel-btn:hover {
+    background: #ccc;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes scaleUp {
+    from {transform: scale(0.8);}
+    to {transform: scale(1);}
+}
