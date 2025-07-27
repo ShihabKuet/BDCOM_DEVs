@@ -152,7 +152,7 @@ body {
 }
 
 #messageContent {
-    resize: vertical;
+    resize: none;
     min-height: 80px;
     padding: 12px 14px;
     font-size: 1rem;

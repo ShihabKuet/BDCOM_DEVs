@@ -12,6 +12,9 @@
     {% include 'navbar.html' %}
 
     <div class="profile-wrapper">
+        <div class="running-text">
+            <span>This facility is still in development. You may face bugs or inefficiencies in this feature. These problems will be fixed soon. Just chill.</span>
+        </div>
         <div class="profile-header">
             <h1>👤 {{ user.username or "Anonymous User" }}</h1>
             <p class="ip-info">IP Address: {{ current_ip }}</p>

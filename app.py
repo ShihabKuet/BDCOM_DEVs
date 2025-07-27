@@ -1018,16 +1018,30 @@ def why_bdf():
 def list_discussions():
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
+    search_term = request.args.get('q', '').strip()
 
-    qs = Discussion.query.filter(Discussion.status != 'Archived').order_by(Discussion.is_closed.desc(), Discussion.created_at.desc())
+    # Base query: exclude archived discussions
+    qs = Discussion.query.filter(Discussion.status != 'Archived')
+
+    # Apply search filter if 'q' is provided
+    if search_term:
+        qs = qs.filter(Discussion.title.ilike(f"%{search_term}%"))
+
+    # Order by closed status and creation date
+    qs = qs.order_by(Discussion.is_closed.desc(), Discussion.created_at.desc())
     paginated = qs.paginate(page=page, per_page=per_page, error_out=False)
 
     # HTML page
     if request.accept_mimetypes.accept_html:
-        return render_template('discussions/index.html', discussions=paginated.items,
-                               page=paginated.page, total_pages=paginated.pages)
+        return render_template(
+            'discussions/index.html',
+            discussions=paginated.items,
+            page=paginated.page,
+            total_pages=paginated.pages,
+            search_term=search_term  # Pass search term for UI
+        )
 
-    # JSON
+    # JSON response
     return jsonify({
         'items': [{
             'id': d.id,
@@ -1039,6 +1053,7 @@ def list_discussions():
         'page': paginated.page,
         'total_pages': paginated.pages
     })
+
 
 @app.route('/discussions/new', methods=['GET', 'POST'])
 def create_discussion():
@@ -1192,24 +1207,33 @@ def reopen_discussion(discussion_id):
 
     return jsonify({'message': 'Discussion reopened'})
 
-@app.route('/archived-discussions', defaults={'page': 1})
-@app.route('/archived-discussions/page/<int:page>')
+@app.route('/discussions/archived', defaults={'page': 1})
+@app.route('/discussions/archived/page/<int:page>')
 def archived_discussions(page):
-    per_page = 10  # Number of discussions per page
-    total_archived = Discussion.query.filter_by(status='Archived').count()
+    per_page = 10
+    search_term = request.args.get('q', '').strip()
+
+    # Base query for archived discussions
+    qs = Discussion.query.filter_by(status='Archived')
+
+    # Apply search filter
+    if search_term:
+        qs = qs.filter(Discussion.title.ilike(f"%{search_term}%"))
+
+    total_archived = qs.count()
     total_pages = (total_archived + per_page - 1) // per_page
-    
-    discussions = (Discussion.query.filter_by(status='Archived')
-                   .order_by(Discussion.created_at.desc())
-                   .offset((page - 1) * per_page)
-                   .limit(per_page)
-                   .all())
+
+    discussions = (qs.order_by(Discussion.created_at.desc())
+                     .offset((page - 1) * per_page)
+                     .limit(per_page)
+                     .all())
 
     return render_template(
         'discussions/archived.html',
         discussions=discussions,
         page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        search_term=search_term
     )
 
 

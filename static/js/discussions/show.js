@@ -28,7 +28,7 @@ async function loadMessages(scrollToBottom) {
     }
 }
 loadMessages(true);
-setInterval(loadMessages, 10000);  // polling
+setInterval(loadMessages, 10000);  // polling - 10 seconds
 
 document.getElementById('messageForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();

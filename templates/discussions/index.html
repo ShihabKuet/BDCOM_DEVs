@@ -16,6 +16,10 @@
             <h1>💬 Discussions (Beta)</h1>
             <a href="{{ url_for('create_discussion') }}" class="btn btn-primary">+ Create Discussion</a>
         </div>
+        <form method="get" action="{{ url_for('list_discussions') }}" class="search-form-discussion">
+            <input type="text" name="q" placeholder="Search by title..." value="{{ request.args.get('q', '') }}">
+            <button type="submit">🔍</button>
+        </form>
 
         {% if discussions %}
             <ul class="discussion-ul">
@@ -35,20 +39,24 @@
             {% if total_pages > 1 %}
                 <div class="pagination">
                     {% if page > 1 %}
-                        <a href="{{ url_for('list_discussions', page=page-1) }}" class="page-btn">« Prev</a>
+                        <a href="{{ url_for('list_discussions', page=page-1, q=request.args.get('q')) }}" class="page-btn">« Prev</a>
                     {% endif %}
 
                     {% for p in range(1, total_pages + 1) %}
-                        <a href="{{ url_for('list_discussions', page=p) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
+                        <a href="{{ url_for('list_discussions', page=p, q=request.args.get('q')) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
                     {% endfor %}
 
                     {% if page < total_pages %}
-                        <a href="{{ url_for('list_discussions', page=page+1) }}" class="page-btn">Next »</a>
+                        <a href="{{ url_for('list_discussions', page=page+1, q=request.args.get('q')) }}" class="page-btn">Next »</a>
                     {% endif %}
                 </div>
             {% endif %}
         {% else %}
-            <p>No discussions yet.</p>
+            {% if request.args.get('q') %}
+                <p>No discussions found matching "{{ request.args.get('q') }}".</p>
+            {% else %}
+                <p>No discussions yet.</p>
+            {% endif %}
         {% endif %}
     </div>
 
