@@ -324,7 +324,8 @@ def inject_year():
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    active_discussions_count = Discussion.query.filter_by(status='Active').count()
+    return render_template("index.html", active_discussions_count=active_discussions_count)
 
 @app.route('/my-ip')
 def get_my_ip():
@@ -1018,7 +1019,7 @@ def list_discussions():
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
 
-    qs = Discussion.query.order_by(Discussion.is_closed.desc(), Discussion.created_at.desc())
+    qs = Discussion.query.filter(Discussion.status != 'Archived').order_by(Discussion.is_closed.desc(), Discussion.created_at.desc())
     paginated = qs.paginate(page=page, per_page=per_page, error_out=False)
 
     # HTML page
@@ -1190,6 +1191,27 @@ def reopen_discussion(discussion_id):
     db.session.commit()
 
     return jsonify({'message': 'Discussion reopened'})
+
+@app.route('/archived-discussions', defaults={'page': 1})
+@app.route('/archived-discussions/page/<int:page>')
+def archived_discussions(page):
+    per_page = 10  # Number of discussions per page
+    total_archived = Discussion.query.filter_by(status='Archived').count()
+    total_pages = (total_archived + per_page - 1) // per_page
+    
+    discussions = (Discussion.query.filter_by(status='Archived')
+                   .order_by(Discussion.created_at.desc())
+                   .offset((page - 1) * per_page)
+                   .limit(per_page)
+                   .all())
+
+    return render_template(
+        'discussions/archived.html',
+        discussions=discussions,
+        page=page,
+        total_pages=total_pages
+    )
+
 
 #end discussion
 

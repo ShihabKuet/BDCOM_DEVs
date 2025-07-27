@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/featured.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home-miscs.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/move_to_top.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
 </head>
@@ -62,6 +63,17 @@
                 <ul id="featuredPostsList">
                     <!-- Loaded dynamically -->
                 </ul>
+            </div>
+
+            <!-- Active Discussions -->
+            <div class="card sidebar-card active-discussions">
+                <h3>💬 Community Discussions</h3>
+                <p>
+                    People are currently discussing <span>{{ active_discussions_count }}</span> topics.
+                </p>
+                <a href="{{ url_for('list_discussions') }}" class="btn join-discussion-btn">
+                    Join the Discussion Thread
+                </a>
             </div>
 
             <!-- Features -->

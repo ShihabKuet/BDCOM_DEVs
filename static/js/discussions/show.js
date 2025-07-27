@@ -46,7 +46,14 @@ document.getElementById('messageForm')?.addEventListener('submit', async (e) => 
 });
 
 async function changeStatus(newStatus) {
-    const confirmed = await customConfirm(`Change status to ${newStatus}?`, "Change Status");
+    let message;
+    if (newStatus === 'Archived') {
+        message = "You won't be able to reopen this discussion once you archive it. Only archive it when you find this discussion will be useful in future.\n\nNow change status to Archived?";
+    } else {
+        message = `Change status to ${newStatus}?`;
+    }
+
+    const confirmed = await customConfirm(message, "Change Status");
     if (!confirmed) return;
 
     const res = await fetch(`/discussions/${discussionId}/status`, {
@@ -62,7 +69,7 @@ async function changeStatus(newStatus) {
 }
 
 async function deleteDiscussion() {
-    const confirmed = await customConfirm("Delete this discussion permanently?", "Delete Discussion");
+    const confirmed = await customConfirm("Delete this discussion permanently? After that you won't be able to recover it!", "Delete Discussion");
     if (!confirmed) return;
 
     const res = await fetch(`/discussions/${discussionId}`, { method: 'DELETE' });

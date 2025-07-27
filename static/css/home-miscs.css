@@ -1,0 +1,49 @@
+.active-discussions {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.active-discussions:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.active-discussions h3 {
+    color: #ffee00;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.active-discussions p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #f0f0f0;
+}
+
+.active-discussions span {
+    font-weight: bold;
+    color: #ffeb3b;
+}
+
+.join-discussion-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 25px;
+    background: #fff;
+    color: #007bff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(255, 255, 255, 0.3);
+}
+
+.join-discussion-btn:hover {
+    background: #0056b3;
+    color: #fff;
+}
