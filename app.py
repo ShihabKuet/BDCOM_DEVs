@@ -1236,6 +1236,17 @@ def archived_discussions(page):
         search_term=search_term
     )
 
+def check_ip_registration():
+    user_ip = request.remote_addr
+    user = UserIP.query.filter_by(ip_address=user_ip).first()
+    return user is not None
+
+@app.before_request
+def require_ip_registration():
+    if request.path.startswith('/discussions'):
+        if not check_ip_registration() and not request.path.startswith('/register-ip'):
+            return redirect(url_for('register_ip'))
+
 
 #end discussion
 
