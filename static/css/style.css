@@ -548,6 +548,11 @@ form, .posts {
     color: #f0fff6;
 }
 
+.post-single .post-type.c\&c {
+    background-color: #010052;
+    color: #f0fff6;
+}
+
 
 /* Stylish post header */
 .post-header {
@@ -825,6 +830,10 @@ form, .posts {
     color: #2ecc71;
 }
 
+.c\&c {
+    background-color: #cbf4ff;
+    color: rgb(60, 0, 128);
+}
 
 .post-actions-single {
     margin: 20px 0;

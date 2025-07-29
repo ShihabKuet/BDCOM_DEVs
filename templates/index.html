@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home-miscs.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/info_tooltip.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/move_to_top.css') }}">
+    <link href="https://banglawebfonts.pages.dev/css/ekushey-lal-sabuj.css" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
 </head>
 <body>
@@ -88,9 +89,10 @@
                     <li>🖼️ Support adding <strong>image</strong> and <strong>code</strong> to the post</li>
                 </ul>
             </div>
+
         </aside>
     </div>
-
+    
     <!-- Move to Top Button -->
     <button id="moveTopBtn" title="Go to top">↑</button>
     
@@ -107,5 +109,6 @@
             document.getElementById('tipContent').textContent = data.tip;
         });
     </script>
+
 </body>
 </html>
