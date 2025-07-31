@@ -1630,3 +1630,13 @@ form, .posts {
     background-color: #3730a3;
 }
 
+.post-body pre {
+    font-size: 0.7rem;   /* Decrease font size for code blocks */
+}
+
+.post-body code {
+    font-size: 0.9rem;  /* Decrease for inline code */
+    background-color: #cecece;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
