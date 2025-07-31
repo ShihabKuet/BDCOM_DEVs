@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <small>by <strong>${post.submitted_by}</strong></small>
             </div>
         `).join('');
-    }); 
+    });
 });
 
 function escapeHtml(text) {

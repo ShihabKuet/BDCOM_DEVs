@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
     <!-- Quill Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -149,7 +150,22 @@
 
         <!-- Show edit history here -->
         <div id="historyContainer" style="display: none;"></div><br>
-        <button onclick="window.print()" class="print-btn">🖨️ Print / Save as PDF</button>
+        
+        {% if known_user %}
+        <div class="create-discussion-container">
+            <button id="createDiscussionBtn" class="discussion-create-btn">
+                💬 Create Discussion on This Topic
+            </button>
+        </div>
+        {% else %}
+        <div class="create-discussion-container">
+            <a href="/register_ip" class="discussion-create-btn">
+                💬 Register IP to Create Discussion on This Topic
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- <button onclick="window.print()" class="print-btn">🖨️ Print / Save as PDF</button> -->
         <br>
 
         <div class="comments-section">
@@ -226,6 +242,24 @@
             }
         });
     }
+    </script>
+
+    <script>
+        document.getElementById('createDiscussionBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const title =  {{ post.title | tojson }};
+        const res = await fetch('/discussions/new', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ title })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            window.location.href = `/discussions/${data.id}`;
+        } else {
+            alert(data.error || 'Failed');
+        }
+        });
     </script>
 
 </body>
