@@ -7,8 +7,8 @@ from sqlalchemy.sql import true
 from datetime import datetime, timedelta, timezone
 from html_diff import diff as html_diff
 from threading import Thread
-from pystray import Icon, Menu, MenuItem
-from PIL import Image, ImageDraw
+# from pystray import Icon, Menu, MenuItem
+# from PIL import Image, ImageDraw
 import os
 import webbrowser
 import random
