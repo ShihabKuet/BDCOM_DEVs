@@ -474,6 +474,7 @@ function escapeHtml(text) {
   const previewWrap = wrapper.querySelector('.file-preview');
   const previewImg = wrapper.querySelector('.file-preview img');
   const removeBtn = wrapper.querySelector('.file-remove');
+  const commentTextarea = document.getElementById('commentContent');
 
   if (!input) return;
 
@@ -537,6 +538,27 @@ function escapeHtml(text) {
     dataTransfer.items.add(file);
     input.files = dataTransfer.files;
     window.updateUI(file);
+  });
+
+  // Handle paste inside comment textarea
+  commentTextarea.addEventListener('paste', (event) => {
+    const items = (event.clipboardData || window.clipboardData).items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        const file = new File([blob], blob.name || 'pasted-image.png', { type: blob.type });
+
+        // Put into file input so it uploads with the form
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+
+        // Update UI with preview
+        window.updateUI(file);
+
+        break; // only first image
+      }
+    }
   });
 
   // Remove / clear file

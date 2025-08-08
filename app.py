@@ -12,6 +12,7 @@ from threading import Thread
 import os
 import webbrowser
 import random
+import uuid
 
 from werkzeug.utils import secure_filename
 
@@ -833,9 +834,11 @@ def add_comment(post_id):
     image_path = None
 
     if image_file and allowed_file(image_file.filename):
-        filename = secure_filename(image_file.filename)
-        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        ext = os.path.splitext(image_file.filename)[1].lower()  # get extension
+        unique_filename = f"{uuid.uuid4().hex}{ext}"  # unique filename with extension
+        save_dir = app.config['UPLOAD_FOLDER']
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, unique_filename)
         image_file.save(save_path)
         image_path = '/' + save_path.replace('\\', '/')
 
