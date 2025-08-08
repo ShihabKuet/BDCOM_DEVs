@@ -31,6 +31,182 @@
     transform: scale(0.98);
 }
 
+/* Comment Image */
+.comment-image-container {
+    max-width: 320px;        /* max width */
+    max-height: auto;       /* max height */
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.comment-image-container:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
+.comment-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+}
+
+
+/* Image File Drop Zone for Comment */
+/* File input wrapper */
+.file-drop-zone {
+  position: relative;  /* NEW — keeps click area inside */
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  justify-self: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,250,250,0.9));
+  border: 1px solid rgba(100,110,120,0.12);
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(18, 22, 28, 0.04);
+  cursor: pointer;
+  transition: box-shadow .18s ease, transform .08s ease, border-color .12s ease;
+  overflow: hidden;
+}
+
+/* Hide actual file input but keep it accessible */
+.file-drop-zone .file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Layout of inner content */
+.file-drop-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none; /* allow clicks to pass to input */
+}
+
+/* Icon */
+.file-icon {
+  font-size: 28px;
+  width: 46px;
+  height: 46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(240,248,255,0.9), rgba(230,240,255,0.9));
+  box-shadow: 0 3px 6px rgba(22, 28, 36, 0.04);
+}
+
+/* Title + subtext */
+.file-text .file-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f1724;
+}
+.file-text .file-sub {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Filename + remove button */
+.file-meta {
+  margin-left: auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.file-name {
+  font-size: 13px;
+  color: #4b5563;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Remove button */
+.file-remove {
+  background: rgba(0,0,0,0.06);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Hover / focus / drag states */
+.file-drop-zone:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+}
+.file-drop-zone.dragover {
+  border-color: rgba(59,130,246,0.6);
+  box-shadow: 0 8px 24px rgba(59,130,246,0.08);
+}
+
+/* Preview thumbnail */
+.file-preview {
+  margin-top: 10px;
+  display: none;
+}
+.file-preview img {
+  max-width: 160px;
+  max-height: 120px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 14px rgba(12,18,26,0.04);
+}
+/* Image File Drop Zone for Comment ends */
+
+/* Comment Image Click Open in Lightbox */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: zoom-out;
+}
+
+.lightbox-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  z-index: 10000;
+  transition: color 0.2s ease;
+}
+
+.lightbox-close:hover {
+  color: #ff4444;
+}
+
+
 /* Optional: Fade-in animation */
 @keyframes fadeInUp {
     from {

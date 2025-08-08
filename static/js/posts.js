@@ -117,10 +117,17 @@ function renderCommentBatch(postId, start, end, userIP) {
         const previewText = isLong ? escapeHtml(c.content.substring(0, COMMENT_PREVIEW_LENGTH)) : escapeHtml(c.content);
         const fullText = escapeHtml(c.content);
 
+        const imageHTML = c.image_path
+            ? `<div class="comment-image-container">
+                <img src="${c.image_path}" alt="Comment Image" class="comment-image" loading="lazy" data-full="${c.image_path}" />
+            </div>`
+            : '';
+
         const commentEl = document.createElement('div');
         commentEl.className = 'comment';
         commentEl.dataset.id = index;
         commentEl.innerHTML = `
+            ${imageHTML}
             <p class="comment-content" id="comment-content-${index}">
                 ${previewText}${isLong ? `<span id="ellipsis-${index}">…</span>` : ''}
                 <span id="full-text-${index}" style="display:none;">${fullText.substring(COMMENT_PREVIEW_LENGTH)}</span>
@@ -278,22 +285,38 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
         return;
     }
     const postId = window.location.pathname.split('/').pop();
+    const imageInput = document.getElementById('commentImage');
+
+    const formData = new FormData();
+    formData.append('content', content);
+    if (imageInput.files.length > 0) {
+        formData.append('image', imageInput.files[0]);
+    }
 
     const res = await fetch(`/comments/${postId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
+        body: formData
     });
 
     if (res.ok) {
         document.getElementById('commentForm').reset();
+
+        // Reset custom file preview UI (clear filename & thumbnail)
+        if (typeof updateUI === 'function') window.updateUI(null);
+
         loadComments(postId);
+        showTopAlert("✅ Feedback added!", "success");
     }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     const postId = window.location.pathname.split('/').pop();
     loadComments(postId);
+
+    // Lightbox elements
+    const lightboxOverlay = document.getElementById('lightboxOverlay');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxClose = document.getElementById('lightboxClose');
 
     // ✅ Initialize Quill editor after DOM is ready
     editQuill = new Quill('#edit-quill-container', {
@@ -329,7 +352,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 titleWarning.style.display = "none";
             }
         });
-    }    
+    }
+    
+    // Delegate click on comment images to open lightbox
+    document.getElementById('comments-container').addEventListener('click', (e) => {
+        if (e.target.classList.contains('comment-image')) {
+        const src = e.target.getAttribute('data-full');
+        if (src) {
+            lightboxImage.src = src;
+            lightboxOverlay.style.display = 'flex';
+        }
+        }
+    });
+
+    // Close lightbox on overlay or close button click
+    lightboxOverlay.addEventListener('click', () => {
+        lightboxOverlay.style.display = 'none';
+        lightboxImage.src = '';
+    });
+
+    lightboxClose.addEventListener('click', () => {
+        lightboxOverlay.style.display = 'none';
+        lightboxImage.src = '';
+    });
+
+    // Also close on pressing Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightboxOverlay.style.display === 'flex') {
+        lightboxOverlay.style.display = 'none';
+        lightboxImage.src = '';
+        }
+    });
 
     // Show Edit History
     const showHistoryBtn = document.getElementById('showHistoryBtn');
@@ -412,3 +465,84 @@ function escapeHtml(text) {
     div.innerText = text;
     return div.innerHTML;
 }
+
+// File input UI behavior
+(function() {
+  const wrapper = document.getElementById('commentImageWrapper');
+  const input = document.getElementById('commentImage');
+  const fileNameEl = wrapper.querySelector('.file-name');
+  const previewWrap = wrapper.querySelector('.file-preview');
+  const previewImg = wrapper.querySelector('.file-preview img');
+  const removeBtn = wrapper.querySelector('.file-remove');
+
+  if (!input) return;
+
+  window.updateUI = function(file) {
+    if (!file) {
+      fileNameEl.textContent = 'No file chosen';
+      previewWrap.style.display = 'none';
+      previewImg.src = '';
+      removeBtn.style.display = 'none';
+      return;
+    }
+
+    fileNameEl.textContent = file.name;
+    removeBtn.style.display = 'inline-block';
+
+    // Show thumbnail if image
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImg.src = reader.result;
+        previewWrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      previewImg.src = '';
+      previewWrap.style.display = 'none';
+    }
+  }
+
+  // When user selects file through dialog
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    window.updateUI(file);
+  });
+
+  // Drag & drop styling
+  ['dragenter','dragover'].forEach(evt => {
+    wrapper.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      wrapper.classList.add('dragover');
+    });
+  });
+
+  ['dragleave','drop'].forEach(evt => {
+    wrapper.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      wrapper.classList.remove('dragover');
+    });
+  });
+
+  // Handle drop
+  wrapper.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    if (!dt) return;
+    const file = dt.files[0];
+    if (!file) return;
+    // set the file to the input (so FormData picks it up)
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    input.files = dataTransfer.files;
+    window.updateUI(file);
+  });
+
+  // Remove / clear file
+  removeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    input.value = '';
+    window.updateUI(null);
+  });
+})();

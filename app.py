@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
 from flask_migrate import Migrate
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, event
 from sqlalchemy.sql import true
 from datetime import datetime, timedelta, timezone
 from html_diff import diff as html_diff
@@ -12,6 +12,8 @@ from threading import Thread
 import os
 import webbrowser
 import random
+
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
@@ -24,6 +26,12 @@ DB_HOST = 'localhost'
 DB_PORT = '5432'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Image Upload to Comment
+UPLOAD_FOLDER = 'static/uploads/comments'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+###
 
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
@@ -74,11 +82,11 @@ class PostLike(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    image_path = db.Column(db.String(255))
     ip_address = db.Column(db.String(45))
     timestamp = db.Column(db.DateTime, default=dhaka_time)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
 
 class Notice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -170,6 +178,11 @@ def create_image():
     d = ImageDraw.Draw(img)
     d.text((10, 20), "BDF", fill="white")
     return img
+
+# Image Upload to Comment
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+###
 
 @app.route('/user')
 def user_profile():
@@ -804,18 +817,29 @@ def get_comments(post_id):
             'content': comment.content,
             'ip_address': comment.ip_address,
             'commented_by': commented_by,
+            'image_path': comment.image_path,
             'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M')
         })
     return jsonify(response)
 
 @app.route('/comments/<int:post_id>', methods=['POST'])
 def add_comment(post_id):
-    data = request.get_json()
-    content = data.get('content')
+    # data = request.get_json()
+    content = request.form.get('content')
     user_ip = request.remote_addr
     post = Post.query.get_or_404(post_id)
 
-    comment = Comment(post_id=post_id, content=content, ip_address=user_ip)
+    image_file = request.files.get('image')
+    image_path = None
+
+    if image_file and allowed_file(image_file.filename):
+        filename = secure_filename(image_file.filename)
+        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        image_file.save(save_path)
+        image_path = '/' + save_path.replace('\\', '/')
+
+    comment = Comment(post_id=post_id, content=content, ip_address=user_ip, image_path=image_path)
     db.session.add(comment)
     db.session.commit()
 
@@ -863,6 +887,16 @@ def delete_comment(comment_id):
     db.session.delete(comment)
     db.session.commit()
     return jsonify({'message': 'Comment deleted successfully'})
+
+@event.listens_for(Comment, 'after_delete')
+def delete_comment_image(mapper, connection, target):
+    if target.image_path:
+        file_path = target.image_path.lstrip('/')
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                app.logger.warning(f"Failed to delete image file: {file_path} - {e}")
 
 #only for admin
 @app.route('/admin/dashboard')
