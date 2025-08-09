@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
+from flask import send_from_directory
 from flask_migrate import Migrate
 from sqlalchemy import or_, and_, event
 from sqlalchemy.sql import true
@@ -29,9 +30,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWOR
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Image Upload to Comment
-UPLOAD_FOLDER = 'static/uploads/comments'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+# UPLOAD_FOLDER = 'uploads/comments'
+# ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'comments')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # ensure it exists
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ###
 
 db = SQLAlchemy(app)
@@ -823,6 +830,10 @@ def get_comments(post_id):
         })
     return jsonify(response)
 
+@app.route('/uploads/comments/<filename>')
+def uploaded_comment_image(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 @app.route('/comments/<int:post_id>', methods=['POST'])
 def add_comment(post_id):
     # data = request.get_json()
@@ -840,7 +851,7 @@ def add_comment(post_id):
         os.makedirs(save_dir, exist_ok=True)
         save_path = os.path.join(save_dir, unique_filename)
         image_file.save(save_path)
-        image_path = '/' + save_path.replace('\\', '/')
+        image_path = f'/uploads/comments/{unique_filename}'
 
     comment = Comment(post_id=post_id, content=content, ip_address=user_ip, image_path=image_path)
     db.session.add(comment)
