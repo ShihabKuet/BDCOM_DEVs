@@ -10,6 +10,7 @@ from html_diff import diff as html_diff
 from threading import Thread
 # from pystray import Icon, Menu, MenuItem
 # from PIL import Image, ImageDraw
+import sys
 import os
 import webbrowser
 import random
@@ -34,11 +35,21 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# === FIXED: Always use absolute path for uploads ===
+if getattr(sys, 'frozen', False):
+    # Running as compiled exe
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    # Running from source
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'comments')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # ensure it exists
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # ensure it exists
 ###
 
 db = SQLAlchemy(app)
@@ -847,13 +858,16 @@ def add_comment(post_id):
     if image_file and allowed_file(image_file.filename):
         ext = os.path.splitext(image_file.filename)[1].lower()  # get extension
         unique_filename = f"{uuid.uuid4().hex}{ext}"  # unique filename with extension
-        save_dir = app.config['UPLOAD_FOLDER']
-        os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, unique_filename)
+        save_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         image_file.save(save_path)
         image_path = f'/uploads/comments/{unique_filename}'
 
-    comment = Comment(post_id=post_id, content=content, ip_address=user_ip, image_path=image_path)
+    comment = Comment(
+        post_id=post_id,
+        content=content,
+        ip_address=user_ip,
+        image_path=image_path
+    )
     db.session.add(comment)
     db.session.commit()
 
@@ -906,9 +920,10 @@ def delete_comment(comment_id):
 def delete_comment_image(mapper, connection, target):
     if target.image_path:
         file_path = target.image_path.lstrip('/')
-        if os.path.exists(file_path):
+        abs_path = os.path.join(BASE_DIR, file_path.replace('/', os.sep))
+        if os.path.exists(abs_path):
             try:
-                os.remove(file_path)
+                os.remove(abs_path)
             except Exception as e:
                 app.logger.warning(f"Failed to delete image file: {file_path} - {e}")
 
