@@ -55,8 +55,10 @@
         <aside class="sidebar">
             <!-- Top 3 Posts -->
             <div class="card sidebar-card notice-card">
-                <h3>📰 Notice Board</h3>
-                <ul id="noticeList"></ul>
+                <h3><span class="notice-icon" aria-hidden="true">📌</span> Notice Board</h3>
+                <ul id="noticeList" aria-live="polite" aria-atomic="true">
+                <!-- dynamically loaded notices -->
+                </ul>
             </div>
 
             <!-- Featured Posts -->

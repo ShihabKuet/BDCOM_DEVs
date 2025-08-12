@@ -80,7 +80,7 @@ class Post(db.Model):
     is_visible = db.Column(db.Boolean, default=True)
 
 def dhaka_time():
-    return datetime.now() + timedelta(hours=6)
+    return datetime.now()
 
 class PostHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
