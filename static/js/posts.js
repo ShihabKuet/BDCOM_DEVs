@@ -129,8 +129,8 @@ function renderCommentBatch(postId, start, end, userIP) {
         commentEl.innerHTML = `
             ${imageHTML}
             <p class="comment-content" id="comment-content-${index}">
-                ${previewText}${isLong ? `<span id="ellipsis-${index}">…</span>` : ''}
-                <span id="full-text-${index}" style="display:none;">${fullText.substring(COMMENT_PREVIEW_LENGTH)}</span>
+                <span id="preview-text-${index}">${previewText}${isLong ? `<span id="ellipsis-${index}">....</span>` : ''}</span>
+                <span id="full-text-${index}" style="display:none;">${fullText}</span>
                 ${isLong ? `<a href="#" id="toggle-btn-${index}" class="expand-link">Expand</a>` : ''}
             </p>
             <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
@@ -183,21 +183,24 @@ document.getElementById('load-more-btn').addEventListener('click', () => {
 
 
 function toggleCommentExpand(index) {
-    const ellipsis = document.getElementById(`ellipsis-${index}`);
+    //const ellipsis = document.getElementById(`ellipsis-${index}`);
     const fullText = document.getElementById(`full-text-${index}`);
     const toggleBtn = document.getElementById(`toggle-btn-${index}`);
+    const previewText = document.getElementById(`preview-text-${index}`);
 
     if (fullText.style.display === 'none') {
         // Expand
+        previewText.style.display = 'none';
+        //ellipsis.style.display = 'none';
         fullText.style.display = 'inline';
-        ellipsis.style.display = 'none';
         toggleBtn.innerHTML = `Collapse <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
         toggleBtn.classList.remove('collapsed');
         toggleBtn.classList.add('expanded');
     } else {
         // Collapse
+        previewText.style.display = 'inline';
         fullText.style.display = 'none';
-        ellipsis.style.display = 'inline';
+        //ellipsis.style.display = 'inline';
         toggleBtn.innerHTML = `Expand <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
         toggleBtn.classList.remove('expanded');
         toggleBtn.classList.add('collapsed');
