@@ -103,7 +103,8 @@
             <input type="hidden" id="editContent">
             <br><br>
             <label><input type="radio" name="editType" value="query" {% if post.type == 'query' %}checked{% endif %}> Query</label>
-            <label><input type="radio" name="editType" value="patch" {% if post.type == 'patch' %}checked{% endif %}> Patch</label><br><br>
+            <label><input type="radio" name="editType" value="patch" {% if post.type == 'patch' %}checked{% endif %}> Patch</label>
+            <label><input type="radio" name="editType" value="c&c" {% if post.type == 'c&c' %}checked{% endif %}> Command & Configuration</label><br><br>
             <label for="editCategory">Category:</label>
             <select id="editCategory" required>
                 <option value="vxworks" {% if post.category == 'vxworks' %}selected{% endif %}>🛠️ VxWorks</option>
