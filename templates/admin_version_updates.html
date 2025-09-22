@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – Version Updates</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_version_updates.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+
+  <div class="admin-container">
+    <h1>⚙️ Manage Version Updates</h1>
+
+    <!-- Add New Version Form -->
+    <div class="form-section">
+      <h2>➕ Add New Version</h2>
+      <form method="POST" class="version-form">
+        <label for="version">Version</label>
+        <input type="text" name="version" id="version" placeholder="e.g. 1.3.0" required>
+
+        <label for="release_date">Release Date</label>
+        <input type="date" name="release_date" id="release_date" required>
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description" rows="5" placeholder="Write update details..." required></textarea>
+
+        <button type="submit" class="btn-submit">Submit Update</button>
+      </form>
+    </div>
+
+    <!-- List of Updates -->
+    <div class="list-section">
+      <h2>📜 All Updates</h2>
+      <table class="manage-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Version</th>
+            <th>Release Date</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for update in updates %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ update.version }}</td>
+            <td>{{ update.release_date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ update.description }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('delete_version_update', update_id=update.id) }}" onsubmit="return confirm('Delete version {{ update.version }}?');">
+                <button type="submit" class="btn-delete">🗑 Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <a href="{{ url_for('admin_dashboard') }}" class="back-admin-link">← Back to Admin Dashboard</a>
+  {% include 'footer.html' %}
+</body>
+</html>

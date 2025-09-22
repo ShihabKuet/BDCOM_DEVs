@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Version Updates</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/version_updates.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+
+  <div class="version-container">
+    <h1>🚀 Version Updates</h1>
+    <p class="subtitle">Stay up to date with the latest improvements and fixes.</p>
+
+    <div class="updates-list">
+      {% for update in updates %}
+      <div class="update-card">
+        <div class="update-header">
+          <span class="version-tag">v{{ update.version }}</span>
+          <span class="release-date">{{ update.release_date.strftime('%b %d, %Y') }}</span>
+        </div>
+        <p class="description">{{ update.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+</body>
+</html>

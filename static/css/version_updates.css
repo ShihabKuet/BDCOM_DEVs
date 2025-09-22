@@ -1,0 +1,70 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f7fb;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.version-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.version-container h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.updates-list {
+  display: grid;
+  gap: 20px;
+}
+
+.update-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.update-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.update-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.version-tag {
+  font-size: 1.2em;
+  font-weight: bold;
+  background: #3498db;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.release-date {
+  font-size: 0.9em;
+  color: #888;
+}
+
+.description {
+  font-size: 1em;
+  color: #444;
+  line-height: 1.5;
+}

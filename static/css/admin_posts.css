@@ -1,0 +1,128 @@
+/* General Layout */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  color: #2c3e50;
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.admin-container h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #34495e;
+}
+
+/* Table Styling */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-post-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.admin-post-table th, 
+.admin-post-table td {
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.admin-post-table thead {
+  background: #3498db;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.admin-post-table tbody tr {
+  transition: background 0.2s;
+}
+
+.admin-post-table tbody tr:nth-child(even) {
+  background: #f9fbfd;
+}
+
+.admin-post-table tbody tr:hover {
+  background: #eaf4fc;
+}
+
+/* Editable cells */
+.admin-post-table td[contenteditable="true"] {
+  background: #fff8e6;
+  border-radius: 6px;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.admin-post-table td[contenteditable="true"]:focus {
+  background: #fff2cc;
+}
+
+/* Buttons */
+.admin-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-actions button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-view {
+  background: #2ecc71;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #27ae60;
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+/* Back link */
+.back-admin-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 16px;
+  background: #bdc3c7;
+  color: #2c3e50;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.back-admin-link:hover {
+  background: #95a5a6;
+  transform: translateY(-2px);
+}

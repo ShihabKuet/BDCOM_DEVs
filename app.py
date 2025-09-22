@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask import abort
 from flask import send_from_directory
@@ -181,6 +181,14 @@ class DiscussionMessage(db.Model):
     created_at = db.Column(db.DateTime, default=dhaka_time)
 
 # Discussion feature ends
+
+class VersionUpdate(db.Model):
+    __tablename__ = "version_updates"
+    id = db.Column(db.Integer, primary_key=True)
+    version = db.Column(db.String(20), nullable=False)
+    release_date = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=dhaka_time)
 
 def load_app_version():
     with open('version') as f:
@@ -1312,6 +1320,39 @@ def require_ip_registration():
 
 
 #end discussion
+
+# Show version update details (user-facing)
+@app.route("/version-updates")
+def version_updates():
+    updates = VersionUpdate.query.order_by(VersionUpdate.release_date.desc()).all()
+    return render_template("version_updates.html", updates=updates)
+
+@app.route("/admin/version-updates", methods=["GET", "POST"])
+def admin_version_updates():
+    if request.method == "POST":
+        version = request.form["version"]
+        release_date = datetime.strptime(request.form["release_date"], "%Y-%m-%d").date()
+        description = request.form["description"]
+
+        new_update = VersionUpdate(
+            version=version,
+            release_date=release_date,
+            description=description
+        )
+        db.session.add(new_update)
+        db.session.commit()
+        return redirect(url_for("admin_version_updates"))
+
+    updates = VersionUpdate.query.order_by(VersionUpdate.release_date.desc()).all()
+    return render_template("admin_version_updates.html", updates=updates)
+
+
+@app.route("/admin/version-updates/delete/<int:update_id>", methods=["POST"])
+def delete_version_update(update_id):
+    update = VersionUpdate.query.get_or_404(update_id)
+    db.session.delete(update)
+    db.session.commit()
+    return redirect(url_for("admin_version_updates"))
 
 # Tray menu actions
 def open_browser(icon, item):
