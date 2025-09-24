@@ -116,12 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
     const quill = new Quill('#editor-container', {
         theme: 'snow',
         modules: {
             toolbar: [
             ['bold', 'italic', 'underline'],
-            [{ 'header': [1, 2, 3, false] }],
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'color': [] }, { 'background': [] }],
             ['code', 'code-block'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'image'],  // ← image button

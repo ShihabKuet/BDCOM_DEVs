@@ -327,12 +327,22 @@ document.addEventListener('DOMContentLoaded', () => {
         modules: {
             toolbar: [
             ['bold', 'italic', 'underline'],
-            [{ 'header': [1, 2, 3, false] }],
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'color': [] }, { 'background': [] }],
             ['code', 'code-block'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'image'],  // ← image button
             ['clean']
             ]
+        }
+    });
+
+    // Light box for Post Images
+    document.querySelector('.post-body').addEventListener('click', (e) => {
+        if (e.target.tagName.toLowerCase() === 'img') {
+            const src = e.target.src;
+            lightboxImage.src = src;
+            lightboxOverlay.style.display = 'flex';
         }
     });
 

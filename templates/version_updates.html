@@ -22,7 +22,7 @@
           <span class="version-tag">v{{ update.version }}</span>
           <span class="release-date">{{ update.release_date.strftime('%b %d, %Y') }}</span>
         </div>
-        <p class="description">{{ update.description }}</p>
+        <p class="description">{{ update.description|safe }}</p>
       </div>
       {% endfor %}
     </div>
