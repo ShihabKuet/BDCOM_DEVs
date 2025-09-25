@@ -78,6 +78,7 @@ class Post(db.Model):
     featured = db.relationship('FeaturedPost', backref='feat_post', cascade='all, delete-orphan', passive_deletes=True)
     followers = db.relationship('PostFollow', backref='followed_post', cascade='all, delete-orphan', passive_deletes=True)
     is_visible = db.Column(db.Boolean, default=True)
+    edit_access = db.Column(db.String(10), default="read")
 
 def dhaka_time():
     return datetime.now()
@@ -452,6 +453,7 @@ def posts():
         reference_id = data.get('reference_id')
         submitted_by = data.get('submitted_by', ip)  # fallback to IP if username not provided
         last_modified_by = data.get('last_modified_by', ip)  # fallback to IP if username not provided
+        edit_access = data.get('edit_access', 'read') # Fallback to read
 
         new_post = Post(
             title=data['title'],
@@ -462,7 +464,8 @@ def posts():
             last_modified_ip=ip,
             submitted_by=submitted_by,
             last_modified_by=last_modified_by,
-            reference_id=reference_id
+            reference_id=reference_id,
+            edit_access=edit_access 
         )
         db.session.add(new_post)
         db.session.commit()
@@ -515,7 +518,8 @@ def posts():
                 'last_modified_ip': post.last_modified_ip,
                 'pinned': post.pinned,
                 'likes': post.likes,
-                'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None
+                'liked': PostLike.query.filter_by(post_id=post.id, ip_address=user_ip).first() is not None,
+                'edit_access': post.edit_access
             } for post in paginated_posts.items],
             'has_next': paginated_posts.has_next,
             'has_prev': paginated_posts.has_prev,
@@ -698,6 +702,7 @@ def update_post(post_id):
     new_content = data.get('content', post.content)
     new_type=data.get('type', post.type)
     new_category=data.get('category', post.category)
+    new_edit_access = data.get('edit_access', post.edit_access)
 
     # Use html_diff to get basic <ins>/<del> diff
     # raw_title_diff = html_diff(post.title or "", new_title or "")
@@ -711,7 +716,8 @@ def update_post(post_id):
         new_title == post.title and
         new_content == post.content and
         new_type == post.type and
-        new_category == post.category
+        new_category == post.category and
+        new_edit_access == post.edit_access
     ):
         return jsonify({'message': 'Nothing is modified'}), 200
 
@@ -745,6 +751,7 @@ def update_post(post_id):
     post.category = new_category
     post.last_modified_by = data.get('last_modified_by', post.last_modified_by)
     post.last_modified_ip = request.remote_addr
+    post.edit_access = new_edit_access
 
     db.session.commit()
 

@@ -32,12 +32,13 @@ async function submitEdit(e, postId) {
     const type = document.querySelector('input[name="editType"]:checked').value;
     const category = document.getElementById('editCategory').value;
     const last_modified_by = document.getElementById('editUsername').value;
+    const edit_access = document.querySelector('input[name="editEditAccess"]:checked').value;
 
     try {
         const response = await fetch(`/posts/${postId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, type, category, last_modified_by })
+            body: JSON.stringify({ title, content, type, category, last_modified_by, edit_access })
         });
 
         const data = await response.json();

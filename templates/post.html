@@ -83,7 +83,10 @@
         {% endif %}
 
         <div class="post-actions-single">
+            {% if post.edit_access == 'write' or current_ip == post.ip_address or current_ip == admin_ip %}
             <button class="editBtn" onclick="startEdit()">✏️ Edit</button>
+            {% endif %}
+
             {% if current_ip == post.ip_address or current_ip == admin_ip %}
             <button class="deleteBtn" onclick="deletePost({{ post.id }})">🗑️ Soft Delete</button>
             {% endif %}
@@ -111,7 +114,22 @@
                 <option value="linux" {% if post.category == 'linux' %}selected{% endif %}>🐧 Linux</option>
                 <option value="technical" {% if post.category == 'technical' %}selected{% endif %}>💡 Technical</option>
                 <option value="non technical" {% if post.category == 'non technical' %}selected{% endif %}>📖 Non Technical</option>
-            </select><br><br>
+            </select>
+            <br><br>
+            <label for="editEditAccess" class="type-label">Edit Access:</label>
+            <div class="radio-group-modern">
+                <label class="radio-option">
+                    <input type="radio" name="editEditAccess" value="read" {% if post.edit_access == 'read' %}checked{% endif %}>
+                    <span class="custom-radio"></span>
+                    Read
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="editEditAccess" value="write" {% if post.edit_access == 'write' %}checked{% endif %}>
+                    <span class="custom-radio"></span>
+                    Write (Anyone can edit)
+                </label>
+            </div>
+            <br><br>
 
             <div class="username-check-container">
                 {% if known_user %}

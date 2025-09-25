@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const reference_id = document.getElementById('referenceSelect').value || null;
         const submitted_by = document.getElementById('username').value;
         const last_modified_by = document.getElementById('username').value;
+        const edit_access = document.querySelector('input[name="editAccess"]:checked').value;
 
         if (!title || !content) {
             alert("Title and content are required.");
@@ -167,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await fetch('/posts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, type, category, reference_id, submitted_by, last_modified_by })
+            body: JSON.stringify({ title, content, type, category, reference_id, submitted_by, last_modified_by, edit_access })
         });
 
         // alert("Post submitted successfully!");
