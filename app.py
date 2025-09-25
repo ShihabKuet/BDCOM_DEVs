@@ -363,6 +363,16 @@ def inject_year():
         'app_version': APP_VERSION
     }
 
+@app.context_processor
+def inject_user_ip():
+    """
+    Makes user_ip and admin_ip available in ALL templates.
+    """
+    return {
+        "current_user_ip": request.remote_addr,
+        "administrator_ip": ADMIN_IP
+    }
+
 @app.route('/')
 def index():
     active_discussions_count = Discussion.query.filter_by(status='Active').count()
