@@ -31,21 +31,21 @@
     transform: scale(0.98);
 }
 
-/* Comment Image */
+/* ===== Comment Images ===== */
 .comment-image-container {
-    max-width: 320px;        /* max width */
-    max-height: auto;       /* max height */
+    max-width: 360px;
+    border-radius: 14px;
     overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin: 10px 0;
     border: 1px solid #e0e0e0;
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
 .comment-image-container:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
 }
 
 .comment-image {
@@ -53,8 +53,9 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 12px;
+    border-radius: 14px;
 }
+
 
 
 /* Image File Drop Zone for Comment */
@@ -217,4 +218,67 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ===== Comment Reply Button ===== */
+.reply-btn {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.reply-btn:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+    color: #1e3a8a;
+}
+
+/* ===== Comment Reply Form ===== */
+.reply-form {
+    margin-top: 10px;
+    padding: 12px;
+    border-left: 3px solid #4f46e5;
+    background: #f9f9ff;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.reply-form textarea {
+    width: 100%;
+    min-height: 70px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    font-size: 0.9rem;
+    resize: vertical;
+    outline: none;
+    transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.reply-form textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* Reply form buttons */
+.reply-form button {
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.reply-form button:hover {
+    background: #3730a3;
 }

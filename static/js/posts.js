@@ -88,23 +88,18 @@ let allComments = [];
 
 async function loadComments(postId) {
     const res = await fetch(`/comments/${postId}`);
-    allComments = (await res.json()).reverse();
+    allComments = await res.json(); // already nested structure
     const userIP = await (await fetch('/my-ip')).json();
 
-    // Clear container before rendering
+    // Clear container
     document.getElementById('comments-container').innerHTML = '';
 
+    // Render first batch of top-level comments
     renderCommentBatch(postId, 0, COMMENTS_PER_BATCH, userIP);
 
-    // Show or hide "Load More" button
+    // Show/hide "Load More"
     const loadMoreBtn = document.getElementById('load-more-btn');
-    if (allComments.length > COMMENTS_PER_BATCH) {
-        loadMoreBtn.style.display = 'block';
-    } else {
-        loadMoreBtn.style.display = 'none';
-    }
-
-    // Set current batch start
+    loadMoreBtn.style.display = allComments.length > COMMENTS_PER_BATCH ? 'block' : 'none';
     loadMoreBtn.dataset.batch = COMMENTS_PER_BATCH;
 }
 
@@ -112,57 +107,119 @@ function renderCommentBatch(postId, start, end, userIP) {
     const container = document.getElementById('comments-container');
     const fragment = document.createDocumentFragment();
 
-    for (let index = start; index < end && index < allComments.length; index++) {
-        const c = allComments[index];
-        const isLong = c.content.length > COMMENT_PREVIEW_LENGTH;
-        const previewText = isLong ? escapeHtml(c.content.substring(0, COMMENT_PREVIEW_LENGTH)) : escapeHtml(c.content);
-        const fullText = escapeHtml(c.content);
-
-        const imageHTML = c.image_path
-            ? `<div class="comment-image-container">
-                <img src="${c.image_path}" alt="Comment Image" class="comment-image" loading="lazy" data-full="${c.image_path}" />
-            </div>`
-            : '';
-
-        const commentEl = document.createElement('div');
-        commentEl.className = 'comment';
-        commentEl.dataset.id = index;
-        commentEl.innerHTML = `
-            ${imageHTML}
-            <p class="comment-content" id="comment-content-${index}">
-                <span id="preview-text-${index}">${previewText}${isLong ? `<span id="ellipsis-${index}">....</span>` : ''}</span>
-                <span id="full-text-${index}" style="display:none;">${fullText}</span>
-                ${isLong ? `<a href="#" id="toggle-btn-${index}" class="expand-link">Expand</a>` : ''}
-            </p>
-            <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
-            ${c.ip_address === userIP.ip ? `
-                <div class="comment-actions">
-                    <button onclick="startEditComment(${index}, ${postId})">✏️</button>
-                    <button onclick="deleteComment(${index}, ${postId})">🗑️</button>
-                </div>
-                <div id="edit-comment-${index}" class="edit-comment-box">
-                    <textarea id="edit-text-${index}" class="edit-comment-text" required>${c.content}</textarea>
-                    <div class="edit-comment-actions">
-                        <button type="button" class="save-btn" onclick="submitCommentEdit(event, ${index}, ${postId})">💾 Save</button>
-                        <button type="button" class="cancel-btn" onclick="cancelEditComment(${index})">✖ Cancel</button>
-                    </div>
-                </div>` : ''}
-        `;
-        fragment.appendChild(commentEl);
+    for (let i = start; i < end && i < allComments.length; i++) {
+        renderComment(allComments[i], fragment, userIP, postId, 0, i);
     }
 
     container.appendChild(fragment);
 
-    // Attach expand/collapse toggle listeners
-    for (let i = start; i < end && i < allComments.length; i++) {
-        const toggleBtn = document.getElementById(`toggle-btn-${i}`);
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                toggleCommentExpand(i);
-            });
-        }
+    // Hide "Load More" if done
+    if (end >= allComments.length) {
+        document.getElementById('load-more-btn').style.display = 'none';
     }
+}
+
+function renderComment(c, container, userIP, postId, depth, index) {
+    const COMMENT_MAX_DEPTH = 3; // maximum indentation
+    const actual_comment_depth = Math.min(depth, COMMENT_MAX_DEPTH);
+
+    const isLong = c.content.length > COMMENT_PREVIEW_LENGTH;
+    const previewText = isLong ? escapeHtml(c.content.substring(0, COMMENT_PREVIEW_LENGTH)) : escapeHtml(c.content);
+    const fullText = escapeHtml(c.content);
+
+    const imageHTML = c.image_path
+        ? `<div class="comment-image-container">
+             <img src="${c.image_path}" class="comment-image" loading="lazy" data-full="${c.image_path}" />
+           </div>` : '';
+
+    const commentEl = document.createElement('div');
+    commentEl.className = 'comment';
+    commentEl.style.marginLeft = `${actual_comment_depth * 20}px`; // indent replies
+    if (depth > 3) {
+        commentEl.style.marginLeft = `${-14}px`;
+    }
+    commentEl.dataset.id = index;
+
+    commentEl.innerHTML = `
+        ${imageHTML}
+        <p class="comment-content">
+            <span id="preview-text-${c.id}">${previewText}${isLong ? `<span id="ellipsis-${c.id}">....</span>` : ''}</span>
+            <span id="full-text-${c.id}" style="display:none;">${fullText}</span>
+            ${isLong ? `<a href="#" id="toggle-btn-${c.id}" class="expand-link">Expand</a>` : ''}
+        </p>
+        <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
+        <button class="reply-btn" data-id="${c.id}">↩ Reply</button>
+
+        ${c.ip_address === userIP.ip ? `
+            <div class="comment-actions">
+                <button onclick="startEditComment(${c.id}, ${postId})">✏️</button>
+                <button onclick="deleteComment(${c.id}, ${postId})">🗑️</button>
+            </div>
+            <div id="edit-comment-${c.id}" class="edit-comment-box">
+                <textarea id="edit-text-${c.id}" class="edit-comment-text" required>${c.content}</textarea>
+                <div class="edit-comment-actions">
+                    <button type="button" class="save-btn" onclick="submitCommentEdit(event, ${c.id}, ${postId})">💾 Save</button>
+                    <button type="button" class="cancel-btn" onclick="cancelEditComment(${c.id})">✖ Cancel</button>
+                </div>
+            </div>` : ''}
+        <div id="replies-${c.id}"></div>
+    `;
+    container.appendChild(commentEl);
+
+    // Reply form button
+    commentEl.querySelector('.reply-btn').addEventListener('click', () => {
+        showReplyForm(commentEl, c.id, postId);
+    });
+
+    // Expand/collapse
+    const toggleBtn = document.getElementById(`toggle-btn-${c.id}`);
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleCommentExpand(c.id);
+        });
+    }
+
+    // Recursively render replies
+    const repliesContainer = commentEl.querySelector(`#replies-${c.id}`);
+    c.replies.forEach((reply, idx) => renderComment(reply, repliesContainer, userIP, postId, depth + 1, `${index}-${idx}`));
+}
+
+/**
+ * Inline reply form handler
+ */
+function showReplyForm(commentDiv, parentId, postId) {
+    // Remove any open reply form before creating new
+    const existing = commentDiv.querySelector('.reply-form');
+    if (existing) existing.remove();
+
+    const form = document.createElement('div');
+    form.className = 'reply-form';
+    form.innerHTML = `
+        <textarea class="replyContent" placeholder="Write a reply..." required></textarea>
+        <div>
+            <button class="sendReplyBtn">Reply</button>
+            <button class="cancelReplyBtn">Cancel</button>
+        </div>
+    `;
+    commentDiv.appendChild(form);
+
+    const textarea = form.querySelector('.replyContent');
+    textarea.focus();
+
+    form.querySelector('.sendReplyBtn').addEventListener('click', async () => {
+        const content = textarea.value.trim();
+        if (!content) return;
+        const formData = new FormData();
+        formData.append('content', content);
+        formData.append('parent_id', parentId);
+        await fetch(`/comments/${postId}`, { method: 'POST', body: formData });
+        loadComments(postId);
+    });
+
+    form.querySelector('.cancelReplyBtn').addEventListener('click', () => {
+        form.remove();
+    });
 }
 
 document.getElementById('load-more-btn').addEventListener('click', () => {
@@ -208,25 +265,41 @@ function toggleCommentExpand(index) {
     }
 }
 
-
-async function deleteComment(index, postId) {
-    const commentId = await getCommentIdByIndex(postId, index);
+async function deleteComment(commentId, postId) {
     if (!confirm('Delete this comment?')) return;
-
     await fetch(`/comments/${commentId}`, { method: 'DELETE' });
     loadComments(postId);
 }
 
-function startEditComment(index, postId) {
-    const box = document.getElementById(`edit-comment-${index}`);
+function startEditComment(commentId) {
+    const box = document.getElementById(`edit-comment-${commentId}`);
     box.classList.add('visible');
-    document.getElementById(`edit-text-${index}`).focus();
+    document.getElementById(`edit-text-${commentId}`).focus();
 }
 
-function cancelEditComment(index) {
-    const box = document.getElementById(`edit-comment-${index}`);
+function cancelEditComment(commentId) {
+    const box = document.getElementById(`edit-comment-${commentId}`);
     box.classList.remove('visible');
 }
+
+// async function deleteComment(index, postId) {
+//     const commentId = await getCommentIdByIndex(postId, index);
+//     if (!confirm('Delete this comment?')) return;
+
+//     await fetch(`/comments/${commentId}`, { method: 'DELETE' });
+//     loadComments(postId);
+// }
+
+// function startEditComment(index, postId) {
+//     const box = document.getElementById(`edit-comment-${index}`);
+//     box.classList.add('visible');
+//     document.getElementById(`edit-text-${index}`).focus();
+// }
+
+// function cancelEditComment(index) {
+//     const box = document.getElementById(`edit-comment-${index}`);
+//     box.classList.remove('visible');
+// }
 
 function setEditUsername(name) {
     document.getElementById('editUsername').value = name;
@@ -250,25 +323,40 @@ function enableEditUsernameField() {
     document.querySelector('#edit-username-confirm-section .no').classList.add('active');
 }
 
-
-async function submitCommentEdit(e, index, postId) {
+async function submitCommentEdit(e, commentId, postId) {
     e.preventDefault();
-    const content = document.getElementById(`edit-text-${index}`).value.trim();
-    if (content === '') {
-        showTopAlert("⚠️ Comment cannot be empty or just spaces.", "warning");
+    const content = document.getElementById(`edit-text-${commentId}`).value.trim();
+    if (!content) {
+        showTopAlert("⚠️ Comment cannot be empty.", "warning");
         return;
     }
-    const commentId = await getCommentIdByIndex(postId, index);
-
     await fetch(`/comments/${commentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content })
     });
-
     loadComments(postId);
 }
 
+// async function submitCommentEdit(e, index, postId) {
+//     e.preventDefault();
+//     const content = document.getElementById(`edit-text-${index}`).value.trim();
+//     if (content === '') {
+//         showTopAlert("⚠️ Comment cannot be empty or just spaces.", "warning");
+//         return;
+//     }
+//     const commentId = await getCommentIdByIndex(postId, index);
+
+//     await fetch(`/comments/${commentId}`, {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ content })
+//     });
+
+//     loadComments(postId);
+// }
+
+// ager comment eta.
 // async function getCommentIdByIndex(postId, index) {
 //     const res = await fetch(`/comments/${postId}`);
 //     const comments = await res.json();

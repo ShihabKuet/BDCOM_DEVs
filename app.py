@@ -8,6 +8,7 @@ from sqlalchemy.sql import true
 from datetime import datetime, timedelta, timezone
 from html_diff import diff as html_diff
 from threading import Thread
+
 # from pystray import Icon, Menu, MenuItem
 # from PIL import Image, ImageDraw
 import sys
@@ -103,10 +104,16 @@ class PostLike(db.Model):
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('comment.id', ondelete='CASCADE'), nullable=True) # Nested Comment
     content = db.Column(db.Text, nullable=False)
     image_path = db.Column(db.String(255))
     ip_address = db.Column(db.String(45))
     timestamp = db.Column(db.DateTime, default=dhaka_time)
+    replies = db.relationship(
+        "Comment",
+        backref=db.backref("parent", remote_side=[id]),
+        cascade="all, delete-orphan",
+    )
 
 class Notice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -845,25 +852,29 @@ def toggle_like(post_id):
 
         return jsonify({'likes': post.likes, 'liked': True}), 201
 
-@app.route('/comments/<int:post_id>', methods=['GET'])
-def get_comments(post_id):
-    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.timestamp.asc()).all()
-    response = []
-
-    for comment in comments:
+def build_comment_tree(comments, parent_id=None):
+    tree = []
+    for comment in [c for c in comments if c.parent_id == parent_id]:
         commenter = UserIP.query.filter_by(ip_address=comment.ip_address).first()
-        if commenter:
-            commented_by = commenter.username or commenter.ip_address
-        else:
-            commented_by = "Unknown"
-        response.append({
+        commented_by = commenter.username if commenter else comment.ip_address or "Unknown"
+
+        tree.append({
             'id': comment.id,
             'content': comment.content,
             'ip_address': comment.ip_address,
             'commented_by': commented_by,
             'image_path': comment.image_path,
-            'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M')
+            'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'replies': build_comment_tree(comments, comment.id)  # recursive
         })
+    return tree
+
+
+@app.route('/comments/<int:post_id>', methods=['GET'])
+def get_comments(post_id):
+    # Fetch all comments once, newest first (for top-level ordering)
+    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.timestamp.desc()).all()
+    response = build_comment_tree(comments)
     return jsonify(response)
 
 @app.route('/uploads/comments/<filename>')
@@ -874,6 +885,7 @@ def uploaded_comment_image(filename):
 def add_comment(post_id):
     # data = request.get_json()
     content = request.form.get('content')
+    parent_id = request.form.get('parent_id')
     user_ip = request.remote_addr
     post = Post.query.get_or_404(post_id)
 
@@ -891,7 +903,8 @@ def add_comment(post_id):
         post_id=post_id,
         content=content,
         ip_address=user_ip,
-        image_path=image_path
+        image_path=image_path,
+        parent_id=parent_id if parent_id else None
     )
     db.session.add(comment)
     db.session.commit()
