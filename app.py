@@ -899,6 +899,7 @@ def add_comment(post_id):
         image_file.save(save_path)
         image_path = f'/uploads/comments/{unique_filename}'
 
+    # Create comment
     comment = Comment(
         post_id=post_id,
         content=content,
@@ -913,14 +914,23 @@ def add_comment(post_id):
     commenter = UserIP.query.filter_by(ip_address=user_ip).first()
     commenter_name = commenter.username if commenter else user_ip or "Someone"
 
-    # Send notification if commenter is not the post owner
+    # 1️⃣ Send notification if commenter is not the post owner
     if user_ip != post.ip_address:
         message = (
             f"💬 <strong>{commenter_name}</strong> gave feedback on your post <strong>{post.title}</strong>"
         )
         create_notification(post.ip_address, message, post.id)
+
+    # 2️⃣ Notify parent comment author if this is a reply
+    if parent_id:
+        parent_comment = Comment.query.get(parent_id)
+        if parent_comment and parent_comment.ip_address != user_ip:
+            parent_commenter = UserIP.query.filter_by(ip_address=parent_comment.ip_address).first()
+            parent_name = parent_commenter.username if parent_commenter else parent_comment.ip_address
+            message = f"💬 <strong>{commenter_name}</strong> replied to your comment on post <strong>{post.title}</strong>"
+            create_notification(parent_comment.ip_address, message, post.id)
         
-    # Notify all followers except who commented
+    # 3️⃣ Notify all followers except who commented
     followers = PostFollow.query.filter(
         PostFollow.post_id == post.id,
         PostFollow.follower_ip != user_ip

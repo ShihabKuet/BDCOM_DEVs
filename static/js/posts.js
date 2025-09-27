@@ -154,8 +154,8 @@ function renderComment(c, container, userIP, postId, depth, index) {
     commentEl.dataset.id = index;
 
     commentEl.innerHTML = `
-        ${imageHTML}
-        <p class="comment-content">
+        <div class="comment-content">
+            ${imageHTML}
             <span id="preview-text-${c.id}">${previewText}${isLong ? `<span id="ellipsis-${c.id}">....</span>` : ''}</span>
             <span id="full-text-${c.id}" style="display:none;">${fullText}</span>
             ${isLong ? `
@@ -163,7 +163,7 @@ function renderComment(c, container, userIP, postId, depth, index) {
                     <span class="label">Expand</span>
                     <span class="icon">▼</span>
                 </a>` : ''}
-        </p>
+        </div>
         <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
     <div class="comment-actions">
         <button class="reply-btn" data-id="${c.id}">↩ Reply</button>
@@ -236,6 +236,15 @@ function showReplyForm(commentDiv, parentId, postId) {
     form.className = 'reply-form';
     form.innerHTML = `
         <textarea class="replyContent" placeholder="Write a reply..." required></textarea>
+        
+        <div class="reply-upload-wrapper">
+            <input type="file" id="replyImage" class="replyImage" accept="image/*">
+            <label for="replyImage" class="replyImageLabel">
+                📷 Upload Image
+            </label>
+            <span id="replyImageName" class="replyImageName"></span>
+        </div>
+
         <div>
             <button class="sendReplyBtn">Reply</button>
             <button class="cancelReplyBtn">Cancel</button>
@@ -244,14 +253,21 @@ function showReplyForm(commentDiv, parentId, postId) {
     commentDiv.appendChild(form);
 
     const textarea = form.querySelector('.replyContent');
+    const imageInput = form.querySelector('.replyImage');
     textarea.focus();
 
     form.querySelector('.sendReplyBtn').addEventListener('click', async () => {
         const content = textarea.value.trim();
-        if (!content) return;
+        if (!content && !imageInput.files.length) return;
+
         const formData = new FormData();
         formData.append('content', content);
         formData.append('parent_id', parentId);
+ 
+        if (imageInput.files.length > 0) {
+            formData.append('image', imageInput.files[0]); // append selected image
+        }
+
         await fetch(`/comments/${postId}`, { method: 'POST', body: formData });
         loadComments(postId);
     });
@@ -260,6 +276,13 @@ function showReplyForm(commentDiv, parentId, postId) {
         form.remove();
     });
 }
+
+document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('replyImage')) {
+        const fileNameSpan = document.getElementById('replyImageName');
+        fileNameSpan.textContent = e.target.files.length > 0 ? e.target.files[0].name : '';
+    }
+});
 
 document.getElementById('load-more-btn').addEventListener('click', () => {
     const loader = document.getElementById('comments-loader');

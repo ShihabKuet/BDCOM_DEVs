@@ -283,6 +283,48 @@
     background: #3730a3;
 }
 
+/* Wrapper for better layout */
+.reply-upload-wrapper {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Hide ugly default input */
+.replyImage {
+    display: none;
+}
+
+/* Custom button style */
+.replyImageLabel {
+    background: linear-gradient(135deg, #4e8cff, #1e60d4);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.replyImageLabel:hover {
+    background: linear-gradient(135deg, #1e60d4, #4e8cff);
+    transform: scale(1.05);
+}
+
+/* Selected file name */
+.replyImageName {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+}
+
+
 .comments-loader {
   display: none; /* hidden by default */
   text-align: center;
@@ -305,3 +347,4 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
