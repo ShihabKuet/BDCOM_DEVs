@@ -87,20 +87,33 @@ const COMMENTS_PER_BATCH = 5;
 let allComments = [];
 
 async function loadComments(postId) {
-    const res = await fetch(`/comments/${postId}`);
-    allComments = await res.json(); // already nested structure
-    const userIP = await (await fetch('/my-ip')).json();
-
-    // Clear container
-    document.getElementById('comments-container').innerHTML = '';
-
-    // Render first batch of top-level comments
-    renderCommentBatch(postId, 0, COMMENTS_PER_BATCH, userIP);
-
-    // Show/hide "Load More"
+    const container = document.getElementById('comments-container');
     const loadMoreBtn = document.getElementById('load-more-btn');
-    loadMoreBtn.style.display = allComments.length > COMMENTS_PER_BATCH ? 'block' : 'none';
-    loadMoreBtn.dataset.batch = COMMENTS_PER_BATCH;
+    const loader = document.getElementById('comments-loader');
+
+    // Show loader, hide old comments + button
+    loader.style.display = 'block';
+    container.innerHTML = '';
+    loadMoreBtn.style.display = 'none';
+
+    try {
+        const res = await fetch(`/comments/${postId}`);
+        allComments = await res.json(); // already nested structure
+        const userIP = await (await fetch('/my-ip')).json();
+
+        // Hide loader
+        loader.style.display = 'none';
+
+        // Render first batch of top-level comments
+        renderCommentBatch(postId, 0, COMMENTS_PER_BATCH, userIP);
+
+        // Show/hide "Load More"
+        loadMoreBtn.style.display = allComments.length > COMMENTS_PER_BATCH ? 'block' : 'none';
+        loadMoreBtn.dataset.batch = COMMENTS_PER_BATCH;
+    } catch (error) {
+        loader.innerHTML = '<p class="error">❌ Failed to load comments. Please try again.</p>';
+        console.error('Error loading comments:', error);
+    }
 }
 
 function renderCommentBatch(postId, start, end, userIP) {
@@ -247,6 +260,9 @@ function showReplyForm(commentDiv, parentId, postId) {
 }
 
 document.getElementById('load-more-btn').addEventListener('click', () => {
+    const loader = document.getElementById('comments-loader');
+    loader.style.display = 'block';
+
     const postId = window.location.pathname.split('/').pop();
     const start = parseInt(document.getElementById('load-more-btn').dataset.batch);
     const end = start + COMMENTS_PER_BATCH;
@@ -256,6 +272,8 @@ document.getElementById('load-more-btn').addEventListener('click', () => {
         .then(res => res.json())
         .then(userIP => {
             renderCommentBatch(postId, start, end, userIP);
+
+            loader.style.display = 'none'; // hide loader after batch render
 
             if (end >= allComments.length) {
                 document.getElementById('load-more-btn').style.display = 'none';
