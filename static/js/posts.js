@@ -147,7 +147,7 @@ function renderComment(c, container, userIP, postId, depth, index) {
 
     const commentEl = document.createElement('div');
     commentEl.className = 'comment';
-    commentEl.style.marginLeft = `${actual_comment_depth * 20}px`; // indent replies
+    commentEl.style.marginLeft = `${actual_comment_depth * 5}px`; // indent replies
     if (depth > 3) {
         commentEl.style.marginLeft = `${-14}px`;
     }
@@ -165,20 +165,22 @@ function renderComment(c, container, userIP, postId, depth, index) {
                 </a>` : ''}
         </p>
         <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
+    <div class="comment-actions">
         <button class="reply-btn" data-id="${c.id}">↩ Reply</button>
-
         ${c.ip_address === userIP.ip ? `
-            <div class="comment-actions">
-                <button onclick="startEditComment(${c.id}, ${postId})">✏️</button>
-                <button onclick="deleteComment(${c.id}, ${postId})">🗑️</button>
+            <button onclick="startEditComment(${c.id}, ${postId})">✏️ Edit</button>
+            <button onclick="deleteComment(${c.id}, ${postId})">🗑️ Delete</button>
+        ` : ''}
+    </div>
+
+    ${c.ip_address === userIP.ip ? `
+        <div id="edit-comment-${c.id}" class="edit-comment-box">
+            <textarea id="edit-text-${c.id}" class="edit-comment-text" required>${c.content}</textarea>
+            <div class="edit-comment-actions">
+                <button type="button" class="save-btn" onclick="submitCommentEdit(event, ${c.id}, ${postId})">💾 Save</button>
+                <button type="button" class="cancel-btn" onclick="cancelEditComment(${c.id})">✖ Cancel</button>
             </div>
-            <div id="edit-comment-${c.id}" class="edit-comment-box">
-                <textarea id="edit-text-${c.id}" class="edit-comment-text" required>${c.content}</textarea>
-                <div class="edit-comment-actions">
-                    <button type="button" class="save-btn" onclick="submitCommentEdit(event, ${c.id}, ${postId})">💾 Save</button>
-                    <button type="button" class="cancel-btn" onclick="cancelEditComment(${c.id})">✖ Cancel</button>
-                </div>
-            </div>` : ''}
+        </div>` : ''}
         <div id="replies-${c.id}"></div>
     `;
     container.appendChild(commentEl);

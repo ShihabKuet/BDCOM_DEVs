@@ -221,7 +221,7 @@
 }
 
 /* ===== Comment Reply Button ===== */
-.reply-btn {
+.comment-actions button {
     background: #f3f4f6;
     color: #374151;
     border: 1px solid #d1d5db;
@@ -233,7 +233,7 @@
     transition: all 0.2s ease-in-out;
 }
 
-.reply-btn:hover {
+.comment-actions button:hover {
     background: #e0e7ff;
     border-color: #a5b4fc;
     color: #1e3a8a;

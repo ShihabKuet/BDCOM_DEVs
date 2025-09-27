@@ -1225,14 +1225,6 @@ form, .posts {
     margin-top: 5px;
 }
 
-.comment-actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right: 6px;
-    font-size: 1rem;
-}
-
 /* Similar Post in a Single Post */
 .similar-posts-box {
     background: #fdfdfd;
