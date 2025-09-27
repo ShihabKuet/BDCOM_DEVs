@@ -145,7 +145,11 @@ function renderComment(c, container, userIP, postId, depth, index) {
         <p class="comment-content">
             <span id="preview-text-${c.id}">${previewText}${isLong ? `<span id="ellipsis-${c.id}">....</span>` : ''}</span>
             <span id="full-text-${c.id}" style="display:none;">${fullText}</span>
-            ${isLong ? `<a href="#" id="toggle-btn-${c.id}" class="expand-link">Expand</a>` : ''}
+            ${isLong ? `
+                <a href="#" id="toggle-btn-${c.id}" class="expand-link">
+                    <span class="label">Expand</span>
+                    <span class="icon">▼</span>
+                </a>` : ''}
         </p>
         <small>By <strong>${c.commented_by}</strong> at ${c.timestamp}</small>
         <button class="reply-btn" data-id="${c.id}">↩ Reply</button>
@@ -172,11 +176,31 @@ function renderComment(c, container, userIP, postId, depth, index) {
     });
 
     // Expand/collapse
-    const toggleBtn = document.getElementById(`toggle-btn-${c.id}`);
+    const toggleBtn = commentEl.querySelector(`#toggle-btn-${c.id}`);
     if (toggleBtn) {
         toggleBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            toggleCommentExpand(c.id);
+
+            const previewText = commentEl.querySelector(`#preview-text-${c.id}`);
+            const fullText = commentEl.querySelector(`#full-text-${c.id}`);
+            const ellipsis = previewText.querySelector(`#ellipsis-${c.id}`);
+            const label = toggleBtn.querySelector('.label');
+            const icon = toggleBtn.querySelector('.icon');
+
+            if (fullText.style.display === 'none') {
+                // Expand
+                previewText.style.display = 'none';
+                if (ellipsis) ellipsis.style.display = 'none';
+                fullText.style.display = 'inline';
+                label.textContent = 'Collapse';
+                icon.textContent = '▲';
+            } else {
+                previewText.style.display = 'inline';
+                if (ellipsis) ellipsis.style.display = 'inline';
+                fullText.style.display = 'none';
+                label.textContent = 'Expand';
+                icon.textContent = '▼';
+            }
         });
     }
 
