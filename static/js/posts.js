@@ -182,6 +182,11 @@ function renderComment(c, container, userIP, postId, depth, index) {
             </div>
         </div>` : ''}
         <div id="replies-${c.id}"></div>
+
+        <div id="replies-${c.id}" class="replies"></div>
+        ${c.replies.length > 0 ? `<button class="show-replies-btn" id="show-replies-${c.id}">
+            Show replies (${c.replies.length})
+        </button>` : ''}
     `;
     container.appendChild(commentEl);
 
@@ -219,9 +224,33 @@ function renderComment(c, container, userIP, postId, depth, index) {
         });
     }
 
-    // Recursively render replies
-    const repliesContainer = commentEl.querySelector(`#replies-${c.id}`);
-    c.replies.forEach((reply, idx) => renderComment(reply, repliesContainer, userIP, postId, depth + 1, `${index}-${idx}`));
+    // Lazy load replies on button click
+    const showRepliesBtn = commentEl.querySelector(`#show-replies-${c.id}`);
+    if (showRepliesBtn) {
+        const repliesContainer = commentEl.querySelector(`#replies-${c.id}`);
+        let repliesLoaded = false;
+        let repliesVisible = false;
+
+        showRepliesBtn.addEventListener('click', () => {
+            if (!repliesLoaded) {
+                // First time load: render replies
+                c.replies.forEach((reply, idx) => 
+                    renderComment(reply, repliesContainer, userIP, postId, depth + 1, `${index}-${idx}`)
+                );
+                repliesLoaded = true;
+                repliesVisible = true;
+                repliesContainer.style.display = 'block';
+                showRepliesBtn.textContent = `Hide replies (${c.replies.length})`;
+            } else {
+                // Toggle visibility
+                repliesVisible = !repliesVisible;
+                repliesContainer.style.display = repliesVisible ? 'block' : 'none';
+                showRepliesBtn.textContent = repliesVisible 
+                    ? `Hide replies (${c.replies.length})` 
+                    : `Show replies (${c.replies.length})`;
+            }
+        });
+    }
 }
 
 /**
