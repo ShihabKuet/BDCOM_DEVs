@@ -132,6 +132,9 @@ function renderCommentBatch(postId, start, end, userIP) {
     }
 }
 
+// Keep track of replies open state globally
+const replyVisibilityState = {};
+
 function renderComment(c, container, userIP, postId, depth, index) {
     const COMMENT_MAX_DEPTH = 3; // maximum indentation
     const actual_comment_depth = Math.min(depth, COMMENT_MAX_DEPTH);
@@ -169,7 +172,7 @@ function renderComment(c, container, userIP, postId, depth, index) {
         <button class="reply-btn" data-id="${c.id}">↩ Reply</button>
         ${c.ip_address === userIP.ip ? `
             <button onclick="startEditComment(${c.id}, ${postId})">✏️ Edit</button>
-            <button onclick="deleteComment(${c.id}, ${postId})">🗑️ Delete</button>
+            <button onclick="openCommentDeleteModal(${c.id}, ${postId})">🗑️ Delete</button>
         ` : ''}
     </div>
 
@@ -229,28 +232,40 @@ function renderComment(c, container, userIP, postId, depth, index) {
     if (showRepliesBtn) {
         const repliesContainer = commentEl.querySelector(`#replies-${c.id}`);
         let repliesLoaded = false;
-        let repliesVisible = false;
+
+        // Restore previous state if exists
+        if (replyVisibilityState[c.id]) {
+            c.replies.forEach((reply, idx) =>
+                renderComment(reply, repliesContainer, userIP, postId, depth + 1, `${index}-${idx}`)
+            );
+            repliesLoaded = true;
+            repliesContainer.style.display = 'block';
+            showRepliesBtn.textContent = `Hide replies (${c.replies.length})`;
+        }
 
         showRepliesBtn.addEventListener('click', () => {
             if (!repliesLoaded) {
                 // First time load: render replies
-                c.replies.forEach((reply, idx) => 
+                c.replies.forEach((reply, idx) =>
                     renderComment(reply, repliesContainer, userIP, postId, depth + 1, `${index}-${idx}`)
                 );
                 repliesLoaded = true;
-                repliesVisible = true;
+            }
+
+            // Toggle visibility and save state
+            const isVisible = repliesContainer.style.display === 'block';
+            if (isVisible) {
+                repliesContainer.style.display = 'none';
+                showRepliesBtn.textContent = `Show replies (${c.replies.length})`;
+                replyVisibilityState[c.id] = false;
+            } else {
                 repliesContainer.style.display = 'block';
                 showRepliesBtn.textContent = `Hide replies (${c.replies.length})`;
-            } else {
-                // Toggle visibility
-                repliesVisible = !repliesVisible;
-                repliesContainer.style.display = repliesVisible ? 'block' : 'none';
-                showRepliesBtn.textContent = repliesVisible 
-                    ? `Hide replies (${c.replies.length})` 
-                    : `Show replies (${c.replies.length})`;
+                replyVisibilityState[c.id] = true;
             }
         });
     }
+
 }
 
 /**
@@ -361,8 +376,35 @@ function toggleCommentExpand(index) {
     }
 }
 
+// Comment Deletion Confirmarion Box
+let commentToDelete = null;
+let postForCommentDelete = null;
+
+function openCommentDeleteModal(commentId, postId) {
+    commentToDelete = commentId;
+    postForCommentDelete = postId;
+    document.getElementById('commentDeleteModal').style.display = 'flex';
+}
+
+// Close modal without deleting
+document.getElementById('cancelCommentDeleteBtn').addEventListener('click', () => {
+    document.getElementById('commentDeleteModal').style.display = 'none';
+    commentToDelete = null;
+    postForCommentDelete = null;
+});
+
+// Confirm delete
+document.getElementById('confirmCommentDeleteBtn').addEventListener('click', () => {
+    if (commentToDelete && postForCommentDelete) {
+        deleteComment(commentToDelete, postForCommentDelete);
+    }
+    document.getElementById('commentDeleteModal').style.display = 'none';
+    commentToDelete = null;
+    postForCommentDelete = null;
+});
+
+
 async function deleteComment(commentId, postId) {
-    if (!confirm('Delete this comment?')) return;
     await fetch(`/comments/${commentId}`, { method: 'DELETE' });
     loadComments(postId);
 }
