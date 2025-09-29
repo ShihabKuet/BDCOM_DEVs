@@ -162,6 +162,51 @@ h3 {
     cursor: pointer;
 }
 
+/* Actions buttons in the IP table */
+.ip-table .edit-btn,
+.ip-table .delete-btn {
+    padding: 4px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Edit button - green */
+.ip-table .edit-btn {
+    background-color: #4CAF50; /* green */
+    color: white;
+}
+
+.ip-table .edit-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Delete button - red */
+.ip-table .delete-btn {
+    background-color: #f44336; /* red */
+    color: white;
+    margin-left: 5px;
+}
+
+.ip-table .delete-btn:hover {
+    background-color: #e53935;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional: make buttons smaller on mobile */
+@media (max-width: 600px) {
+    .ip-table .edit-btn,
+    .ip-table .delete-btn {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+}
+
 /* Dialog Box */
 .modal-overlay {
     position: fixed;

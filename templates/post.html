@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/move_to_top.css') }}">
     <!-- Quill Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/a11y-dark.min.css">
@@ -300,6 +301,9 @@
     <img id="lightboxImage" class="lightbox-image" src="" alt="Full Size Image" />
     </div>
 
+    <!-- Move to Top Button -->
+    <button id="moveTopBtn" title="Go to top">↑</button>
+
     <div class="back-link-container">
         <a href="{{ url_for('index') }}" class="back-link">← Back to Forum</a>
     </div>
@@ -310,6 +314,7 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/diff/5.0.0/diff.min.js"></script>
+    <script src="{{ url_for('static', filename='js/move_to_top.js') }}"></script>
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {

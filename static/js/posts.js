@@ -695,8 +695,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const link = btn.nextElementSibling;
                 if (link) {
                     link.textContent = data.likes === 1
-                        ? "1 person has appreciated this post"
-                        : `${data.likes} people have appreciated this post`;
+                        ? " person has appreciated this post"
+                        : ` people have appreciated this post`;
                 }
             } catch (err) {
                 console.error("Error toggling like:", err);

@@ -443,7 +443,53 @@ def get_user_ips():
     return jsonify([
         {'ip': u.ip_address, 'username': u.username} for u in all_users
     ])
+
+@app.route('/admin/register_ip')
+def admin_register_ip():
+    # Replace `current_ip` with your logic to identify the admin
+    if not is_admin():
+        return abort(403)
+
+    return render_template('admin_register_ip.html')
     
+@app.route('/admin/save_ip', methods=['POST'])
+def admin_save_ip():
+    data = request.get_json()
+    ip_address = data.get('ip_address')
+    username = data.get('username')
+    edit_id = data.get('edit_id')  # old IP if editing
+
+    if not ip_address or not username:
+        return jsonify({'error': 'Missing fields'}), 400
+
+    if edit_id:  # Update existing
+        entry = UserIP.query.filter_by(ip_address=edit_id).first()
+        if entry:
+            entry.ip_address = ip_address
+            entry.username = username
+            db.session.commit()
+            return jsonify({'message': 'Updated successfully'}), 200
+    else:  # Add new
+        existing = UserIP.query.filter_by(ip_address=ip_address).first()
+        if existing:
+            return jsonify({'error': 'IP already exists'}), 400
+        new_entry = UserIP(ip_address=ip_address, username=username)
+        db.session.add(new_entry)
+        db.session.commit()
+        return jsonify({'message': 'Added successfully'}), 201
+
+@app.route('/admin/delete_ip', methods=['POST'])
+def admin_delete_ip():
+    data = request.get_json()
+    ip_address = data.get('ip_address')
+    entry = UserIP.query.filter_by(ip_address=ip_address).first()
+    if entry:
+        db.session.delete(entry)
+        db.session.commit()
+        return jsonify({'message': 'Deleted successfully'}), 200
+    return jsonify({'error': 'IP not found'}), 404
+
+
 @app.route('/follow/<int:post_id>', methods=['POST'])
 def toggle_follow(post_id):
     post = Post.query.get_or_404(post_id)

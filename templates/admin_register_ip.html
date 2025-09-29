@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage IP & Username</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register_ip.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/back-link.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="register-container">
+        <h2>👑 Admin - Manage IP & Username</h2>
+
+        <!-- Form to Add / Edit -->
+        <form id="adminIpForm" class="register-form">
+            <input type="hidden" id="editId">
+            <div class="ip-input-group">
+                <input type="text" id="ip_address" placeholder="Enter IP Address" required>
+                <button type="button" id="loadIpBtn" title="Load your IP">📡</button>
+            </div>
+            <input type="text" id="username" placeholder="Enter Username" required>
+            <button type="submit" id="saveBtn">Save</button><br><br>
+            <button type="button" id="cancelEditBtn" style="display:none;">Cancel</button>
+        </form>
+        <div id="statusMessage" class="status"></div>
+
+        <hr>
+        <h3>📜 Registered IPs</h3>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Search IP or Username...">
+        </div>
+        <div class="ip-table-wrapper">
+            <table class="ip-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>IP Address</th>
+                        <th>Username</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ipTableBody">
+                    <!-- JS will populate -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="back-link-container">
+        <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script>
+        const ipForm = document.getElementById('adminIpForm');
+        const ipTableBody = document.getElementById('ipTableBody');
+        const statusMessage = document.getElementById('statusMessage');
+        const searchInput = document.getElementById('searchInput');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+        async function loadIPs() {
+            const res = await fetch('/api/user_ips');
+            const data = await res.json();
+            ipTableBody.innerHTML = '';
+            data.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>${item.ip}</td>
+                    <td>${item.username}</td>
+                    <td>
+                        <button class="edit-btn" data-ip="${item.ip}" data-username="${item.username}">✏️ Edit</button>
+                        <button class="delete-btn" data-ip="${item.ip}">🗑️ Delete</button>
+                    </td>
+                `;
+                ipTableBody.appendChild(tr);
+            });
+            attachRowEvents();
+        }
+
+        function attachRowEvents() {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('ip_address').value = btn.dataset.ip;
+                    document.getElementById('username').value = btn.dataset.username;
+                    document.getElementById('editId').value = btn.dataset.ip; // store old ip for update
+                    cancelEditBtn.style.display = 'inline-block';
+                    statusMessage.textContent = 'Editing entry...';
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm(`Delete IP ${btn.dataset.ip}?`)) return;
+                    const res = await fetch('/admin/delete_ip', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ ip_address: btn.dataset.ip })
+                    });
+                    if (res.ok) {
+                        loadIPs();
+                        statusMessage.textContent = 'Deleted successfully!';
+                    }
+                });
+            });
+        }
+
+        ipForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const ip = document.getElementById('ip_address').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const editId = document.getElementById('editId').value;
+
+            if (!ip || !username) return;
+
+            const res = await fetch('/admin/save_ip', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ ip_address: ip, username, edit_id: editId || null })
+            });
+            if (res.ok) {
+                ipForm.reset();
+                document.getElementById('editId').value = '';
+                cancelEditBtn.style.display = 'none';
+                statusMessage.textContent = editId ? 'Updated successfully!' : 'Added successfully!';
+                loadIPs();
+            }
+        });
+
+        cancelEditBtn.addEventListener('click', () => {
+            ipForm.reset();
+            document.getElementById('editId').value = '';
+            cancelEditBtn.style.display = 'none';
+            statusMessage.textContent = '';
+        });
+
+        searchInput.addEventListener('input', () => {
+            const filter = searchInput.value.toLowerCase();
+            document.querySelectorAll('#ipTableBody tr').forEach(tr => {
+                tr.style.display = tr.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('loadIpBtn').addEventListener('click', async () => {
+            try {
+                const res = await fetch('/my-ip');
+                const data = await res.json();
+                document.getElementById('ip_address').value = data.ip || '';
+            } catch (err) {
+                alert("Failed to load your IP.");
+                console.error(err);
+            }
+        });
+
+        loadIPs();
+    </script>
+</body>
+</html>
