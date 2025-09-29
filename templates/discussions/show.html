@@ -20,30 +20,32 @@
     <div class="discussion-container" data-discussion-id="{{ discussion.id }}">
         <div class="discussion-header">
             <h1>{{ discussion.title }}</h1>
-            <span class="status-badge {{ discussion.status | lower }}">
-                {{ discussion.status.upper() }}
-            </span>
+            <div class="discussion-header-bottom">
+                <span class="status-badge {{ discussion.status | lower }}">
+                    {{ discussion.status.upper() }}
+                </span>
 
-            {% if is_admin or current_ip == discussion.created_by_ip %}
-            <div class="status-actions">
-                {% if discussion.status == 'Active' %}
-                    <button class="btn-close" onclick="changeStatus('Closed')">Close</button>
-                    <button class="btn-archive" onclick="changeStatus('Archived')">Archive</button>
-                    <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
-                {% elif discussion.status == 'Closed' %}
-                    <button class="btn-activate" onclick="changeStatus('Active')">Activate</button>
-                    <button class="btn-archive" onclick="changeStatus('Archived')">Archive</button>
-                    <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
-                {% elif discussion.status == 'Archived' %}
-                    <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                {% if is_admin or current_ip == discussion.created_by_ip %}
+                <span class="status-actions">
+                    {% if discussion.status == 'Active' %}
+                        <button class="btn-close" onclick="changeStatus('Closed')">Close</button>
+                        <button class="btn-archive" onclick="changeStatus('Archived')">Archive</button>
+                        <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                    {% elif discussion.status == 'Closed' %}
+                        <button class="btn-activate" onclick="changeStatus('Active')">Activate</button>
+                        <button class="btn-archive" onclick="changeStatus('Archived')">Archive</button>
+                        <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                    {% elif discussion.status == 'Archived' %}
+                        <button class="btn-delete" onclick="deleteDiscussion()">Delete</button>
+                    {% endif %}
+                </span>
                 {% endif %}
             </div>
-            {% endif %}
         </div>
 
         <div class="discussion-meta">
             <small>Opened by <strong>{{ discussion.created_by_name or discussion.created_by_ip }}</strong>
-            at {{ discussion.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            at {{ discussion.created_at.strftime('%Y-%m-%d %I:%M %p') }}</small>
         </div>
 
         <hr>

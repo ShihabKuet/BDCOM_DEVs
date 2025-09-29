@@ -22,13 +22,12 @@ body {
 }
 
 /* Discussion Header */
-.discussion-header {
+.discussion-header-bottom {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
-    justify-content: space-between;
-    margin-bottom: 10px;
 }
 
 .discussion-header h1 {
@@ -62,7 +61,7 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     display: inline-block;
-    margin-left: 10px;
+    margin-left: 0px;
 }
 .status-badge.active { background: #28a745; color: #fff; }
 .status-badge.closed { background: #ffc107; color: #000; }

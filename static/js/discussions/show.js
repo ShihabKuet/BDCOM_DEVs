@@ -9,6 +9,16 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function formatAMPM(dateString) {
+    const date = new Date(dateString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 => 12
+    return `${hours}:${minutes} ${ampm}`;
+}
+
 let scrollToBottom = true;
 async function loadMessages(scrollToBottom) {
     const res = await fetch(`/discussions/${discussionId}/messages`);
@@ -17,7 +27,7 @@ async function loadMessages(scrollToBottom) {
     container.innerHTML = msgs.map(m => `
         <div class="message">
             <div class="meta">
-                <strong>${m.author_name}</strong> &middot; <small>${m.created_at}</small>
+                <strong>${m.author_name}</strong> &middot; <small>${formatAMPM(m.created_at)}</small>
             </div>
             <div class="message-body">${escapeHtml(m.content)}</div>
         </div>
