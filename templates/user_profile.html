@@ -1,73 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ user.username if user else 'Not Set' }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+  <meta charset="UTF-8">
+  <title>{{ user.username if user else 'User Profile' }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 </head>
 <body>
-    {% include 'navbar.html' %}
+  {% include 'navbar.html' %}
 
-    <div class="profile-wrapper">
-        <div class="running-text">
-            <span>This facility is still in development. You may face bugs or inefficiencies in this feature. These problems will be fixed soon. Just chill.</span>
-        </div>
-        <div class="profile-header">
-            <h1>👤 {{ user.username or "Anonymous User" }}</h1>
-            <p class="ip-info">IP Address: {{ current_ip }}</p>
-        </div>
-
-        <!-- Account Info -->
-        <div class="glass-card account-info">
-            <h2>🧾 Account Info</h2>
-            <p><strong>Username:</strong> {{ user.username or "Not set" }}</p>
-            <p><strong>IP Address:</strong> {{ current_ip }}</p>
-        </div>
-
-        <!-- Main Content: Posts and Followed Posts -->
-        <div class="main-grid">
-            <!-- Left: Your Posts -->
-            <div class="your-posts">
-                <div class="glass-card">
-                    <h2>📝 Your Posts</h2>
-                    <ul class="post-list-modern">
-                        {% for post in user_posts %}
-                        <li class="post-card">
-                            <a href="{{ url_for('get_post', post_id=post.id) }}">
-                                <div class="post-icon">📝</div>
-                                <div class="post-info">
-                                    <div class="post-title">{{ post.title }}</div>
-                                </div>
-                            </a>
-                        </li>
-                        {% else %}
-                        <li>No posts found.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Right: Followed Posts -->
-            <div class="followed-posts">
-                <div class="glass-card">
-                    <h2>📌 Followed Posts</h2>
-                    {% if followed_posts %}
-                        <ul class="post-list">
-                            {% for post in followed_posts %}
-                                <li><a href="{{ url_for('get_post', post_id=post.id) }}">{{ post.title }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>You are not following any posts yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+  <div class="profile-wrapper">
+    <div class="running-text">
+      <span>⚡ This profile feature is under development. You may face some bugs, but updates are on the way. Stay tuned!</span>
     </div>
 
-    {% include 'footer.html' %}
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar">
+        {{ user.username[0]|upper if user and user.username else "A" }}
+      </div>
+      <h1>{{ user.username or "Anonymous User" }}</h1>
+      <p class="ip-info">📡 IP Address: {{ current_ip }}</p>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>📝 Posts</h3>
+        <p>{{ user_posts|length }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>📌 Followed</h3>
+        <p>{{ followed_posts|length if followed_posts else 0 }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>⚡ Member Since</h3>
+        <p>Unknown</p>
+        <!-- <p>{{ user.created_at.strftime('%b %Y') if user and user.created_at else "Unknown" }}</p> -->
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="main-grid">
+      <!-- Your Posts -->
+      <div class="your-posts glass-card">
+        <h2>📝 Your Posts</h2>
+        {% if user_posts %}
+          <ul class="post-list-modern">
+            {% for post in user_posts %}
+            <li class="post-card">
+              <a href="{{ url_for('get_post', post_id=post.id) }}">
+                <div class="post-info">
+                  <div class="post-title">{{ post.title }}</div>
+                  <div class="post-meta">
+                    <span>📅 (date not available)</span>
+                    <span>💬 {{ post.comments|length }} Comments</span>
+                  </div>
+                </div>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">You haven’t created any posts yet.</p>
+        {% endif %}
+      </div>
+
+      <!-- Followed Posts -->
+      <div class="followed-posts glass-card">
+        <h2>📌 Followed Posts</h2>
+        {% if followed_posts %}
+          <ul class="post-list-modern">
+            {% for post in followed_posts %}
+            <li class="post-card">
+              <a href="{{ url_for('get_post', post_id=post.id) }}">
+                <div class="post-title">{{ post.title }}</div>
+                <div class="post-meta">👤 {{ post.submitted_by }}</div>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">You are not following any posts yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
 </body>
 </html>
