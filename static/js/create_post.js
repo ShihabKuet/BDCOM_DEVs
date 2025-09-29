@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 [{ 'color': [] }, { 'background': [] }],
                 ['code', 'code-block'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
                 ['link', 'image'],  // ← image button
                 ['clean']
             ]

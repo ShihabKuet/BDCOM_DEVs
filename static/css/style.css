@@ -833,6 +833,22 @@ form, .posts {
     transition: transform 0.2s; /* Optional: smooth hover effect */
 }
 
+/* Base for lists */
+.post-body ol,
+.post-body ul {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+/* Handle Quill indent levels */
+.post-body .ql-indent-1 { margin-left: 2em; }
+.post-body .ql-indent-2 { margin-left: 4em; }
+.post-body .ql-indent-3 { margin-left: 6em; }
+.post-body .ql-indent-4 { margin-left: 8em; }
+.post-body .ql-indent-5 { margin-left: 10em; }
+
+
+
 .reference-banner {
     background-color: #f0f4f8;
     border-left: 4px solid #007bff;

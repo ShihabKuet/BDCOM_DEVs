@@ -82,6 +82,36 @@
         </div>
         {% endif %}
 
+        <!-- Post Likes & Appreciation -->
+        <div class="post-likes-section">
+            <!-- Toggle Like Button -->
+            <button class="like-btn {{ 'liked' if post.liked else '' }}" data-id="{{ post.id }}">
+                🌟 <span id="likes-{{ post.id }}">{{ post.likes }}</span>
+            </button>
+
+            <!-- Appreciation Link -->
+            <a href="javascript:void(0);" class="show-likers" data-id="{{ post.id }}">
+                {% if post.likes == 1 %}
+                    person has appreciated this post
+                    <!-- 1 person has appreciated this post -->
+                {% else %}
+                    people have appreciated this post
+                    <!-- {{ post.likes }} people have appreciated this post -->
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- Appreciation Modal -->
+        <div id="likersModal" class="modal-overlay">
+            <div class="modal-box">
+                <h2>🌟 Appreciations</h2>
+                <ul id="likersList"></ul>
+                <div class="modal-buttons">
+                    <button id="closeLikersBtn" class="btn-cancel">Close</button>
+                </div>
+            </div>
+        </div>
+
         <div class="post-actions-single">
             {% if post.edit_access == 'write' or current_ip == post.ip_address or current_ip == admin_ip %}
             <button class="editBtn" onclick="startEdit()">✏️ Edit</button>

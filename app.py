@@ -852,6 +852,18 @@ def toggle_like(post_id):
 
         return jsonify({'likes': post.likes, 'liked': True}), 201
 
+@app.route('/likes/<int:post_id>', methods=['GET'])
+def get_post_likers(post_id):
+    post = Post.query.get_or_404(post_id)
+    likes = PostLike.query.filter_by(post_id=post_id).all()
+
+    likers = []
+    for like in likes:
+        user = UserIP.query.filter_by(ip_address=like.ip_address).first()
+        likers.append(user.username if user else like.ip_address)
+
+    return jsonify({'likers': likers, 'count': len(likers)})
+
 def build_comment_tree(comments, parent_id=None):
     tree = []
     for comment in [c for c in comments if c.parent_id == parent_id]:

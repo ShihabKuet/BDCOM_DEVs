@@ -681,6 +681,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Toggle Like Button
+    document.querySelectorAll(".like-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const postId = btn.dataset.id;
+            try {
+                const res = await fetch(`/like/${postId}`, { method: 'POST' });
+                const data = await res.json();
+                document.getElementById(`likes-${postId}`).textContent = data.likes;
+                btn.classList.toggle("liked", data.liked);
+
+                // Update appreciation link text
+                const link = btn.nextElementSibling;
+                if (link) {
+                    link.textContent = data.likes === 1
+                        ? "1 person has appreciated this post"
+                        : `${data.likes} people have appreciated this post`;
+                }
+            } catch (err) {
+                console.error("Error toggling like:", err);
+            }
+        });
+    });
+
+    const showLikersLinks = document.querySelectorAll(".show-likers");
+
+    showLikersLinks.forEach(link => {
+        link.addEventListener("click", async (e) => {
+            e.preventDefault(); // prevent default link behavior
+            const postId = link.dataset.id;
+
+            // Only proceed if postId exists
+            if (!postId) return;
+
+            try {
+                const res = await fetch(`/likes/${postId}`);
+                if (!res.ok) throw new Error("Failed to fetch likers");
+                const data = await res.json();
+
+                const list = document.getElementById("likersList");
+                list.innerHTML = "";
+
+                if (!data.likers || data.likers.length === 0) {
+                    list.innerHTML = "<li>No one has appreciated this post yet.</li>";
+                } else {
+                    data.likers.forEach(liker => {
+                        const li = document.createElement("li");
+                        li.textContent = liker;
+                        list.appendChild(li);
+                    });
+                }
+
+                // Show modal
+                const modal = document.getElementById("likersModal");
+                modal.style.display = "flex";
+            } catch (err) {
+                console.error("Error fetching likers:", err);
+            }
+        });
+    });
+
+    // Close modal
+    document.getElementById("closeLikersBtn").addEventListener("click", () => {
+        document.getElementById("likersModal").style.display = "none";
+    });
+
+    // Optional: click outside to close modal
+    document.getElementById("likersModal").addEventListener("click", (e) => {
+        if (e.target.id === "likersModal") {
+            e.target.style.display = "none";
+        }
+    });
+
     // Load similar posts
     fetch(`/similar-posts/${postId}`)
     .then(res => res.json())
