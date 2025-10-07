@@ -512,4 +512,95 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Recover Deleted Post */
+.deleted-post-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4ebf0 100%);
+    animation: fadeIn 0.8s ease-in-out;
+}
 
+.deleted-post-card {
+    text-align: center;
+    background: #fff;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 90%;
+    border-top: 6px solid #d9534f;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.deleted-post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.deleted-icon {
+    font-size: 3.5em;
+    margin-bottom: 15px;
+}
+
+.deleted-post-card h2 {
+    font-size: 1.8em;
+    color: #d9534f;
+    margin-bottom: 10px;
+}
+
+.deleted-post-card p {
+    color: #555;
+    font-size: 1.05em;
+    line-height: 1.6em;
+}
+
+.deleted-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-back-home,
+.btn-request-recover {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-back-home {
+    background: #6c757d;
+    color: #fff;
+}
+
+.btn-back-home:hover {
+    background: #5a6268;
+}
+
+.btn-request-recover {
+    background: #d9534f;
+    color: white;
+}
+
+.btn-request-recover:hover {
+    background: #c9302c;
+}
+
+.deleted-hint {
+    margin-top: 25px;
+    font-size: 0.9em;
+    color: #777;
+    background: #f9f9f9;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -17,7 +17,7 @@
 
     {% include 'navbar.html' %}
 
-{% if post.is_visible %}
+{% if post.is_visible or current_ip == admin_ip %}
     <div class="post-single">
         <!-- Only for admin to pin a post -->
         {% if current_ip == admin_ip %}
@@ -268,7 +268,28 @@
     </div>
 
 {% else %}
-    <h1>Request to admin to recover your post</h1>
+<div class="deleted-post-container">
+    <div class="deleted-post-card">
+        <div class="deleted-icon">🗑️</div>
+        <h2>This Post Has Been Deleted</h2>
+        <p>
+            The content of this post is no longer visible to the public.
+            <br>
+            You can request the admin to restore it if you believe this was a mistake.
+        </p>
+
+        <div class="deleted-actions">
+            <a href="{{ url_for('index') }}" class="btn-back-home">← Back to Forum</a>
+            <a href="mailto:shanjid.arefin@bdcom.com.cn?subject=Recover%20Deleted%20Post%20(ID:{{ post.id }})" class="btn-request-recover">
+                ✉️ Request Recovery
+            </a>
+        </div>
+
+        <div class="deleted-hint">
+            <p><strong>Tip:</strong> Posts may be removed due to duplicate content, irrelevant material, or policy violations.</p>
+        </div>
+    </div>
+</div>
 {% endif %}
 
     <!-- Custom Delete Confirmation Modal -->

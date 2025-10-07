@@ -16,7 +16,7 @@
             <ul class="deleted-posts-list">
                 {% for post in posts %}
                 <li class="deleted-post">
-                    <h3>{{ post.id }}: {{ post.title }}</h3>
+                    <h3><a href="/posts/{{post.id}}">{{ post.id }}: {{ post.title }}</a></h3>
                     <p><strong>Submitted by:</strong> {{ post.submitted_by }}</p>
                     <p><strong>Category:</strong> {{ post.category }}</p>
                     <div class="admin-actions">
