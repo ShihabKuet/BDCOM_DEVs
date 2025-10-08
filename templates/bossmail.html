@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bossmail - Quick Mail Actions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bossmail.css') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='resources/bdf_favicon.ico') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+
+  <div class="bossmail-container">
+    <h1>📧 Bossmail Center</h1>
+    <p class="intro">
+      Quickly send emails to your boss for Official (Terms) issues.
+      Fill in your details and click a button below to open <strong>your mail client</strong> and copy the message directly.
+    </p>
+
+    <!-- ✨ Mail App Recommendation Section -->
+    <div class="mail-note">
+      <div class="mail-note-icon">💡</div>
+      <div class="mail-note-text">
+        Please use a <strong>Mail Application</strong> (Foxmail or similar application) for the best experience.<br>
+        <strong>Foxmail</strong> is highly recommended — <a href="https://www.foxmail.com/" target="_blank">click here to download</a>.
+      </div>
+    </div>
+
+    <!-- User Input Form -->
+    <div class="user-input-form">
+        <div>
+            <label for="inputDate">Date</label>
+            <input type="date" id="inputDate" placeholder=" " />
+        </div>
+        <div>
+            <label for="inputInTime">Punch-In Time</label>
+            <input type="time" id="inputInTime" placeholder=" " />
+        </div>
+        <div>
+            <label for="inputOutTime">Punch-Out Time</label>
+            <input type="time" id="inputOutTime" placeholder=" " />
+        </div>
+        <div>
+            <label for="inputID">Your ID</label>
+            <input type="text" id="inputID" placeholder=" " />
+        </div>
+    </div>
+
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+      <button class="mail-btn" onclick="sendMissingPunch()">📨 Missing Punch</button>
+      <button class="mail-btn" onclick="sendLateArrival()">⏰ Late Arrival</button>
+    </div>
+
+    <!-- Message Preview -->
+    <div class="message-preview">
+      <h3>📄 Message Preview / Copyable Text</h3>
+      <textarea id="messageBody" contenteditable="true"></textarea>
+      <button class="copy-btn" onclick="copyMessage()">📋 Copy to Clipboard</button>
+    </div>
+
+    <!-- Copy Success Modal -->
+    <div id="copyModal" class="copy-modal">
+    <div class="copy-modal-content">
+        <div class="checkmark">✅</div>
+        <h3>Message Copied!</h3>
+        <p>You can now paste it into your mail application.</p>
+    </div>
+    </div>
+
+</div>
+
+  {% include 'footer.html' %}
+
+  <script>
+    const to = "zhangjinwei@bdcom.com.cn";
+    const cc = "riyad_hossain@bdcom.com.cn";
+    const messageArea = document.getElementById('messageBody');
+
+    function getUserInputs() {
+      return {
+        date: document.getElementById('inputDate').value || "<Enter Date>",
+        inTime: document.getElementById('inputInTime').value || "<Enter Punch-In Time>",
+        outTime: document.getElementById('inputOutTime').value || "<Enter Punch-Out Time>",
+        userID: document.getElementById('inputID').value || "BDCOM****"
+      };
+    }
+
+    function formatTimeToAMPM(timeStr) {
+        if (!timeStr) return "";
+        let [hours, minutes] = timeStr.split(":").map(Number);
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 => 12
+        return `${hours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+    }
+
+    function sendMissingPunch() {
+        const date = document.getElementById('inputDate').value;
+        const inTime = formatTimeToAMPM(document.getElementById('inputInTime').value);
+        const outTime = formatTimeToAMPM(document.getElementById('inputOutTime').value);
+        const empID = document.getElementById('inputID').value || "BDCOM****";
+
+        const subject = `Missing Punch _${empID}`;
+        const bodyText = `Dear Mr. Jerry,
+Sorry to inform you that yesterday I forgot to punch out before leaving the office. 
+
+Date: ${date}
+Punch-In Time: ${inTime}
+Left office at: ${outTime}
+ID: ${empID}`;
+
+        messageArea.value = bodyText;
+        window.location.href = `mailto:${to}?cc=${cc}&subject=${encodeURIComponent(subject)}`;
+    }
+
+    function sendLateArrival() {
+        const date = document.getElementById('inputDate').value;
+        const inTime = formatTimeToAMPM(document.getElementById('inputInTime').value);
+        const empID = document.getElementById('inputID').value || "BDCOM****";
+
+        const subject = `Late Arrival _${empID}`;
+        const bodyText = `Dear Mr. Jerry,
+Sorry to inform you that I arrived late today due to traffic jam.
+
+Date: ${date}
+Punch-In Time: ${inTime}
+ID: ${empID}`;
+
+        messageArea.value = bodyText;
+        window.location.href = `mailto:${to}?cc=${cc}&subject=${encodeURIComponent(subject)}`;
+    }
+
+    function copyMessage() {
+        messageArea.removeAttribute('readonly');
+        messageArea.select();
+        messageArea.setSelectionRange(0, messageArea.value.length);
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) showCopyModal();
+            else alert("Failed to copy. Please copy manually.");
+        } catch (err) {
+            alert("Failed to copy. Please copy manually.");
+        }
+
+        window.getSelection().removeAllRanges();
+    }
+
+    function showCopyModal() {
+        const modal = document.getElementById("copyModal");
+        modal.style.display = "flex";
+
+        setTimeout(() => {
+            modal.style.display = "none";
+        }, 1500); // auto hide after 1.5 seconds
+    }
+  </script>
+
+</body>
+</html>

@@ -235,11 +235,18 @@ def user_profile():
         .filter(PostFollow.follower_ip == current_ip)
         .all()
     )
+    deleted_posts = (
+        Post.query
+        .filter_by(submitted_by=user.username if user else None, is_visible=False)
+        .order_by(Post.id.desc())  # Sort by highest ID first
+        .all()
+    ) 
     return render_template(
         'user_profile.html',
         user=user,
         user_posts=user_posts,
         followed_posts=followed_posts,
+        deleted_posts=deleted_posts,
         current_ip=current_ip
     )
 
@@ -1418,6 +1425,10 @@ def require_ip_registration():
 
 
 #end discussion
+
+@app.route('/bossmail')
+def bossmail():
+    return render_template('bossmail.html')
 
 # Show version update details (user-facing)
 @app.route("/version-updates")

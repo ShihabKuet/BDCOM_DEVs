@@ -56,7 +56,7 @@
                 <div class="post-info">
                   <div class="post-title">{{ post.title }}</div>
                   <div class="post-meta">
-                    <span>📅 (date not available)</span>
+                    <span>👍 {{ post.likes }} Appreciations </span>
                     <span>💬 {{ post.comments|length }} Comments</span>
                   </div>
                 </div>
@@ -87,6 +87,23 @@
           <p class="empty-state">You are not following any posts yet.</p>
         {% endif %}
       </div>
+
+      <!-- Deleted Posts -->
+      <div class="deleted-posts glass-card">
+        <h2>🗑️ Your Deleted Posts</h2>
+        {% if deleted_posts %}
+          <ul class="post-list-modern">
+            {% for post in deleted_posts %}
+            <li class="post-card">
+              <div class="post-title">#{{ post.id }}: {{ post.title }}</div>
+            </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">You have no deleted posts.</p>
+        {% endif %}
+      </div>
+
     </div>
   </div>
 

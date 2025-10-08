@@ -118,3 +118,75 @@
     color: #fff;
 }
 
+/* Bossmail Card */
+.bossmail-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #4facfe, #00f2fe); /* gradient effect */
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Optional subtle icon background */
+.bossmail-card::before {
+    content: "📧";
+    position: absolute;
+    font-size: 5rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.08;
+    z-index: 0;
+}
+
+.bossmail-card h3,
+.bossmail-card p,
+.bossmail-btn {
+    position: relative;
+    z-index: 1;
+}
+
+.bossmail-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #fffde7;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.bossmail-card p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #f0f8ff;
+    line-height: 1.4;
+}
+
+.bossmail-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: 25px;
+    background-color: #fff;
+    color: #4facfe;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+}
+
+.bossmail-btn:hover {
+    background-color: #4facfe;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.bossmail-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
