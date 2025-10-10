@@ -190,3 +190,111 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
+/* ===== BDF Access Section ===== */
+.bdf-access-section {
+  background: #f9fafc;
+  border-top: 1px solid #e0e4e8;
+  padding: 40px 20px;
+  margin-top: 50px;
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bdf-access-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  width: 100%;
+  padding: 30px 40px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.bdf-access-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.bdf-access-card h2 {
+  font-size: 1.6rem;
+  color: #1a2b49;
+  margin-bottom: 10px;
+}
+
+.bdf-access-card h2 i {
+  color: #0078d7;
+  margin-right: 8px;
+}
+
+.access-subtitle {
+  color: #444;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.bdf-access-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.bdf-access-list li {
+  margin: 10px 0;
+}
+
+.bdf-access-list a {
+  color: #0056b3;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.bdf-access-list a:hover {
+  color: #0078d7;
+  transform: translateX(4px);
+}
+
+.bdf-access-list i {
+  color: #0078d7;
+  font-size: 1.1rem;
+}
+
+.bdf-tips {
+  background: #e8f4ff;
+  border-left: 4px solid #0078d7;
+  color: #004a8f;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 15px;
+}
+
+.bdf-tips i {
+  color: #0078d7;
+}
+
+/* ===== Responsive Styling ===== */
+@media (max-width: 768px) {
+  .bdf-access-card {
+    padding: 25px 20px;
+  }
+
+  .bdf-access-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .bdf-access-list a {
+    font-size: 0.95rem;
+  }
+}

@@ -61,6 +61,7 @@
 .forum-nav a {
     font-family: 'Poppins', sans-serif;
     position: relative;
+    align-content: center;
     margin-left: 10px;
     text-decoration: none;
     color: #2c3e50;
@@ -364,5 +365,124 @@
     .notification-dropdown {
         right: 10px;
         width: 90%;
+    }
+}
+
+/* ===================== */
+/* 🔽 Features Dropdown  */
+/* ===================== */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    font-family: 'Poppins', sans-serif;
+    background-color: rgba(240, 248, 255, 0.6);
+    color: #2c3e50;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-left: 10px;
+}
+
+.dropbtn:hover {
+    color: #3498db;
+    background-color: rgba(230, 240, 255, 0.8);
+}
+
+/* Dropdown content box */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 42px;
+    left: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    min-width: 200px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    animation: dropdownFade 0.25s ease-in-out;
+}
+
+/* Each link in dropdown */
+.dropdown-content a {
+    font-family: 'Poppins', sans-serif;
+    color: #2c3e50;
+    padding: 10px 14px;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.dropdown-content a:hover {
+    background-color: #f0f8ff;
+    color: #007bff;
+}
+
+/* Show dropdown on hover (desktop) */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Small fade animation */
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Arrow rotation effect */
+.dropdown:hover .dropbtn::after {
+    transform: rotate(180deg);
+}
+
+.dropbtn::after {
+    content: "▾";
+    display: inline-block;
+    margin-left: 6px;
+    transition: transform 0.3s ease;
+}
+
+/* Mobile-friendly layout */
+@media (max-width: 768px) {
+    .dropdown {
+        width: 100%;
+    }
+
+    .dropbtn {
+        width: 100%;
+        text-align: left;
+        border-top: 1px solid #eee;
+        border-radius: 0;
+        background-color: transparent;
+    }
+
+    .dropdown-content {
+        position: relative;
+        top: 0;
+        left: 0;
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
+        animation: none;
+    }
+
+    .dropdown-content a {
+        background-color: rgba(240, 248, 255, 0.6);
+        border-radius: 10px;
+        margin: 3px 0;
     }
 }

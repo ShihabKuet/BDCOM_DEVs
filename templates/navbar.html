@@ -6,14 +6,25 @@
             </div>
             <nav class="forum-nav" id="navMenu">
                 <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Home</a>
-                <!-- <a href="/bdf_manual" class="{{ 'active' if request.path == '/bdf_manual' else '' }}">Manual</a> -->
-                <a href="/register_ip" class="{{ 'active' if request.path == '/register_ip' else ''}}">RegisterIP</a>
+                
                 <a href="/user" class="{{ 'active' if request.path == '/user' else '' }}">Profile</a>
+                
+                <!-- 🔽 Features Dropdown -->
+                <div class="dropdown">
+                    <button class="dropbtn"> Panels </button>
+                    <div class="dropdown-content">
+                        <a href="/register_ip" class="{{ 'active' if request.path == '/register_ip' else ''}}">🖥️ Register IP</a>
+                        <a href="/discussions" class="{{ 'active' if request.path == '/discussions' else ''}}">💬 Discussion Thread</a>
+                        <a href="/bossmail" class="{{ 'active' if request.path == '/bossmail' else ''}}">📧 Bossmail</a>
+                    </div>
+                </div>
+
                 {% if current_user_ip == administrator_ip %}
                 <a href="/admin/dashboard" class="{{ 'active' if request.path == '/admin/dashboard' else '' }}">Admin</a>
                 {% endif %}
                 <a href="/create" class="{{ 'active_create' if request.path == '/create' else 'create' }}">Create</a>
-                <!-- Future: <a href="/login">Login</a> -->
+
+                <!-- Notification Bell -->
                 <button class="notification-button" id="notificationBell">
                     🔔 <span id="unreadCount" class="notification-badge"></span>
                 </button>
